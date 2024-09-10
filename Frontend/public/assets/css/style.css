@@ -1,0 +1,241 @@
+@import url("https://fonts.googleapis.com/css2?family=Cairo&family=Parisienne&family=Poppins:wght@200;300;400;500;600;700&family=Roboto&display=swap");
+
+* {
+  --white: #fff;
+  --blue-gradient: linear-gradient(
+    150deg,
+    rgba(31, 179, 237, 1) 10%,
+    rgba(17, 106, 197, 1) 90%
+  );
+  --orange-gradient: linear-gradient(
+    130deg,
+    rgba(246, 191, 13, 1) 0%,
+    rgba(249, 47, 47, 1) 150%
+  );
+  font-family: Poppins;
+}
+
+body {
+  height: 100%;
+  background: #000;
+}
+
+span {
+  color: rgb(255, 191, 13);
+}
+
+/*****************************/
+/* HOME NAVBAR BUTTONS STYLE */
+/*****************************/
+
+.login-buttons {
+  position: absolute;
+  right: 2%;
+  top: 0;
+  padding-top: 8px;
+  font-size: 14px;
+}
+
+.btn-primary,
+.btn-secondary {
+  color: var(--white);
+  padding: 11px 16px;
+  border: none;
+  border-radius: 50px;
+}
+
+.btn-primary {
+  background: var(--blue-gradient);
+}
+
+.btn-secondary {
+  background: var(--orange-gradient);
+}
+
+.btn-primary:hover,
+.btn-secondary:hover {
+  opacity: 0.9;
+}
+
+.btn-outline-secondary {
+  background-color: var(--white);
+  border: 0;
+  border-radius: 2rem;
+  box-sizing: border-box;
+  color: rgb(90, 90, 90);
+  font-weight: 500;
+  padding: 0.76rem 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+}
+
+.btn-outline-secondary:hover {
+  background-color: rgb(249, 250, 251);
+  transition: all 0.2s linear;
+}
+
+.btn-outline-secondary:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+/*****************************/
+/* FORM CONTROL STYLE */
+/*****************************/
+
+.form-input {
+  color: #495057;
+  background-color: #f2f2f2;
+  display: block;
+  width: 100%;
+  padding: 0.7rem 1.2rem;
+  border: none;
+  border-radius: 2rem;
+  transition: all 0.5s linear;
+}
+
+.form-input:focus {
+  outline-color: #b3b9c0;
+}
+
+.form-input::placeholder {
+  color: #b3b9c0;
+  font-size: 15px;
+}
+
+.form-btn-primary {
+  display: block;
+  width: 100%;
+  margin-top: 2rem;
+}
+
+@media (min-width: 992px) {
+  .navbar-brand {
+    padding-left: 2rem;
+  }
+}
+
+/*****************************/
+/* FORM SUBCARD STYLE */
+/*****************************/
+
+.container {
+  position: relative;
+}
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  transition: 0.3s;
+}
+.card:hover {
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+}
+
+.bg-primary {
+  width: 100%;
+  background: var(--blue-gradient);
+}
+
+.bg-secondary {
+  background: var(--orange-gradient);
+}
+
+.subcard-btn-outline {
+  position: relative;
+  color: var(--white);
+  border: 1px solid var(--white);
+  border-radius: 22px;
+  padding: 10px 20px;
+  transition: all 0.2s linear;
+  text-decoration: none;
+}
+
+.subcard-btn-outline:hover {
+  background-color: var(--white);
+}
+
+.text-blue:hover {
+  color: #1383b3;
+}
+
+.text-orange:hover {
+  color: orange;
+}
+
+/*****************************/
+/* BOOK CARS PAGE STYLES */
+/*****************************/
+
+.vehicle-card {
+    position: relative;
+  }
+
+  .vehicle-card .details {
+    position: relative;
+    height: 365px;
+    width: 330px;
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: #fff;
+    box-shadow: 0 0px 5px rgba(0, 0, 0, 0.3);
+  }
+
+@media (min-width: 768px) {
+    
+      
+      .vehicle-card:hover {
+        position: absolute;
+        z-index: 2;
+        -webkit-transform: translate(0px, -10px);
+        transform: translate(0, -10px);
+        -webkit-transform: scale(1.1);
+        transform: scale(1.1);
+        -webkit-transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+      }
+      
+      
+      
+      .vehicle-card .details:hover {
+        -webkit-transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        height: 455px;
+        width: 330px;
+      }
+}
+
+@media (max-width: 767px) {
+    
+    .vehicle-card .details {
+      height: 455px;
+      
+    }
+  
+    .vehicle-card .details:hover {
+      -webkit-transition: none;
+      transition: none;
+      
+    }
+  }
+
+.thumb-gallery {
+  height: 215px;
+}
+.thumb-gallery img {
+  position: absolute;
+}
+.thumb-gallery img.first {
+  opacity: 1;
+}
+.vehicle-card:hover .thumb-gallery img.second {
+  opacity: 0;
+  -webkit-transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+@media (max-width: 768px) {
+    .vehicle-card:hover .thumb-gallery img.second {
+      opacity: 1;
+      transition: none;
+    }
+  }
