@@ -19,7 +19,7 @@ This project is a web application for a car rental company. It allows users to b
 - React.js
 - Node.js
 - Express.js
-- MongoDB
+
 
 ### Installation
 
