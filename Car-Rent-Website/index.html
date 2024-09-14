@@ -160,7 +160,7 @@ input[type=text]:focus, input[type=password]:focus {
 } 
 }
 footer{
-        background: #273f44;
+        background: #718096;
         color: #fff;
         font-family: 'montserrat';
       }
@@ -208,9 +208,9 @@ footer{
       .navbar{
       position: fixed;
       width: 100%;
-      background: #23393d !important;
+      
       box-shadow: 0px 1px 8px rgba(0, 0, 0, 0.25);
-      transition: .6s;
+      transition: .4s;
       z-index: 10;
     }
 
@@ -256,13 +256,13 @@ footer{
     
     </style>
   </head>
-  <nav class="navbar navbar-expand-md navbar-light " style="background-color: #273f44;"> 
+  <nav class="navbar navbar-expand-md  " > 
     <a href="#" class="navbar-brand">
         <img src="https://motors.stylemixthemes.com/rent-a-car/wp-content/uploads/sites/7/2017/01/motors_car_rental_logo.svg" height="50" alt="kissan">
     </a>
-    <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+    <!-- <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
         <span class="navbar-toggler-icon"></span>
-    </button>
+    </button> -->
     <div class="collapse navbar-collapse" id="navbarCollapse">
         <div class="navbar-nav">
             
@@ -302,12 +302,15 @@ footer{
                       <a href="#" class="nav-item nav-link"></a>
                       <b><a href="#" class="nav-item nav-link"></a></b>
                       </li>
-                    <li class="nav-item dropdown">
-                      <a href="#" class="nav-item nav-link"></a>
-                      <b><a href="Register.html" class="nav-item nav-link" style="color: white;">Sign Up</a></b>
-                      </li>
+                    
             
         </div>
+    </div>
+    <div class="signup">
+      <div class="nav-item dropdown">
+        <a href="#" class="nav-item nav-link"></a>
+        <b><a href="Register.html" class="nav-item nav-link" style="color: white;">Sign Up</a></b>
+      </div>
     </div>
 </nav>
   
@@ -400,11 +403,14 @@ footer{
     
           <!-- Testimonials container -->
           <div class="testimonials">
-            <!-- Testimonial 1 -->
-            <div class="testimonial">
-              <div class="testimonial-content">
-                <h3 class="testimonial-heading">Great Experience</h3>
-                <p class="testimonial-text">The service was fast, reliable, and affordable.</p>
+            <!-- Testimonial 1 -->*
+             <div style="display: flex; flex-direction:column">
+              <div class="testimonial">
+                <div class="testimonial-content">
+                  <h3 class="testimonial-heading">Great Experience</h3>
+                  <p class="testimonial-text">The service was fast, reliable, and affordable.</p>
+                </div>
+               
               </div>
               <div class="testimonial-avatar">
                 <img
@@ -417,13 +423,16 @@ footer{
                   <p class="avatar-title">CEO, Company A</p>
                 </div>
               </div>
-            </div>
-    
+             </div>
+           
             <!-- Testimonial 2 -->
-            <div class="testimonial">
-              <div class="testimonial-content">
-                <h3 class="testimonial-heading">Highly Recommend</h3>
-                <p class="testimonial-text">Professional and friendly service. I would recommend it to anyone.</p>
+            <div style="display: flex;flex-direction:column">
+              <div class="testimonial">
+                <div class="testimonial-content">
+                  <h3 class="testimonial-heading">Highly Recommend</h3>
+                  <p class="testimonial-text">Professional and friendly service. I would recommend it to anyone.</p>
+                </div>
+               
               </div>
               <div class="testimonial-avatar">
                 <img
@@ -437,12 +446,14 @@ footer{
                 </div>
               </div>
             </div>
-    
             <!-- Testimonial 3 -->
-            <div class="testimonial">
-              <div class="testimonial-content">
-                <h3 class="testimonial-heading">Outstanding Service</h3>
-                <p class="testimonial-text">They went above and beyond my expectations.</p>
+            <div style="display: flex;flex-direction:column">
+              <div class="testimonial">
+                <div class="testimonial-content">
+                  <h3 class="testimonial-heading">Outstanding Service</h3>
+                  <p class="testimonial-text">They went above and beyond my expectations.</p>
+                </div>
+                
               </div>
               <div class="testimonial-avatar">
                 <img
