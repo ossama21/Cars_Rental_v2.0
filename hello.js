@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const translations = {
       "whyChooseUs": {
         "title": "Why Choose Us",
-        "description": "Here are the reasons why you should choose us.",
+        "description": "Experience hassle-free car rentals with exceptional service and a wide selection of vehicles.",
         "features": [
           {
             "title": "Feature 1",
