@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Sign Up - Modern Design</title>
+    <title>Sign In</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--===============================================================================================-->    
@@ -31,7 +31,7 @@
             background: linear-gradient(to right, #6a11cb, #2575fc);
             font-family: 'Roboto', sans-serif;
         }
-        
+
         .container-login100 {
             display: flex;
             justify-content: center;
@@ -147,20 +147,10 @@
             <div class="login100-more"></div>
 
             <div class="wrap-login100 p-l-50 p-r-50 p-t-72 p-b-50">
-                <form class="login100-form validate-form" action="reg_connect.php" method="post">
+                <form class="login100-form validate-form" action="./signin_connect.php" method="post">
                     <span class="login100-form-title p-b-59">
-                        Sign Up
+                        Sign In
                     </span>
-
-                    <div class="wrap-input100 validate-input" data-validate="Name is required">
-                        <span class="label-input100">Full Name</span>
-                        <input class="input100" type="text" name="name" placeholder="Name...">
-                    </div>
-
-                    <div class="wrap-input100 validate-input" data-validate="Valid email is required: ex@abc.xyz">
-                        <span class="label-input100">Email</span>
-                        <input class="input100" type="email" name="email" placeholder="Email address...">
-                    </div>
 
                     <div class="wrap-input100 validate-input" data-validate="Username is required">
                         <span class="label-input100">Username</span>
@@ -172,21 +162,15 @@
                         <input class="input100" type="password" name="pass" placeholder="*************">
                     </div>
 
-                    <div class="wrap-input100 validate-input" data-validate="Repeat Password is required">
-                        <span class="label-input100">Repeat Password</span>
-                        <input class="input100" type="password" name="repeatpass" placeholder="*************">
-                    </div>
-
                     <div class="container-login100-form-btn">
                         <button class="login100-form-btn" name="submit">
-                            Sign Up
+                            Sign In
                         </button>
                     </div>
 
-					<a href="./signin.html" class="txt3 hov1 p-r-30 p-t-10 p-b-10 p-l-30">
-						Sign in
-					</a>
-					
+                    <a href="./Register.html" class="txt3 hov1 p-r-30 p-t-10 p-b-10 p-l-30">
+                        Create an account
+                    </a>
                 </form>  
             </div>
         </div>
@@ -207,7 +191,7 @@
     <!--===============================================================================================-->
     <script src="vendor/countdowntime/countdowntime.js"></script>
     <!--===============================================================================================-->
-    <script src="js/main.js"></script>
+    <script src="./js/main.js"></script>
 
 </body>
 </html>
