@@ -3,9 +3,84 @@
     <title>CARSRENT - Checkout</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
     <link rel="stylesheet" type="text/css" href="./checkout.css">
+    <style>
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+        }
+        
+        .car-details {
+            display: flex;
+            gap: 20px;
+        }
+
+        .form-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 30px;
+        }
+
+        .form-container .booking-info, 
+        .form-container .payment-info {
+            width: 48%;
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-container input[type="text"], 
+        .form-container input[type="number"],
+        .form-container input[type="date"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .form-container input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #3182ce;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .form-container input[type="submit"]:hover {
+            background-color: #63b3ed;
+        }
+
+        .features span {
+            margin-right: 15px;
+        }
+
+        .payment-methods img {
+            margin-right: 10px;
+        }
+
+        .rating i {
+            color: #f39c12;
+        }
+
+        .rating span {
+            margin-left: 5px;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+    </style>
 </head>
 <body>
     <div class="container">
+        <!-- Car Details Section -->
         <div class="car-details">
             <div class="car-image">
                 <img id="car-image" alt="Car Image" height="300" width="400"/>
@@ -30,14 +105,15 @@
                 </div>
             </div>
         </div>
+
+        <!-- Booking and Payment Forms Section -->
         <div class="form-container">
+          <!-- Booking Information Form -->
           <div class="booking-info">
-           <h2>
-            Booking Information
-           </h2>
+           <h2>Booking Information</h2>
            <form>
             <div>
-             $35 / per car
+             <p>$35 / per car</p>
             </div>
             <div>
              <input placeholder="Full Name" type="text"/>
@@ -53,16 +129,16 @@
             <input type="submit" value="Reserve Now"/>
            </form>
           </div>
-          <div class="payment-info" style="--darkreader-inline-bgcolor: #32312e; --darkreader-inline-outline: #2a386c;" data-darkreader-inline-outline="" data-darkreader-inline-bgcolor="">
-            <h2 style="--darkreader-inline-bgcolor: #32312e;">
-             Payment Information
-            </h2>
-            <form style="--darkreader-inline-bgcolor: #32312e;">
-             <label style="">
+
+          <!-- Payment Information Form -->
+          <div class="payment-info">
+            <h2>Payment Information</h2>
+            <form>
+             <label>
               <input name="payment" type="radio" value="bank"/>
               Direct Bank Transfer
              </label>
-            <label style="--darkreader-inline-bgcolor: #32312e;">
+            <label>
              <input name="payment" type="radio" value="cheque"/>
              Cheque Payment
             </label>
@@ -82,6 +158,8 @@
             </div>
            </form>
           </div>
+        </div>
+    </div>
 
     <script type="module" src="checkout.js"></script> <!-- Link to the JS file -->
 </body>
