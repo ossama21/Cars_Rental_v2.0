@@ -4,6 +4,54 @@
     box-sizing:border-box;
     font-family:"poppins",sans-serif;
 }
+.navbar {
+    position: absolute;
+    width: 100%;
+    background-color: #3182ce; /* Blue background */
+    box-shadow: 0px 1px 8px rgba(0, 0, 0, 0.25); /* Subtle shadow for depth */
+    transition: .4s; /* Smooth transition effect */
+    z-index: 10; /* Ensures the navbar is on top */
+  }
+  
+  .logo-one {
+    height: 50px; /* Logo height */
+    margin: 10px 50px 10px; /* Margin around the logo */
+  }
+  
+  .navbar-nav {
+    font-family: 'Montserrat'; /* Font for navigation links */
+    font-weight: bold; /* Bold text for links */
+  }
+  
+  .nav-link {
+    margin-right: 10px; /* Spacing between navigation links */
+    color: #fff !important; /* White text for links */
+  }
+  
+  .nav-link:hover {
+    color: #F0c540 !important; /* Yellow hover effect */
+  }
+  
+  nav.sticky {
+    margin-right: 5px; /* Margin adjustment for sticky navigation */
+  }
+  
+  /* Responsive Design (for screens below 768px) */
+  @media (max-width:768px) {
+    .navbar {
+      z-index: 10; /* Navbar remains on top */
+    }
+  
+    .navbar-brand .logo-one {
+      margin-left: 5px !important; /* Logo alignment adjustment */
+      height: 40px; /* Smaller logo for mobile */
+    }
+  
+    .icons {
+      margin-bottom: 1rem; /* Margin for icons in mobile view */
+    }
+  }
+  
 body{
     background-color: #c9d6ff;
     background:linear-gradient(to right,#e2e2e2,#c9d6ff);

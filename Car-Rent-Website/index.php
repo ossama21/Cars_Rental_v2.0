@@ -1,3 +1,7 @@
+<?php
+session_start();
+// include('homepage.php');
+?>
 <!doctype html>
 <html lang="en">
   <head>
@@ -255,59 +259,190 @@ footer{
       }
 
     }
+    .navbar-list {
+      width: 100%;
+      text-align: right;
+      padding-right: 2rem;
+    }
+    
+    .navbar-list li {
+      display: inline-block;
+      margin: 0 1rem;
+    }
+    
+    .navbar-list li a {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--black);
+      text-decoration: none;
+    }
+    
+    .profile-dropdown {
+      position: relative;
+      width: fit-content;
+    }
+    
+    .profile-dropdown-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-right: 1rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      width: 150px;
+      border-radius: 50px;
+      color: var(--black);
+      /* background-color: white;
+      box-shadow: var(--shadow); */
+    
+      cursor: pointer;
+      border: 1px solid var(--secondary);
+      transition: box-shadow 0.2s ease-in, background-color 0.2s ease-in,
+        border 0.3s;
+    }
+    
+    .profile-dropdown-btn:hover {
+      background-color: var(--secondary-light-2);
+      box-shadow: var(--shadow);
+    }
+    
+    .profile-img {
+      position: relative;
+      width: 3rem;
+      height: 3rem;
+      border-radius: 50%;
+      background: url(./assets/profile-pic.jpg);
+      background-size: cover;
+    }
+    
+    .profile-img i {
+      position: absolute;
+      right: 0;
+      bottom: 0.3rem;
+      font-size: 0.5rem;
+      color: var(--green);
+    }
+    
+    .profile-dropdown-btn span {
+      margin: 0 0.5rem;
+      margin-right: 0;
+    }
+    
+    .profile-dropdown-list {
+      position: absolute;
+      top: 68px;
+      width: 220px;
+      right: 0;
+      background-color: var(--white);
+      border-radius: 10px;
+      max-height: 0;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: max-height 0.5s;
+    }
+    
+    .profile-dropdown-list hr {
+      border: 0.5px solid var(--green);
+    }
+    
+    .profile-dropdown-list.active {
+      max-height: 500px;
+    }
+    
+    .profile-dropdown-list-item {
+      padding: 0.5rem 0rem 0.5rem 1rem;
+      transition: background-color 0.2s ease-in, padding-left 0.2s;
+    }
+    
+    .profile-dropdown-list-item a {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--black);
+    }
+    
+    .profile-dropdown-list-item a i {
+      margin-right: 0.8rem;
+      font-size: 1.1rem;
+      width: 2.3rem;
+      height: 2.3rem;
+      background-color: var(--secondary);
+      color: var(--white);
+      line-height: 2.3rem;
+      text-align: center;
+      margin-right: 1rem;
+      border-radius: 50%;
+      transition: margin-right 0.3s;
+    }
+    
+    .profile-dropdown-list-item:hover {
+      padding-left: 1.5rem;
+      background-color: var(--secondary-light);
+    }
     
     </style>
-  </head>
-  <nav  class="navbar navbar-expand-md  " > 
-    <a style="font-weight: 900;color:#333" href="#" class="navbar-brand">
-       <span style="color: #ffff;" >CARS</span>RENT
-    </a>
-    <!-- <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
-        <span class="navbar-toggler-icon"></span>
-    </button> -->
-    <div class="collapse navbar-collapse" id="navbarCollapse">
-        <div class="navbar-nav">
-            
-        </div>
-
+    <body>
+      <?php
+    // include './data/connect.php'; 
     
-        <div class="navbar-nav ml-auto">
-            <li class="nav-item dropdown">
-              
-              <b><a href="index.html" class="nav-item nav-link"  style="color: white;">Home</a></b>
-              </li>
-              <li class="nav-item dropdown">
-                <b><a href="#" class="nav-item nav-link"></a></b>
-                </li>
-              <li class="nav-item dropdown">
-                <b><a href="./book.html" class="nav-item nav-link" style="color: white;">Book Now</a></b>
-                </li>
-                <li class="nav-item dropdown">
-                  <b><a href="#" class="nav-item nav-link"></a></b>
-                  </li>
-                <li class="nav-item dropdown">
-                  <b><a href="#about" class="nav-item nav-link" style="color: white;">About Us</a></b>
-                  </li>
-                  <li class="nav-item dropdown">
-                    <b><a href="#" class="nav-item nav-link"></a></b>
-                    </li>
-                  <li class="nav-item dropdown">
-                    <b><a href="#con" class="nav-item nav-link" style="color: white;">Contact Us</a></b>
-                    </li>
-                    <li class="nav-item dropdown">
-                      <b><a href="#" class="nav-item nav-link"></a></b>
-                      </li>
-                    
-            
+    $firstName = isset($_SESSION['firstName']) ? $_SESSION['firstName'] : 'User'; 
+    // $sel = "SELECT * FROM users"; 
+    // $query = mysqli_query($conn, $sel);
+    // $resul = mysqli_fetch_assoc($query); 
+    ?>
+   
+  </head>
+  
+  <nav class="navbar navbar-expand-md">
+    <a style="font-weight: 900;color:#333" href="#" class="navbar-brand">
+      <span style="color: #ffff;">CARS</span>RENT
+    </a>
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+      <div class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a href="index.html" class="nav-item nav-link" style="color: white;">Home</a>
+        </li>
+        <li class="nav-item">
+          <a href="./book.html" class="nav-item nav-link" style="color: white;">Book Now</a>
+        </li>
+        <li class="nav-item">
+          <a href="#about" class="nav-item nav-link" style="color: white;">About Us</a>
+        </li>
+        <li class="nav-item">
+          <a href="#con" class="nav-item nav-link" style="color: white;">Contact Us</a>
+        </li>
+        <div class="signup">
+          <div class="nav-item dropdown">
+            <b><a href="./data/index.php" class="nav-item nav-link" style="color: white;">Sign Up</a></b>
+          </div>
         </div>
-    </div>
-    <div class="signup">
-      <div class="nav-item dropdown">
-        <b><a href="./data/index.php" class="nav-item nav-link" style="color: white;">Sign Up</a></b>
+        <!-- Profile Dropdown for Signed-In User -->
+        <li class="nav-item dropdown">
+          <div class="profile-dropdown">
+            <div onclick="toggleDropdown()" class="profile-dropdown-btn">
+              <div class="profile-img">
+                <i class="fa-solid fa-circle"></i>
+              </div>
+              <span id="user-name-display">
+                <!-- Default name that will be updated via JavaScript -->
+                <?php echo htmlspecialchars($firstName); // Escape output for security ?>
+              </span>
+              <i class="fa-solid fa-angle-down"></i>
+            </div>
+            <ul class="profile-dropdown-list">
+              <li class="profile-dropdown-list-item">
+                <a href="./data/logout.php">
+                  <i class="fa-solid fa-arrow-right-from-bracket"></i> Log out
+                </a>
+              </li>
+            </ul>
+          </div>
+        </li>
       </div>
     </div>
-</nav>
-  
+  </nav>
     <div id="carouselExampleInterval" class="carousel slide" data-ride="carousel">
         <div class="carousel-inner">
           <div class="carousel-item active" data-interval="10000">
@@ -512,7 +647,7 @@ footer{
 
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
- <!-- <script src="../hello.js"></script> -->
+ <script src="../dropdown.js"></script>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>

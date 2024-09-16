@@ -104,12 +104,12 @@
         <!-- session fetching username -->
         <h1>Welcome 
             <?php
-            // session_start();
-            // if (isset($_SESSION['name'])) {
-            //     echo $_SESSION['name'];
-            // } else {
-            //     echo "Guest";
-            // }
+            session_start();
+            if (isset($_SESSION['name'])) {
+                echo $_SESSION['name'];
+            } else {
+                echo "Guest";
+            }
             ?>
         </h1>
 
