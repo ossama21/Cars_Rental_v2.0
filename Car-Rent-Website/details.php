@@ -81,7 +81,7 @@
         echo "Username: " . $_SESSION['username'] . "<br>";
         echo "Address: " . $_SESSION['address'] . "<br>";
         echo "Starting Date: " . $date . "<br>";
-        echo "Price: Rs " . $_SESSION['days'] * 5000;
+        echo "Price: $ " . $_SESSION['days'] * 25;
         ?>
     </div>
 
