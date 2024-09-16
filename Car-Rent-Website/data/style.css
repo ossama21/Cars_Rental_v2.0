@@ -86,7 +86,7 @@ input:focus~label,input:not(:placeholder-shown)~label{
     outline:none;
     border:none;
     width:100%;
-    background:#3182ce;
+    background:#3182ce !important;
     color:white;
     cursor:pointer;
     transition:0.9s;
@@ -103,7 +103,7 @@ input:focus~label,input:not(:placeholder-shown)~label{
     text-align:center;
 }
 .icons i{
-    color:#3182ce;
+    color:#3182ce !important;
     padding:0.8rem 1.5rem;
     border-radius:10px;
     font-size:1.5rem;
