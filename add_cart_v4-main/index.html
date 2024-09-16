@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    
+    <div id="app"></div>
+    <div id="temporaryContent">
+        <div class="listProduct">
+            if you don't know how to run this project. You need to watch the detailed instructional video to understand how the project works
+        </div>
+    </div>
+
+    <!-- products.html or index.html -->
+    <div id="car-list"></div>
+
+    <script src="products.js"></script>
+    <script>
+    const carList = document.getElementById('car-list');
+    
+    products.forEach(car => {
+        const carElement = document.createElement('div');
+        carElement.innerHTML = `
+            <h2>${car.name}</h2>
+            <p>${car.description}</p>
+            <a href="checkout.html?id=${car.id}">Checkout</a>
+        `;
+        carList.appendChild(carElement);
+    });
+    </script>
+
+
+    <script src="index.js" type="module"></script>
+</body>
+</html>

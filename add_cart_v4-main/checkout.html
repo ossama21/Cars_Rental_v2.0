@@ -1,0 +1,88 @@
+<html>
+<head>
+    <title>CARSRENT - Checkout</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" type="text/css" href="./checkout.css">
+</head>
+<body>
+    <div class="container">
+        <div class="car-details">
+            <div class="car-image">
+                <img id="car-image" alt="Car Image" height="300" width="400"/>
+            </div>
+            <div class="car-info">
+                <h1 id="car-name">Car Name</h1>
+                <div id="car-price" class="price">$0.00 / Day</div>
+                <div class="rating">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star-half-alt"></i>
+                    <span>4.5 ratings</span>
+                </div>
+                <p id="car-description">Car description goes here.</p>
+                <div class="features">
+                    <span><i class="fas fa-car"></i> <span id="car-model">Model</span></span>
+                    <span><i class="fas fa-cogs"></i> <span id="car-transmission">Transmission</span></span>
+                    <span><i class="fas fa-couch"></i> <span id="car-interior">Interior</span></span>
+                    <span><i class="fas fa-car"></i> <span id="car-brand">Brand</span></span>
+                </div>
+            </div>
+        </div>
+        <div class="form-container">
+          <div class="booking-info">
+           <h2>
+            Booking Information
+           </h2>
+           <form>
+            <div>
+             $35 / per car
+            </div>
+            <div>
+             <input placeholder="Full Name" type="text"/>
+             <input placeholder="Phone" type="text"/>
+            </div>
+            <div>
+             <input type="date"/>
+             <input type="date"/>
+            </div>
+            <div>
+             <input placeholder="Quantity" type="number"/>
+            </div>
+            <input type="submit" value="Reserve Now"/>
+           </form>
+          </div>
+          <div class="payment-info" style="--darkreader-inline-bgcolor: #32312e; --darkreader-inline-outline: #2a386c;" data-darkreader-inline-outline="" data-darkreader-inline-bgcolor="">
+            <h2 style="--darkreader-inline-bgcolor: #32312e;">
+             Payment Information
+            </h2>
+            <form style="--darkreader-inline-bgcolor: #32312e;">
+             <label style="">
+              <input name="payment" type="radio" value="bank"/>
+              Direct Bank Transfer
+             </label>
+            <label style="--darkreader-inline-bgcolor: #32312e;">
+             <input name="payment" type="radio" value="cheque"/>
+             Cheque Payment
+            </label>
+            <label>
+             <input name="payment" type="radio" value="mastercard"/>
+             Master Card
+            </label>
+            <label>
+             <input name="payment" type="radio" value="paypal"/>
+             Paypal
+            </label>
+            <div class="payment-methods">
+             <img alt="Visa" height="30" src="images/visa.png" width="50"/>
+             <img alt="Amex" height="30" src="images/amex.png" width="50"/>
+             <img alt="MasterCard" height="30" src="images/mastercard.png" width="50"/>
+             <img alt="PayPal" height="30" src="images/paypal.png" width="40"/>
+            </div>
+           </form>
+          </div>
+
+    <script type="module" src="checkout.js"></script> <!-- Link to the JS file -->
+</body>
+</html>

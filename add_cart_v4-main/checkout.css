@@ -1,0 +1,172 @@
+/* General Styling */
+.body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Car Details */
+.car-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+.car-details img {
+    max-width: 100%;
+    height: auto;
+}
+
+.car-info {
+    flex: 1;
+    margin-right: 20px;
+    min-width: 280px;
+}
+
+.car-info h1 {
+    font-size: 2em;
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.car-info .price {
+    font-size: 1.5em;
+    color: #e74c3c;
+    margin-bottom: 10px;
+}
+
+.car-info .rating {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.car-info .rating i {
+    color: #f1c40f;
+}
+
+.car-info .rating span {
+    margin-left: 10px;
+    background-color: #3498db;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.car-info p {
+    color: #7f8c8d;
+    margin-bottom: 15px;
+}
+
+.car-info .features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.car-info .features span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background-color: #ecf0f1;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+/* Booking & Payment Section */
+.booking-payment-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 20px; /* Add space between booking and payment sections */
+    margin-top: 30px;
+    flex-wrap: wrap;
+}
+
+.booking-info, .payment-info {
+    flex: 1; /* Make both booking and payment info equally flexible */
+    max-width: 48%; /* Ensure responsive design */
+    box-sizing: border-box;
+}
+
+.booking-info h2, .payment-info h2 {
+    font-size: 1.5em;
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+.booking-info form, .payment-info form {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+}
+
+/* Input Fields and Submit Button */
+.booking-info form input, .booking-info form select {
+    width: calc(50% - 10px);
+    padding: 10px;
+    margin: 10px 5px;
+    border: 1px solid #bdc3c7;
+    border-radius: 10px;
+    box-sizing: border-box;
+}
+
+.booking-info form input[type="submit"] {
+    width: 100%;
+    background-color: #2c3e50;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    font-size: 1em;
+}
+
+.booking-info form input[type="submit"]:hover {
+    background-color: #34495e;
+}
+
+/* Payment Info Styling */
+.payment-info form {
+    display: flex;
+    flex-direction: column;
+}
+
+.payment-info form label {
+    margin: 10px 0;
+    font-weight: bold;
+}
+
+.payment-info form input[type="radio"] {
+    margin-right: 10px;
+}
+
+.payment-info .payment-methods img {
+    margin: 10px 5px;
+}
+
+/* Media Queries for Mobile */
+@media (max-width: 768px) {
+    .booking-payment-container {
+        flex-direction: column;
+        gap: 0; /* Remove the gap for stacked layout */
+    }
+
+    .booking-info, .payment-info {
+        width: 100%; /* Full width on smaller screens */
+        margin-bottom: 20px;
+    }
+}
