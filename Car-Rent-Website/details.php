@@ -86,7 +86,7 @@
     </div>
 
     <h3>Go to home page</h3>
-    <a href="index.html">
+    <a href="index.php">
         <button class="button">Click Here</button>
     </a>
 </body>

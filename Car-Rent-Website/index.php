@@ -405,7 +405,7 @@ footer{
           <a href="index.html" class="nav-item nav-link" style="color: white;">Home</a>
         </li>
         <li class="nav-item">
-          <a href="./book.html" class="nav-item nav-link" style="color: white;">Book Now</a>
+          <a href="./book.php" class="nav-item nav-link" style="color: white;">Book Now</a>
         </li>
         <li class="nav-item">
           <a href="#about" class="nav-item nav-link" style="color: white;">About Us</a>
@@ -413,11 +413,11 @@ footer{
         <li class="nav-item">
           <a href="#con" class="nav-item nav-link" style="color: white;">Contact Us</a>
         </li>
-        <div class="signup">
+        <!-- <div class="signup">
           <div class="nav-item dropdown">
             <b><a href="./data/index.php" class="nav-item nav-link" style="color: white;">Sign Up</a></b>
           </div>
-        </div>
+        </div> -->
         <!-- Profile Dropdown for Signed-In User -->
         <li class="nav-item dropdown">
           <div class="profile-dropdown">
@@ -427,7 +427,17 @@ footer{
               </div>
               <span id="user-name-display">
                 <!-- Default name that will be updated via JavaScript -->
-                <?php echo htmlspecialchars($firstName); // Escape output for security ?>
+               
+
+<?php if (empty($_SESSION['firstName'])): ?>
+    <!-- Assign and display the link if 'firstName' is empty -->
+    <?php $_SESSION['firstName'] = '<a style="text-decoration: none;color:#ffff" href="./data/index.php">Sign In</a>'; ?>
+    <?= $_SESSION['firstName']; ?> <!-- Short tag to display the link -->
+<?php else: ?>
+    <!-- If 'firstName' is already set, display its value -->
+    <?= $_SESSION['firstName']; ?>
+<?php endif; ?>
+
               </span>
               <i class="fa-solid fa-angle-down"></i>
             </div>
