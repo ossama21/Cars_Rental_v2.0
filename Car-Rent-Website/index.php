@@ -419,7 +419,7 @@ footer{
           <a href="index.html" class="nav-item nav-link" style="color: white;">Home</a>
         </li>
         <li class="nav-item">
-          <a href="./book.html" class="nav-item nav-link" style="color: white;">Book Now</a>
+          <a href="./book.php" class="nav-item nav-link" style="color: white;">Book Now</a>
         </li>
         <li class="nav-item">
           <a href="#about" class="nav-item nav-link" style="color: white;">About Us</a>
