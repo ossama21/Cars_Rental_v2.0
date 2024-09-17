@@ -177,15 +177,17 @@ footer{
       }
 
       .content1{
-        margin:20px;
+        margin-top: 20px;
         font-size: 16px;
         line-height: 25px;
         
       }
-
+.container-fluid{
+  /* margin-inline: 170px; */
+}
       .content2{
-        margin-top: 50px;
-        margin-left: 30px;
+        margin-inline: 58px;
+        margin-top: 12px;
         font-weight: bold;
         border-bottom-width: 1px;
         border-bottom-style: solid;
@@ -469,10 +471,10 @@ footer{
   </nav>
     <div id="carouselExampleInterval" class="carousel slide" data-ride="carousel">
         <div class="carousel-inner">
-          <div class="carousel-item active" data-interval="10000">
+          <div class="carousel-item active" data-interval="800">
             <img src="../wallpaperflare.com_wallpaper 1.jpg" class="d-block w-100" alt="...">
           </div>
-          <div class="carousel-item" data-interval="2000">
+          <div class="carousel-item" data-interval="800">
             <img src="../wallpaperflare.com_wallpaper 2.jpg" class="d-block w-100" alt="...">
           </div>
           <div class="carousel-item">

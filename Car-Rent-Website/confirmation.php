@@ -1,36 +1,49 @@
 <?php
-// Get booking details
-$name = $_POST['name'];
-$phone = $_POST['phone'];
-$startDate = $_POST['startDate'];
-$endDate = $_POST['endDate'];
-$quantity = $_POST['quantity'];
+session_start();
 
-// Calculate duration of rental
-$startDateObj = new DateTime($startDate);
-$endDateObj = new DateTime($endDate);
-$duration = $startDateObj->diff($endDateObj)->days;
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Get the form data
+    $username = $_POST['name'];
+    $phone = $_POST['phone'];
+    $startDate = $_POST['startDate'];
+    $endDate = $_POST['endDate'];
+    $quantity = $_POST['quantity'];
 
-// Get car details
-$carName = "Hyundai i20"; // You would replace this with dynamic data
+    // Calculate the duration (days) of the booking
+    $startDateObj = new DateTime($startDate);
+    $endDateObj = new DateTime($endDate);
+    $duration = $startDateObj->diff($endDateObj)->days;
 
-// Display confirmation
-echo "<h1>Congratulations, $name!</h1>";
-echo "<p>You have successfully reserved the car: $carName</p>";
-echo "<p>Phone: $phone</p>";
-echo "<p>Start Date: $startDate</p>";
-echo "<p>End Date: $endDate</p>";
-echo "<p>Duration: $duration days</p>";
-echo "<p>Quantity: $quantity</p>";
+    // Connect to the database
+    $con = mysqli_connect('127.0.0.1', 'root', '', 'car_rent');
 
-// Add a button to generate a PDF
-echo "<form action='generate_pdf.php' method='post'>";
-echo "<input type='hidden' name='name' value='$name'>";
-echo "<input type='hidden' name='phone' value='$phone'>";
-echo "<input type='hidden' name='startDate' value='$startDate'>";
-echo "<input type='hidden' name='endDate' value='$endDate'>";
-echo "<input type='hidden' name='duration' value='$duration'>";
-echo "<input type='hidden' name='carName' value='$carName'>";
-echo "<button type='submit'>Generate PDF</button>";
-echo "</form>";
+    if (!$con) {
+        die("Database connection failed: " . mysqli_connect_error());
+    }
+
+    // Insert the booking information into the database
+    $insertQuery = "INSERT INTO `services` (`username`, `phone`, `start_date`, `end_date`, `quantity`, `duration`) 
+                    VALUES ('$username', '$phone', '$startDate', '$endDate', '$quantity', '$duration')";
+
+    if (mysqli_query($con, $insertQuery)) {
+        // Success message and redirect
+        echo "<script>
+                alert('Booking Registered Successfully');
+                window.location.href='details.php';
+              </script>";
+
+        // Store data in session for use in other pages
+        $_SESSION['username'] = $username;
+        $_SESSION['phone'] = $phone;
+        $_SESSION['startDate'] = $startDate;
+        $_SESSION['endDate'] = $endDate;
+        $_SESSION['quantity'] = $quantity;
+        $_SESSION['duration'] = $duration;
+    } else {
+        echo "Error: " . $insertQuery . "<br>" . mysqli_error($con);
+    }
+
+    // Close the database connection
+    mysqli_close($con);
+}
 ?>
