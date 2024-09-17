@@ -92,7 +92,7 @@ opacity: 0.3;
     background-color: #f7fafc;
     border-radius: 8px;
   }
-/*   
+  
   .icon-box {
     display: flex;
     align-items: center;
@@ -102,12 +102,13 @@ opacity: 0.3;
     border-radius: 10%;
     background-color: #3182ce;
     color: white;
-    margin-right: 20px;
+    /* margin-right: 20px; */
     padding: 20px;
-  } */
+  }
   
   .icon {
     font-size: 24px;
+    
   }
   
   .feature-content {
