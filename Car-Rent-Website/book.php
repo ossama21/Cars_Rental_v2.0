@@ -10,7 +10,7 @@ session_start();
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="icon" type="image/png" href="../image.png">
-    <link rel="stylesheet" href="../hello.css">
+    <!-- <link rel="stylesheet" href="../hello.css"> -->
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   
@@ -554,10 +554,6 @@ session_start();
             <div class="col-md-3 col-sm-6 col-xs-12">
               <h6 class="content2">SOCIAL MEDIA</h6>
               <div class="icons">
-                <a class="icon-link" href="#"><i class="fa fa-instagram" aria-hidden="true"></i></a>
-                <a class="icon-link" href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a>
-                <a class="icon-link" href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a>
-                <a class="icon-link" href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a><br>
                <a style="color: #fff;" href="https://github.com/ossama21/Cars_Rental_WebSite-Project"> <i class="fa fa-envelope" aria-hidden="true"><span style="font-family: 'montserrat';">&nbsp;&nbsp;https://github.com/ossama21/Cars_Rental_WebSite-Project</span></i></a>
               </div>
             </div>
