@@ -1,27 +1,21 @@
 <?php
-// Get booking details
-$name = $_POST['name'];
-$phone = $_POST['phone'];
-$startDate = $_POST['startDate'];
-$endDate = $_POST['endDate'];
-$quantity = $_POST['quantity'];
+session_start();
 
-// Calculate duration of rental
-$startDateObj = new DateTime($startDate);
-$endDateObj = new DateTime($endDate);
-$duration = $startDateObj->diff($endDateObj)->days;
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Get the form data
+    $username = $_POST['name'];
+    $phone = $_POST['phone'];
+    $startDate = $_POST['startDate'];
+    $endDate = $_POST['endDate'];
+    $quantity = $_POST['quantity'];
 
-// Get car details
-$carName = "Hyundai i20"; // You would replace this with dynamic data
+    // Calculate the duration (days) of the booking
+    $startDateObj = new DateTime($startDate);
+    $endDateObj = new DateTime($endDate);
+    $duration = $startDateObj->diff($endDateObj)->days;
 
-// Display confirmation
-echo "<h1>Congratulations, $name!</h1>";
-echo "<p>You have successfully reserved the car: $carName</p>";
-echo "<p>Phone: $phone</p>";
-echo "<p>Start Date: $startDate</p>";
-echo "<p>End Date: $endDate</p>";
-echo "<p>Duration: $duration days</p>";
-echo "<p>Quantity: $quantity</p>";
+    // Connect to the database
+    $con = mysqli_connect('127.0.0.1', 'root', '', 'car_rent');
 
     if (!$con) {
         die("Database connection failed: " . mysqli_connect_error());
@@ -50,7 +44,7 @@ echo "<p>Quantity: $quantity</p>";
 
     // Close the database connection
     mysqli_close($con);
-
+}
 ?>
 <style>
         body {
