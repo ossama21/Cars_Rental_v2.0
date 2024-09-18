@@ -16,7 +16,7 @@ function displayProducts() {
             <h5 class="card-title">${product.name}</h5>
             <hr>
             <p class="card-text">${product.price}$/day 
-              <a href="checkout.html?product_id=${product.id}" class="button btn btn-dark">Book Now</a>
+              <a href="checkout.php?product_id=${product.id}" class="button btn btn-dark">Book Now</a>
             </p>
             <p class="card-description">${product.description}</p>
             <p class="card-details">
