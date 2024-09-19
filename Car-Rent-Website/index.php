@@ -194,13 +194,13 @@ session_start();
               </div>
               <div class="testimonial-avatar">
                 <img
-                  src="../hicham_project.jpeg"
+                  src="./images/person_1.jpg"
                   alt="HICHAM"
                   class="avatar"
                 />
                 <div class="avatar-info">
                   <p class="avatar-name">HICHAM</p>
-                  <p class="avatar-title">CEO, Company meta</p>
+                  <p class="avatar-title">CEO, Company data</p>
                 </div>
               </div>
              </div>
@@ -216,13 +216,13 @@ session_start();
               </div>
               <div class="testimonial-avatar">
                 <img
-                  src="../khalid_project.jpeg"
+                  src="./images/person_3.jpg"
                   alt="KHALID"
                   class="avatar"
                 />
                 <div class="avatar-info">
                   <p class="avatar-name">KHALID</p>
-                  <p class="avatar-title">Manager, Company steam</p>
+                  <p class="avatar-title">Manager, Company streaming</p>
                 </div>
               </div>
             </div>
@@ -237,13 +237,13 @@ session_start();
               </div>
               <div class="testimonial-avatar">
                 <img
-                  src="../zakaria_project.jpeg"
+                  src="./images/person_4.jpg"
                   alt="ZAKARIA"
                   class="avatar"
                 />
                 <div class="avatar-info">
                   <p class="avatar-name">ZAKARIA</p>
-                  <p class="avatar-title">Director, Company apple</p>
+                  <p class="avatar-title">Director, Company phone</p>
                 </div>
               </div>
             </div>
