@@ -49,13 +49,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Car Rental Bill</title>
     <link rel="icon" type="image/png" href="./images/image.png">
-
-
-    
-
-<style>
+    <style>
         body {
             font-family: 'Poppins', sans-serif;
             background: linear-gradient(135deg, #3182ce, #63b3ed);
@@ -64,13 +60,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             color: #333;
         }
 
-        h1, h3 {
-            text-align: center;
-            color: white;
-            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
-        }
-
         h1 {
+            text-align: center;
+            color: #fff;
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
             background-color: rgba(49, 130, 206, 0.9);
             padding: 20px;
             border-radius: 10px;
@@ -79,71 +72,95 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             font-size: 2rem;
         }
 
-        h3 {
-            margin-top: 30px;
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 20px auto;
+            width: 80%;
+            max-width: 800px;
         }
 
         .content {
-            text-align: center;
-            font-size: 1.2rem;
-            color: #fff;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.2);
             padding: 20px;
-            border-radius: 10px;
-            width: 80%;
-            margin: 20px auto;
+            border-radius: 15px;
+            width: 100%;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            color: #fff;
+            font-size: 1.1rem;
+            text-align: left;
+        }
+
+        .content h2 {
+            margin-top: 0;
+            color: #fff;
+            font-size: 1.5rem;
+        }
+
+        .content p {
+            margin: 10px 0;
         }
 
         .button {
             background: linear-gradient(45deg, #3182ce, #63b3ed);
             border: none;
             color: white;
-            padding: 15px 32px;
-            font-size: 24px;
+            padding: 15px 30px;
+            font-size: 1.2rem;
             border-radius: 30px;
             text-decoration: none;
             display: inline-block;
             margin: 20px auto;
             cursor: pointer;
-            transition: background 0.3s ease;
+            transition: background 0.3s ease, transform 0.3s ease;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         .button:hover {
             background: linear-gradient(45deg, #63b3ed, #3182ce);
+            transform: scale(1.05);
         }
 
         a {
             text-align: center;
             display: block;
         }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 15px;
+                width: 95%;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+                width: 95%;
+            }
+        }
     </style>
 </head>
 <body>
     <h1>Thank You For Using Our Services</h1>
     
-    <div class="content">
-        <?php
-       
-        $date = date("Y-m-d");
-        
-        // echo "Username: " . $_SESSION['username'] . "<br>";
-        // echo "Address: " . $_SESSION['address'] . "<br>";
-        // echo "Starting Date: " . $date . "<br>";
-        // echo "Price: $ " . $_SESSION['days'] * 25;
-     echo "User Name: " . $_SESSION['username']. "<br> ";
-     echo  "Phone: ". $_SESSION['phone'] ."<br>";
-     echo  "Start Date: ". $_SESSION['startDate']."<br>";
-     echo  "End Date: ". $_SESSION['endDate'] ."<br>";
-     echo  "Quantity: ". $_SESSION['quantity']."  DAYS"."<br>";
-     echo  "Duration: ". $_SESSION['duration']. "<br>";
-        ?>
-    </div>
+    <div class="container">
+        <div class="content">
+            <h2>Rental Details</h2>
+            <?php
+            echo "<p><strong>User Name:</strong> " . htmlspecialchars($_SESSION['username']) . "</p>";
+            echo "<p><strong>Phone:</strong> " . htmlspecialchars($_SESSION['phone']) . "</p>";
+            echo "<p><strong>Start Date:</strong> " . htmlspecialchars($_SESSION['startDate']) . "</p>";
+            echo "<p><strong>End Date:</strong> " . htmlspecialchars($_SESSION['endDate']) . "</p>";
+            echo "<p><strong>Quantity:</strong> " . htmlspecialchars($_SESSION['quantity']) . "</p>";
+            echo "<p><strong>Duration:</strong> " . htmlspecialchars($_SESSION['duration']) . " DAYS</p>";
+            ?>
+        </div>
 
-    <h3>Go to home page</h3>
-    <a href="index.php">
-        <button class="button">Click Here</button>
-    </a>
+        <h3>Go to home page</h3>
+        <a href="index.php">
+            <button class="button">Click Here</button>
+        </a>
+    </div>
 </body>
 </html>
