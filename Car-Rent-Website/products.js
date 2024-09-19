@@ -45,9 +45,9 @@ const products = [
     },
     {
         id: '5',
-        name: 'Tata Hexa',
+        name: 'Baleno',
         price: '300',
-        description: 'Tata Hexa, a premium 7-seater SUV with luxury, power, advanced technology, spacious interiors, safety features.',
+        description: 'Baleno, a premium 7-seater SUV with luxury, power, advanced technology, spacious interiors, safety features.',
         model: 'Hexa',
         transmission: 'Automatic',
         interior: 'Leather',

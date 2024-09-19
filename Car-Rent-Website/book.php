@@ -28,6 +28,43 @@ h1{
   top:10rem;
 }
 
+.card {
+  background-color: #f5f5f5;
+  border-style: none !important;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-img-top {
+  height: 300px; /* Increase the image height */
+  object-fit: cover; /* Ensure the image fits within the space */
+  padding: 15px; /* Adjust padding around the image */
+  transition: transform .5s;
+}
+
+.card-body {
+  flex-grow: 1;
+  padding: 10px; /* Reduce the padding around the text */
+}
+
+.card-title {
+  font-size: 1.1rem; /* Slightly reduce the font size */
+}
+
+.card-text, .card-description, .card-details {
+  font-size: 0.9rem; /* Reduce text size */
+  margin-bottom: 5px; /* Minimize the spacing between text elements */
+}
+
+.button {
+  float: right;
+  margin-top: 10px; /* Add a little space above the button */
+}
+
+.card-img-top:hover {
+  transform: scale(1.1);
+}
 
 .card{
   margin-top: 8rem;
@@ -478,7 +515,9 @@ nav.sticky{
 
   <!-- Custom JavaScript file -->
   <!-- <script defer src="script.js"></script> -->
-  <script type="module" src="script.js"></script>
+  <!-- <script type="module" src="script.js"></script> -->
+  <script type="module" src="script.js?v=1.1"></script>
+
   <script type="module" src="checkout.js"></script>
 </body>
 </html>
