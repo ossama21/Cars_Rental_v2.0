@@ -73,7 +73,7 @@ session_start();
         <input type="text" id="bank-account" name="bank-account" required>
         <label for="bank-routing">Routing Number:</label>
         <input type="text" id="bank-routing" name="bank-routing" required>
-        <button class="blue-btn submit-btn">Submit</button>
+        <button  type="submit" class="clicked blue-btn submit-btn">Submit</button>
         <button class="cancel-btn">Cancel</button>
     </div>
 
