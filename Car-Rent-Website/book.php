@@ -51,7 +51,7 @@ session_start();
                   <b><a href="#" class="nav-item nav-link"></a></b>
                   </li>
                 <li class="nav-item dropdown">
-                  <b><a href="book.html" class="nav-item nav-link" style="color: white;">Book Now</a></b>
+                  <b><a href="book.php" class="nav-item nav-link" style="color: white;">Book Now</a></b>
                   </li>
                   <li class="nav-item dropdown">
                     <b><a href="#" class="nav-item nav-link"></a></b>
