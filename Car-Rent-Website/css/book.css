@@ -152,17 +152,19 @@ h1{
       height:50px; 
       margin:30px 20px 5px;
     }
-  
+
     .content1{
-      margin:20px;
+      margin-top: 20px;
       font-size: 16px;
       line-height: 25px;
       
     }
-  
+.container-fluid{
+/* margin-inline: 170px; */
+}
     .content2{
-      margin-top: 50px;
-      margin-left: 30px;
+      margin-inline: 58px;
+      margin-top: 12px;
       font-weight: bold;
       border-bottom-width: 1px;
       border-bottom-style: solid;
@@ -171,17 +173,28 @@ h1{
       font-size: 12px;
       letter-spacing: 2px;
     }
-  
+
     .icons{
       margin-left: 14%;
       margin-top: 4%;
     }
-  
+
     .icons .icon-link{
       color: #fff;
       margin-right: 10px;
     }
-  
+    .icon-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 50px;
+  width: 50px;
+  border-radius: 10%;
+  background-color: #3182ce;
+  color: white;
+  margin-right: 20px;
+  padding: 20px;
+}
     .footer2{
       background: #333;
       color: grey;

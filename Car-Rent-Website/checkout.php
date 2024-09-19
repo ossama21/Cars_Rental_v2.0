@@ -5,7 +5,7 @@ session_start();
 <head>
     <title>CARSRENT - Checkout</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
-    <link rel="stylesheet" type="text/css" href="./checkout.css">
+    <link rel="stylesheet" type="text/css" href="./css/checkout.css">
 </head>
 <body>
     <div class="container">

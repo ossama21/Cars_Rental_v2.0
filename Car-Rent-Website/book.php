@@ -21,7 +21,7 @@ session_start();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="book.css">
+    <link rel="stylesheet" href="./css/book.css">
     <!-- Import products.js -->
 
 
@@ -119,7 +119,7 @@ session_start();
   <!-- Footer Section -->
   <footer>
     <div class="footer-top" id="con">
-      <div class="container">
+      <div class="container-fluid">
         <div class="row">
           <div class="col-md-3 col-sm-6 col-xs-12">
             <a href="#" class="navbar-brand" style="font-weight: 900;color:#333;">
@@ -128,13 +128,11 @@ session_start();
             <p class="content1">Best cars at low cost.</p>
           </div>
           <div class="col-md-3 col-sm-6 col-xs-12">
-            <h6 class="content2">SOCIAL MEDIA</h6>
+            <h6 class="content2">TEAM</h6>
             <div class="icons">
-              <a class="icon-link" href="#"><i class="fa fa-instagram"></i></a>
-              <a class="icon-link" href="#"><i class="fa fa-facebook"></i></a>
-              <a class="icon-link" href="#"><i class="fa fa-twitter"></i></a>
-              <a class="icon-link" href="#"><i class="fa fa-linkedin"></i></a>
-            </div>
+          <a style="color: #fff;" href="https://github.com/ossama21/Cars_Rental_WebSite-Project">  <i class="fa fa-envelope" aria-hidden="true"><span style="font-family: 'montserrat';">&nbsp;&nbsp;https://github.com/ossama21/Cars_Rental_WebSite-Project</span></i></a>
+           
+          </div>
           </div>
         </div>
       </div>

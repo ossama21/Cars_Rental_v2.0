@@ -15,8 +15,8 @@ session_start();
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
-    <link rel="stylesheet" href="../hello.css">
-    <link rel="stylesheet" href="index1.css">
+    <link rel="stylesheet" href="./css/index2.css">
+    <link rel="stylesheet" href="./css/index1.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 
     <title>CARrent</title>
@@ -271,7 +271,7 @@ session_start();
         </div>
 
         <div class="col-md-3 col-sm-6 col-xs-12" id="con">
-          <h6 class="content2">SOCIAL MEDIA</h6>
+          <h6 class="content2">TEAM</h6>
           <div class="icons">
           <a style="color: #fff;" href="https://github.com/ossama21/Cars_Rental_WebSite-Project">  <i class="fa fa-envelope" aria-hidden="true"><span style="font-family: 'montserrat';">&nbsp;&nbsp;https://github.com/ossama21/Cars_Rental_WebSite-Project</span></i></a>
            
