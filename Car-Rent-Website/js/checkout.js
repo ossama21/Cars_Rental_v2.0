@@ -85,7 +85,7 @@ function showPopupAlert() {
     // Add event listeners to cancel buttons to hide the forms
     document.querySelectorAll('.cancel-btn').forEach(button => {
         button.addEventListener('click', () => {
-            hidePaymentForm();
+            hidePaymentForm(); // Hide the payment form
         });
     });
 
