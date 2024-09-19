@@ -86,6 +86,17 @@ const products = [
         interior: 'Fabric',
         brand: 'Hyundai',
         image: 'images/img8.png'
+    },
+    {
+        id: '8',
+        name: 'Creta',
+        price: '300',
+        description: 'Creta City offers a premium look, reliable performance, refined driving, advanced infotainment, spacious, comfortable seating.',
+        model: 'City',
+        transmission: 'Automatic',
+        interior: 'Fabric',
+        brand: 'Creta',
+        image: 'images/img10.png'
     }
 ];
 export default products;

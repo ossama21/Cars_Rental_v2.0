@@ -441,7 +441,7 @@ footer{
               <div class="profile-img">
                 <i class="fa-solid fa-circle"></i>
               </div>
-              <span id="user-name-display">
+              <span  style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;color:#fff;font-size:  16px;font-weight:900" id="user-name-display">
                 <!-- Default name that will be updated via JavaScript -->
                
 
@@ -469,12 +469,12 @@ footer{
       </div>
     </div>
   </nav>
-    <div id="carouselExampleInterval" class="carousel slide" data-ride="carousel">
+    <div id="carouselExampleInterval" class="carousel slide" data-ride="carousel" data-interval="3000">
         <div class="carousel-inner">
-          <div class="carousel-item active" data-interval="800">
+          <div class="carousel-item active" >
             <img src="../wallpaperflare.com_wallpaper 1.jpg" class="d-block w-100" alt="...">
           </div>
-          <div class="carousel-item" data-interval="800">
+          <div class="carousel-item" >
             <img src="../wallpaperflare.com_wallpaper 2.jpg" class="d-block w-100" alt="...">
           </div>
           <div class="carousel-item">
