@@ -65,6 +65,11 @@ window.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+// Function to show popup alert after submitting
+function showPopupAlert() {
+    alert('Your payment information has been saved successfully. You can now reserve.');
+}
+
     // Get all the payment method buttons
     const bankButton = document.getElementById('bank-button');
     const chequeButton = document.getElementById('cheque-button');
@@ -81,6 +86,15 @@ window.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.cancel-btn').forEach(button => {
         button.addEventListener('click', () => {
             hidePaymentForm();
+        });
+    });
+
+    // Add event listeners to submit buttons to show the alert message
+    document.querySelectorAll('.submit-btn').forEach(button => {
+        button.addEventListener('click', (event) => {
+            event.preventDefault(); // Prevent form submission and page reload
+            showPopupAlert(); // Show the popup alert
+            hidePaymentForm(); // Optionally hide the form after submit
         });
     });
 });
