@@ -13,7 +13,7 @@ function displayProducts() {
   products.forEach(product => {
     // Create a new card for each product
     const carCard = `
-      <div class="col-lg-4 mb-5 d-flex align-items-stretch">
+      <div style="height:600px" class="col-lg-4 mb-5 d-flex align-items-stretch">
         <div class="card shadow rounded d-flex flex-column">
           <img src="${product.image}" class="card-img-top" alt="${product.name}">
           <div class="card-body d-flex flex-column">
