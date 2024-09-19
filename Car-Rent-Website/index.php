@@ -40,7 +40,7 @@ session_start();
     <div class="collapse navbar-collapse" id="navbarCollapse">
       <div class="navbar-nav ml-auto">
         <li class="nav-item">
-          <a href="index.html" class="nav-item nav-link" style="color: white;">Home</a>
+          <a href="#" class="nav-item nav-link" style="color: white;">Home</a>
         </li>
         <li class="nav-item">
           <a href="./book.php" class="nav-item nav-link" style="color: white;">Book Now</a>
