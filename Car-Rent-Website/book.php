@@ -8,7 +8,7 @@ session_start();
     <title>BOOKING</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="icon" type="image/png" href="../image.png">
+    <link rel="icon" type="image/png" href="./images/image.png">
     
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -146,13 +146,13 @@ session_start();
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
   <script type="module" src="products.js"></script>
-  <script src="../dropdown.js"></script>
+  <script src="./js/dropdown.js"></script>
 
   <!-- Custom JavaScript file -->
   <!-- <script defer src="script.js"></script> -->
   <!-- <script type="module" src="script.js"></script> -->
-  <script type="module" src="script.js?v=1.1"></script>
+  <script type="module" src="./js/script.js"></script>
 
-  <script type="module" src="checkout.js"></script>
+  <script type="module" src="./js/checkout.js"></script>
 </body>
 </html>

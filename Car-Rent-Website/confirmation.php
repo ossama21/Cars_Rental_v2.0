@@ -27,9 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if (mysqli_query($con, $insertQuery)) {
         // Success message and redirect
-        echo "<script>
-                alert('Booking Registered Successfully');
-              </script>";
+    
 
         // Store data in session for use in other pages
         $_SESSION['username'] = $username;
@@ -46,6 +44,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     mysqli_close($con);
 }
 ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="icon" type="image/png" href="./images/image.png">
+
+
+    
+
 <style>
         body {
             font-family: 'Poppins', sans-serif;

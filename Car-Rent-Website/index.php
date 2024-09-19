@@ -8,7 +8,7 @@ session_start();
     <!-- Required meta tags -->
 
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&family=Open+Sans&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/png" href="../image.png">
+    <link rel="icon" type="image/png" href="./images/image.png">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -94,16 +94,16 @@ session_start();
     <div id="carouselExampleInterval" class="carousel slide" data-ride="carousel" data-interval="3000">
         <div class="carousel-inner">
           <div class="carousel-item active" >
-            <img src="../wallpaperflare.com_wallpaper 1.jpg" class="d-block w-100" alt="...">
+            <img src="./images/wallpaperslide1.jpg" class="d-block w-100" alt="...">
           </div>
           <div class="carousel-item" >
-            <img src="../wallpaperflare.com_wallpaper 2.jpg" class="d-block w-100" alt="...">
+            <img src="./images/wallpaperslide2.jpg" class="d-block w-100" alt="...">
           </div>
           <div class="carousel-item">
-            <img src="../wallpaperflare.com_wallpaper 3.jpg" class="d-block w-100" alt="...">
+            <img src="./images/wallpaperslide3.jpg" class="d-block w-100" alt="...">
           </div>
           <div class="carousel-item">
-              <img src="../8732441.jpg" class="d-block w-100" alt="...">
+              <img src="./images/wallpaperslide4.jpg" class="d-block w-100" alt="...">
           </div>
         </div>
         <a class="carousel-control-prev" href="#carouselExampleInterval" role="button" data-slide="prev">
@@ -291,7 +291,7 @@ session_start();
 
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
- <script src="../dropdown.js"></script>
+ <script src="./js/dropdown.js"></script>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
