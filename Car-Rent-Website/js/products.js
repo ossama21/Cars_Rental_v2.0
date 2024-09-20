@@ -88,11 +88,11 @@ const products = [
         image: 'images/img8.png'
     },
     {
-        id: '8',
+        id: '9',
         name: 'Creta',
         price: '300',
-        description: 'Creta City offers a premium look, reliable performance, refined driving, advanced infotainment, spacious, comfortable seating.',
-        model: 'City',
+        description: 'Creta  offers a premium look, reliable performance, refined driving, advanced infotainment, spacious, comfortable seating.',
+        model: 'creta',
         transmission: 'Automatic',
         interior: 'Fabric',
         brand: 'Creta',
