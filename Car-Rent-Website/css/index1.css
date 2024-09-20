@@ -376,3 +376,84 @@
         background-color: var(--secondary-light);
       }
       
+            /* Media Queries for Tablets */
+@media (max-width: 1024px) {
+  .navbar-list {
+    text-align: center;
+  }
+  .features {
+    grid-template-columns: 1fr; /* Stack features on smaller screens */
+  }
+  .testimonial {
+    margin-bottom: 20px;
+  }
+}
+
+/* Media Queries for Mobile Phones */
+@media (max-width: 768px) {
+  .navbar-list {
+    flex-direction: column;
+    text-align: center;
+  }
+  .carousel-item img {
+    height: 60vh; /* Adjust carousel image height for mobile */
+  }
+  .why-choose-us {
+    padding: 20px;
+  }
+  .title {
+    font-size: 28px; /* Reduce font size */
+  }
+  .description {
+    font-size: 16px;
+  }
+  .testimonials {
+    flex-direction: column; /* Stack testimonials */
+  }
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Two columns for larger screens */
+  gap: 20px;
+}
+
+@media (max-width: 768px) {
+  .features {
+    grid-template-columns: 1fr; /* One column for smaller screens */
+  }
+}
+
+.testimonials {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+@media (max-width: 768px) {
+  .testimonials {
+    flex-direction: column;
+  }
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+}
+
+@media (max-width: 768px) {
+  .navbar-list {
+    flex-direction: column;
+    text-align: center;
+  }
+  .navbar-list li {
+    margin-bottom: 10px;
+  }
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
