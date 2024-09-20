@@ -25,11 +25,16 @@ session_start();
       <?php
     // include './data/connect.php'; 
     
-    $firstName = isset($_SESSION['firstName']) ? $_SESSION['firstName'] : 'User'; 
+    $firstName = isset($_SESSION['firstName'])  ;
     // $sel = "SELECT * FROM users"; 
     // $query = mysqli_query($conn, $sel);
     // $resul = mysqli_fetch_assoc($query); 
     ?>
+    <style>
+      #sign-in-link{
+        margin: 10px;
+      }
+    </style>
    
   </head>
   
@@ -57,37 +62,35 @@ session_start();
           </div>
         </div> -->
         <!-- Profile Dropdown for Signed-In User -->
-        <li class="nav-item dropdown">
-          <div class="profile-dropdown">
-            <div onclick="toggleDropdown()" class="profile-dropdown-btn">
-              <div class="profile-img">
-                <i class="fa-solid fa-circle"></i>
-              </div>
-              <span  style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;color:#fff;font-size:  16px;font-weight:900" id="user-name-display">
-                <!-- Default name that will be updated via JavaScript -->
-               
-
-<?php if (empty($_SESSION['firstName'])): ?>
-    <!-- Assign and display the link if 'firstName' is empty -->
-    <?php $_SESSION['firstName'] = '<a style="text-decoration: none;color:#ffff" href="./data/index.php">Sign In</a>'; ?>
-    <?= $_SESSION['firstName']; ?> <!-- Short tag to display the link -->
-<?php else: ?>
-    <!-- If 'firstName' is already set, display its value -->
-    <?= $_SESSION['firstName']; ?>
-<?php endif; ?>
-
-              </span>
-              <i class="fa-solid fa-angle-down"></i>
-            </div>
-            <ul class="profile-dropdown-list">
-              <li class="profile-dropdown-list-item">
-                <a href="./data/logout.php">
-                  <i class="fa-solid fa-arrow-right-from-bracket"></i> Log out
-                </a>
-              </li>
-            </ul>
-          </div>
+        <li  class="nav-item dropdown">
+  <div  class="profile-dropdown">
+    <?php if (empty($_SESSION['firstName'])): ?>
+      <!-- Display sign-in link if the user is not signed in -->
+     <div style="margin: 8px !important;">
+      <a id="sign-in-link" style="text-decoration: none; color: #fff;" href="./data/index.php">Sign In</a>
+      </div>
+      <?php else: ?>
+      <!-- Show dropdown with the user's name if signed in -->
+      <div id="profile-btn" onclick="toggleDropdown()" class="profile-dropdown-btn">
+        <div class="profile-img">
+          <i class="fa-solid fa-circle"></i>
+        </div>
+        <span id="user-name-display" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color:#fff; font-size:16px; font-weight:900">
+          <?= htmlspecialchars($_SESSION['firstName']); ?>
+        </span>
+        <i class="fa-solid fa-angle-down"></i>
+      </div>
+      <ul class="profile-dropdown-list">
+        <li class="profile-dropdown-list-item">
+          <a href="./data/logout.php">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> Log out
+          </a>
         </li>
+      </ul>
+    <?php endif; ?>
+  </div>
+</li>
+
       </div>
     </div>
   </nav>

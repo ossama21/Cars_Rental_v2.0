@@ -1,19 +1,17 @@
+// JavaScript Logic to Control Dropdown Activation
 let profileDropdownList = document.querySelector(".profile-dropdown-list");
 let btn = document.querySelector(".profile-dropdown-btn");
+let signInLink = document.getElementById("sign-in-link");
 
-let classList = profileDropdownList.classList;
+if (btn && !signInLink) {  // Only activate dropdown if the user is signed in (no sign-in link)
+  btn.addEventListener("click", function () {
+    profileDropdownList.classList.toggle("active");
+  });
 
-const toggle = () => classList.toggle("active");
-
-window.addEventListener("click", function (e) {
-  if (!btn.contains(e.target)) classList.remove("active");
-});
-// Script to toggle dropdown
-function toggleDropdown() {
-    const dropdownList = document.querySelector('.profile-dropdown-list');
-    dropdownList.classList.toggle('active');
+  // Close dropdown if clicked outside
+  window.addEventListener("click", function (e) {
+    if (!btn.contains(e.target)) {
+      profileDropdownList.classList.remove("active");
+    }
+  });
 }
-
-// Simulate a user sign-in for now (replace this with actual sign-in logic)
-
-// Call the function to set the user name
