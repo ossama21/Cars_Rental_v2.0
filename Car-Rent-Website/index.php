@@ -66,8 +66,8 @@ session_start();
   <div  class="profile-dropdown">
     <?php if (empty($_SESSION['firstName'])): ?>
       <!-- Display sign-in link if the user is not signed in -->
-     <div style="margin: 8px !important;">
-      <a id="sign-in-link" style="text-decoration: none; color: #fff;" href="./data/index.php">Sign In</a>
+     <div class="signin-link" style="margin: 8px !important;">
+      <a  id="sign-in-link" style="text-decoration: none; color: #fff;" href="./data/index.php">Sign In</a>
       </div>
       <?php else: ?>
       <!-- Show dropdown with the user's name if signed in -->

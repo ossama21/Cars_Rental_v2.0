@@ -237,6 +237,9 @@
         margin-right: 5px;
       }
   
+      .signin-link:hover{
+        color: #F0c540 !important;
+      }
       @media (max-width:768px){
   
         .navbar{
