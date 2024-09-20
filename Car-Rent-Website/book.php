@@ -53,13 +53,9 @@ session_start();
                 <li class="nav-item dropdown">
                   <b><a href="book.php" class="nav-item nav-link" style="color: white;">Book Now</a></b>
                   </li>
-                  <li class="nav-item dropdown">
-                    <b><a href="#" class="nav-item nav-link"></a></b>
-                    </li>
-                 
-                    <li class="nav-item dropdown">
-                      <b><a href="#" class="nav-item nav-link"></a></b>
-                      </li>
+                  <li class="nav-item">
+                   <a href="about.php" class="nav-item nav-link" style="color: white;">About Us</a>
+                  </li>
                     <li class="nav-item dropdown">
                       <b><a href="#con" class="nav-item nav-link" style="color: white;">Contact Us</a></b>
                       </li>

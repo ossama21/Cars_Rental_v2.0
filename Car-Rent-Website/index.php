@@ -30,11 +30,7 @@ session_start();
     // $query = mysqli_query($conn, $sel);
     // $resul = mysqli_fetch_assoc($query); 
     ?>
-    <style>
-      #sign-in-link{
-        margin: 10px;
-      }
-    </style>
+
    
   </head>
   
@@ -51,7 +47,7 @@ session_start();
           <a href="./book.php" class="nav-item nav-link" style="color: white;">Book Now</a>
         </li>
         <li class="nav-item">
-          <a href="#about" class="nav-item nav-link" style="color: white;">About Us</a>
+          <a href="about.php" class="nav-item nav-link" style="color: white;">About Us</a>
         </li>
         <li class="nav-item">
           <a href="#con" class="nav-item nav-link" style="color: white;">Contact Us</a>
