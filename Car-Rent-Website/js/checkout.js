@@ -49,7 +49,6 @@ window.addEventListener('DOMContentLoaded', function () {
 
     // Reserve button
     const reserveButton = document.querySelector('input[type="submit"]');
-    reserveButton.disabled = true;  // Disable the reserve button by default
 
     // Function to show payment forms
     function showPaymentForm(formId, paymentMethod) {
@@ -95,12 +94,11 @@ window.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Add event listeners to submit buttons to enable the reserve button
+    // Add event listeners to submit buttons to display success/failure alerts
     document.querySelectorAll('.submit-btn').forEach(button => {
         button.addEventListener('click', (event) => {
             event.preventDefault();  // Prevent form submission and page reload
             if (checkPaymentFieldsFilled()) {
-                reserveButton.disabled = false;
                 alert('Your payment information has been saved. You can now reserve.');
             } else {
                 alert('Please fill in all required fields for the selected payment method.');
@@ -113,7 +111,10 @@ window.addEventListener('DOMContentLoaded', function () {
     const bookingForm = document.getElementById('bookingForm');
     if (bookingForm) {
         bookingForm.addEventListener('submit', function(event) {
-            if (!checkPaymentFieldsFilled()) {
+            if (!selectedPaymentMethod) {
+                event.preventDefault();  // Prevent the form from submitting
+                alert("You need to choose a payment method before reserving.");
+            } else if (!checkPaymentFieldsFilled()) {
                 event.preventDefault();  // Prevent the form from submitting
                 alert("You need to fill in all fields for the selected payment method before reserving.");
             }
