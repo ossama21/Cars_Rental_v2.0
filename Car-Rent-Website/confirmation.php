@@ -153,6 +153,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </tbody>
         </table>
         <a href="index.php" class="button">Go to Home Page</a>
+        <a href="generate_invoice.php" class="button" target="_blank">Download Invoice as PDF</a>
+
+
     </div>
 </body>
 </html>

@@ -52,6 +52,7 @@ session_start();
         </div>
         <div>
             <input placeholder="Quantity" type="number" name="quantity" required />
+            <input type="email" name="email" required placeholder="Enter your email">
         </div>
         <input type="submit" value="Reserve Now" />
     </form>
