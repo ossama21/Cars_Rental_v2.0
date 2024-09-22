@@ -79,7 +79,7 @@ session_start();
 
     <!-- Cheque Form -->
     <div class="payment-form" id="cheque-form" style="display:none;">
-        <h4>Cheque Payment Details</h4>
+        <h4>Cheque Payment Details</h4> 
         <label for="cheque-number">Cheque Number:</label>
         <input type="text" id="cheque-number" name="cheque-number" required>
         <label for="cheque-date">Date:</label>
