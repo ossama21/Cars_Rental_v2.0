@@ -1,24 +1,24 @@
 ## Cars Rental Website Project
 
-This project is a web application for a car rental company. It allows users to browse and rent cars online. The project is protected by the MIT License.
+This project is a web application for a car rental company. It allows users to browse and rent cars online. The project is protected by the MIT License. 
 
 ### Features
 
 - User registration and login
-- Car catalog with detailed information
+- Car catalog with detailed information 
 - Car search and filtering options
 - Booking and reservation system
-- Payment integration
-- User profile management
+- Payment integration 
+- User profile management 
 
 ### Technologies Used
 
-- HTML5
-- CSS3
-- JavaScript
+- HTML5 
+- CSS3 
+- JavaScript 
 - React.js
 - Node.js
-- Express.js
+- Express.js 
 
 
 ### Installation
@@ -32,13 +32,13 @@ This project is a web application for a car rental company. It allows users to b
 2. Install the dependencies:
 
     ```bash
-    cd Cars_Rental_WebSite-Project
+    cd Cars_Rental_WebSite-Project 
     npm install
     ```
 
 3. Set up the environment variables:
 
-    - Create a `.env` file in the root directory
+    - Create a `.env` file in the root directory 
     - Add the following variables:
 
       ```plaintext

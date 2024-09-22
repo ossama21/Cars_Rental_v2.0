@@ -61,30 +61,31 @@ window.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Function to check if all fields are filled in the selected payment method
-    function checkPaymentFieldsFilled() {
-        if (selectedPaymentMethod) {
-            const form = document.getElementById(`${selectedPaymentMethod}-form`);
-            const inputs = form.querySelectorAll('input');
-            return Array.from(inputs).every(input => input.value.trim() !== '');
-        }
-        return false;
-    }
+// Function to show popup alert after submitting
+function showPopupAlert() {
+    alert('Your payment information has been saved successfully. You can now reserve.');
+}
+
+    // Get all the payment method buttons
+    const bankButton = document.getElementById('bank-button');
+    const chequeButton = document.getElementById('cheque-button');
+    const mastercardButton = document.getElementById('mastercard-button');
+    const paypalButton = document.getElementById('paypal-button');
 
     // Add click event listeners to payment buttons
-    bankButton.addEventListener('click', () => showPaymentForm('bank-form', 'bank'));
-    chequeButton.addEventListener('click', () => showPaymentForm('cheque-form', 'cheque'));
-    mastercardButton.addEventListener('click', () => showPaymentForm('mastercard-form', 'mastercard'));
-    paypalButton.addEventListener('click', () => showPaymentForm('paypal-form', 'paypal'));
+    bankButton.addEventListener('click', () => showPaymentForm('bank-form'));
+    chequeButton.addEventListener('click', () => showPaymentForm('cheque-form'));
+    mastercardButton.addEventListener('click', () => showPaymentForm('mastercard-form'));
+    paypalButton.addEventListener('click', () => showPaymentForm('paypal-form'));
 
     // Add event listeners to cancel buttons to hide the forms
     document.querySelectorAll('.cancel-btn').forEach(button => {
         button.addEventListener('click', () => {
-            hidePaymentForm(); // Hide the payment form
+            hidePaymentForm(); // Hide the payment form 
         });
     });
 
-    // Add event listeners to submit buttons to enable the reserve button
+    // Add event listeners to submit buttons to show the alert message
     document.querySelectorAll('.submit-btn').forEach(button => {
         button.addEventListener('click', (event) => {
             event.preventDefault();  // Prevent form submission and page reload

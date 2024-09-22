@@ -4,20 +4,20 @@ session_start();
 <html>
 <head>
     <title>CARSRENT - Checkout</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/> 
     <link rel="stylesheet" type="text/css" href="./css/checkout.css">
-    <link rel="icon" type="image/png" href="./images/image.png">
+    <link rel="icon" type="image/png" href="./images/image.png"> 
 </head>
 <body>
     <div class="container">
         <!-- Car Details Section -->
         <div class="car-details">
-            <div class="car-image">
+            <div class="car-image"> 
                 <img id="car-image" alt="Car Image" height="300" width="400"/>
             </div>
             <div class="car-info">
                 <h1 id="car-name">Car Name</h1>
-                <div id="car-price" class="price">$0.00 / Day</div>
+                <div id="car-price" class="price">$0.00 / Day</div> 
                 <div class="rating">
                     <i class="fas fa-star"></i>
                     <i class="fas fa-star"></i>
@@ -45,7 +45,7 @@ session_start();
         <div>
             <input placeholder="Full Name" type="text" name="name" required />
             <input placeholder="Phone" type="text" name="phone" required />
-        </div>
+        </div> 
         <div>
             <input type="date" name="startDate" required />
             <input type="date" name="endDate" required />
@@ -60,7 +60,7 @@ session_start();
 
     <!-- Payment Information Form -->
     <div class="payment-methods">
-        <h2>Payment Information</h2>
+        <h2>Payment Information</h2> 
         <button id="bank-button" class="blue-btn">Direct Bank Transfer</button>
         <button id="cheque-button" class="blue-btn">Cheque Payment</button>
         <button id="mastercard-button" class="blue-btn">Master Card</button>
@@ -79,9 +79,9 @@ session_start();
 
     <!-- Cheque Form -->
     <div class="payment-form" id="cheque-form" style="display:none;">
-        <h4>Cheque Payment Details</h4>
+        <h4>Cheque Payment Details</h4> 
         <label for="cheque-number">Cheque Number:</label>
-        <input type="text" id="cheque-number" name="cheque-number" required>
+        <input type="text" id="cheque-number" name="cheque-number" required> 
         <label for="cheque-date">Date:</label>
         <input type="date" id="cheque-date" name="cheque-date" required>
         <button class="blue-btn submit-btn">Submit</button>
@@ -99,7 +99,7 @@ session_start();
         <input type="text" id="mastercard-cvc" name="mastercard-cvc" required>
         <button class="blue-btn submit-btn">Submit</button>
         <button class="cancel-btn">Cancel</button>
-    </div>
+    </div> 
 
     <!-- PayPal Form -->
     <div class="payment-form" id="paypal-form" style="display:none;">

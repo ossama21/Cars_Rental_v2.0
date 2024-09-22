@@ -8,7 +8,7 @@ const products = [
         transmission: 'Automatic',
         interior: 'Fabric',
         brand: 'Hyundai',
-        image: 'images/img1.png',
+        image: 'images/img1.png', 
     },
     {
         id: '2',
@@ -37,7 +37,7 @@ const products = [
         name: 'Scorpio',
         price: '280',
         description: 'Mahindra Scorpio is a rugged SUV with bold exterior, powerful engine, excellent urban, rural performance.',
-        model: 'Scorpio',
+        model: 'Scorpio', 
         transmission: 'Automatic',
         interior: 'Fabric',
         brand: 'Mahindra',
@@ -73,7 +73,7 @@ const products = [
         model: 'Baleno',
         transmission: 'Automatic',
         interior: 'Fabric',
-        brand: 'Suzuki',
+        brand: 'Suzuki', 
         image: 'images/img7.png'
     },
     {
