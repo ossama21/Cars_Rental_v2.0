@@ -73,7 +73,7 @@ const products = [
         model: 'Baleno',
         transmission: 'Automatic',
         interior: 'Fabric',
-        brand: 'Suzuki',
+        brand: 'Suzuki', 
         image: 'images/img7.png'
     },
     {
