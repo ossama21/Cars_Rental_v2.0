@@ -14,10 +14,10 @@ $result = $conn->query($sql);
 $user = $result->fetch_assoc();
 
 // Redirect if not admin
-if ($user['role'] !== 'admin') {
-    header('Location: ../index.php');
-    exit();
-}
+// if ($user['role'] !== 'admin') {
+//     header('Location: ../index.php');
+//     exit();
+// }
 
 ?>
 

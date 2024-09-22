@@ -1,37 +1,37 @@
 <?php
 session_start();
-
-// Database connection
-// change the host, user, password and db when connecting 
 $host="localhost";
 $user="root";
 $pass="";
-$db="car_rent"; // Replace with your DB password
+$db="car_rent";
 
 $conn = new mysqli($host, $user, $pass, $db);
 
-// Check for connection errors
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Fetch car data from MySQL
 $sql = "SELECT * FROM cars";
 $result = $conn->query($sql);
 
-// Store the cars in an array
 $cars = [];
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
         $cars[] = $row;
     }
-} else {
-    echo "No cars found!";
 }
 
+// Close the database connection
 $conn->close();
 
+// Check if it's an AJAX request
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Return cars as a JSON response
+    echo json_encode(['cars' => $cars]);
+    exit;
+}
 ?>
+
 <!doctype html>
 <html lang="en">
   <head>
@@ -46,9 +46,13 @@ $conn->close();
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&family=Open+Sans&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
     <!-- Custom CSS -->
     <link rel="stylesheet" href="./css/book.css">
+    <!-- Import products.js -->
 
 
   </head>
@@ -124,15 +128,14 @@ $conn->close();
     <?php endif; ?>
   </div>
 </li>
-
 </div>
   </nav>
 
     <!-- Heading Section -->
     <h1 class="text-center">Choose the best here.</h1>
 
-    <!-- Container for Cars -->
-    <div class="row car-section" id="car-listings">
+<!-- Container for Cars -->
+<div class="row car-section" id="car-listings">
       <?php foreach ($cars as $car) { ?>
         <div class="col-md-4">
           <div class="car">
@@ -175,17 +178,11 @@ $conn->close();
     </div>
   </footer>
 
-  <!-- Bootstrap JS and Dependencies -->
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-  
-  <script src="./js/dropdown.js"></script>
-
-  <!-- Custom JavaScript file -->
-  <!-- <script defer src="script.js"></script> -->
-  <!-- <script type="module" src="script.js"></script> -->
-  <script type="module" src="./js/script.js"></script>
-
-  <script type="module" src="./js/checkout.js"></script>
+    <!-- Bootstrap JS and Dependencies -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="./js/dropdown.js"></script>
+    <script type='module' src="./js/script.js"></script>
+    <script type="module" src="./js/checkout.js"></script>
 </body>
 </html>

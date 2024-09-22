@@ -12,10 +12,10 @@ $sql = "SELECT role FROM users WHERE email='$email'";
 $result = $conn->query($sql);
 $user = $result->fetch_assoc();
 
-if ($user['role'] !== 'admin') {
-    header('Location: ../index.php');
-    exit();
-}
+// if ($user['role'] !== 'admin') {
+//     header('Location: ../index.php');
+//     exit();
+// }
 
 $sqlCars = "SELECT * FROM cars";
 $carsResult = $conn->query($sqlCars);

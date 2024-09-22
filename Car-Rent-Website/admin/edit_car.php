@@ -51,6 +51,7 @@ if (isset($_GET['id'])) {
         <input type="text" name="transmission" value="<?= $car['transmission'] ?>" placeholder="Transmission" required>
         <input type="text" name="interior" value="<?= $car['interior'] ?>" placeholder="Interior" required>
         <input type="text" name="brand" value="<?= $car['brand'] ?>" placeholder="Brand" required>
+        <input type="file" name="image" value="<?= $car['image'] ?>" placeholder="Image" required>
         <button type="submit" name="updateCar">Update Car</button>
     </form>
 
