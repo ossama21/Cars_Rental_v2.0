@@ -30,56 +30,75 @@ $user = $result->fetch_assoc();
     
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    
     <style>
         body {
-            background-color: #f4f6f9;
+            background-color: #f8f9fa;
         }
         .admin-header {
-            margin-top: 30px;
+            margin-top: 50px;
             text-align: center;
+            color: #343a40;
         }
         .admin-section {
             display: flex;
-            justify-content: space-around;
-            margin-top: 50px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 30px;
         }
         .admin-card {
-            width: 300px;
-            height: 150px;
+            width: 280px;
+            height: 180px;
+            margin: 15px;
             background-color: #007bff;
             color: white;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            border-radius: 10px;
+            border-radius: 15px;
             transition: 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         .admin-card:hover {
             background-color: #0056b3;
-            transform: scale(1.05);
+            transform: translateY(-5px);
         }
         .admin-card a {
             text-decoration: none;
             color: white;
             font-size: 18px;
             font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+        .admin-card i {
+            font-size: 30px;
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
 
 <div class="container admin-header">
-    <h2>Admin Dashboard</h2>
+    <h1>Admin Dashboard</h1>
+    <p class="lead">Welcome, Admin! Manage your application efficiently from here.</p>
 </div>
 
 <div class="container admin-section">
     <div class="admin-card">
+        <i class="fas fa-car"></i>
         <a href="manage_cars.php">Manage Cars</a>
     </div>
     <div class="admin-card">
+        <i class="fas fa-users"></i>
         <a href="manage_users.php">Manage Users</a>
     </div>
     <div class="admin-card">
+        <i class="fas fa-dollar-sign"></i>
         <a href="manage_payments.php">Manage Payments</a>
     </div>
 </div>
