@@ -38,7 +38,7 @@ This project is a web application for a car rental company. It allows users to b
 
 3. Set up the environment variables:
 
-    - Create a `.env` file in the root directory
+    - Create a `.env` file in the root directory 
     - Add the following variables:
 
       ```plaintext
