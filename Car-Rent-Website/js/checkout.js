@@ -27,35 +27,31 @@ window.addEventListener('DOMContentLoaded', function () {
         console.error('Car ID not found in URL');
     }
 
-    // Attach form submit event listener after the DOM is loaded
-    const checkoutForm = document.getElementById('checkoutForm');
-    if (checkoutForm) {
-        checkoutForm.addEventListener('submit', function(event) {
-            event.preventDefault();  // Prevent the form from submitting
+    // Payment method selection variable
+    let selectedPaymentMethod = null;
 
-            // Basic validation (you can enhance this)
-            let name = document.getElementById('name').value;
-            let address = document.getElementById('address').value;
-            let phone = document.getElementById('phone').value;
-            let visa = document.getElementById('visa').value;
+    // Get all the payment method buttons
+    const bankButton = document.getElementById('bank-button');
+    const chequeButton = document.getElementById('cheque-button');
+    const mastercardButton = document.getElementById('mastercard-button');
+    const paypalButton = document.getElementById('paypal-button');
 
-            if (name === "" || address === "" || phone === "" || visa === "") {
-                alert("Please fill in all fields.");
-            } else {
-                // Show confirmation message
-                document.getElementById('confirmationMessage').style.display = 'block';
-            }
-        });
-    }
+    // Reserve button
+    const reserveButton = document.querySelector('input[type="submit"]');
+    reserveButton.disabled = true;  // Disable the reserve button by default
 
-    function showPaymentForm(formId) {
+    // Function to show payment forms
+    function showPaymentForm(formId, paymentMethod) {
         // Hide all payment forms
         document.querySelectorAll('.payment-form').forEach(form => {
             form.style.display = 'none';
         });
-    
+
         // Show the selected payment form
         document.getElementById(formId).style.display = 'block';
+
+        // Store the selected payment method
+        selectedPaymentMethod = paymentMethod;
     }
 
     function hidePaymentForm() {
@@ -65,22 +61,21 @@ window.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-// Function to show popup alert after submitting
-function showPopupAlert() {
-    alert('Your payment information has been saved successfully. You can now reserve.');
-}
-
-    // Get all the payment method buttons
-    const bankButton = document.getElementById('bank-button');
-    const chequeButton = document.getElementById('cheque-button');
-    const mastercardButton = document.getElementById('mastercard-button');
-    const paypalButton = document.getElementById('paypal-button');
+    // Function to check if all fields are filled in the selected payment method
+    function checkPaymentFieldsFilled() {
+        if (selectedPaymentMethod) {
+            const form = document.getElementById(`${selectedPaymentMethod}-form`);
+            const inputs = form.querySelectorAll('input');
+            return Array.from(inputs).every(input => input.value.trim() !== '');
+        }
+        return false;
+    }
 
     // Add click event listeners to payment buttons
-    bankButton.addEventListener('click', () => showPaymentForm('bank-form'));
-    chequeButton.addEventListener('click', () => showPaymentForm('cheque-form'));
-    mastercardButton.addEventListener('click', () => showPaymentForm('mastercard-form'));
-    paypalButton.addEventListener('click', () => showPaymentForm('paypal-form'));
+    bankButton.addEventListener('click', () => showPaymentForm('bank-form', 'bank'));
+    chequeButton.addEventListener('click', () => showPaymentForm('cheque-form', 'cheque'));
+    mastercardButton.addEventListener('click', () => showPaymentForm('mastercard-form', 'mastercard'));
+    paypalButton.addEventListener('click', () => showPaymentForm('paypal-form', 'paypal'));
 
     // Add event listeners to cancel buttons to hide the forms
     document.querySelectorAll('.cancel-btn').forEach(button => {
@@ -89,12 +84,28 @@ function showPopupAlert() {
         });
     });
 
-    // Add event listeners to submit buttons to show the alert message
+    // Add event listeners to submit buttons to enable the reserve button
     document.querySelectorAll('.submit-btn').forEach(button => {
         button.addEventListener('click', (event) => {
-            event.preventDefault(); // Prevent form submission and page reload
-            showPopupAlert(); // Show the popup alert
+            event.preventDefault();  // Prevent form submission and page reload
+            if (checkPaymentFieldsFilled()) {
+                reserveButton.disabled = false;
+                alert('Your payment information has been saved. You can now reserve.');
+            } else {
+                alert('Please fill in all required fields for the selected payment method.');
+            }
             hidePaymentForm(); // Optionally hide the form after submit
         });
     });
+
+    // Attach form submit event listener to booking form
+    const bookingForm = document.getElementById('bookingForm');
+    if (bookingForm) {
+        bookingForm.addEventListener('submit', function(event) {
+            if (!checkPaymentFieldsFilled()) {
+                event.preventDefault();  // Prevent the form from submitting
+                alert("You need to fill in all fields for the selected payment method before reserving.");
+            }
+        });
+    }
 });
