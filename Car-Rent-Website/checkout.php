@@ -45,7 +45,7 @@ session_start();
         <div>
             <input placeholder="Full Name" type="text" name="name" required />
             <input placeholder="Phone" type="text" name="phone" required />
-        </div>
+        </div> 
         <div>
             <input type="date" name="startDate" required />
             <input type="date" name="endDate" required />
