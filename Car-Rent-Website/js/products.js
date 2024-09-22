@@ -37,7 +37,7 @@ const products = [
         name: 'Scorpio',
         price: '280',
         description: 'Mahindra Scorpio is a rugged SUV with bold exterior, powerful engine, excellent urban, rural performance.',
-        model: 'Scorpio',
+        model: 'Scorpio', 
         transmission: 'Automatic',
         interior: 'Fabric',
         brand: 'Mahindra',
