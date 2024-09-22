@@ -51,7 +51,6 @@ session_start();
             <input type="date" name="endDate" required />
         </div>
         <div>
-            <input placeholder="Quantity" type="number" name="quantity" required />
             <input type="email" name="email" required placeholder="Enter your email">
         </div>
         <input type="submit" value="Reserve Now" />

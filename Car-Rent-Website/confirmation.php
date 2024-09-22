@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $phone = htmlspecialchars($_POST['phone']);
     $startDate = htmlspecialchars($_POST['startDate']);
     $endDate = htmlspecialchars($_POST['endDate']);
-    $quantity = htmlspecialchars($_POST['quantity']);
+    $email = htmlspecialchars($_POST['email']);
 
     // Calculate the duration (days) of the booking
     $startDateObj = new DateTime($startDate);
@@ -21,8 +21,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     // Insert the booking information into the database
-    $insertQuery = $con->prepare("INSERT INTO `services` (`username`, `phone`, `start_date`, `end_date`, `quantity`, `duration`) VALUES (?, ?, ?, ?, ?, ?)");
-    $insertQuery->bind_param('ssssii', $username, $phone, $startDate, $endDate, $quantity, $duration);
+    $insertQuery = $con->prepare("INSERT INTO `services` (`username`, `phone`, `start_date`, `end_date`, `duration`,`email`) VALUES (?, ?, ?, ?, ?,?)");
+    $insertQuery->bind_param('ssssss', $username, $phone, $startDate, $endDate, $duration, $email);
+
 
     if ($insertQuery->execute()) {
         // Store data in session for use in other pages
@@ -30,8 +31,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['phone'] = $phone;
         $_SESSION['startDate'] = $startDate;
         $_SESSION['endDate'] = $endDate;
-        $_SESSION['quantity'] = $quantity;
         $_SESSION['duration'] = $duration;
+        $_SESSION['email'] = $email;
     } else {
         echo "Error: " . $insertQuery->error;
     }
@@ -41,6 +42,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     mysqli_close($con);
 }
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -137,25 +140,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <table>
             <thead>
                 <tr>
-                    <th>Phone</th>
+                    <th>start Date</th>
                     <th>End Date</th>
                     <th>Duration (days)</th>
-                    <th>Quantity</th>
+                    <th>Phone</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td><?php echo htmlspecialchars($_SESSION['phone']); ?></td>
+                    <td><?php echo htmlspecialchars($_SESSION['startDate']); ?></td>
                     <td><?php echo htmlspecialchars($_SESSION['endDate']); ?></td>
                     <td><?php echo htmlspecialchars($_SESSION['duration']); ?></td>
-                    <td><?php echo htmlspecialchars($_SESSION['quantity']); ?></td>
+                    <td><?php echo htmlspecialchars($_SESSION['phone']); ?></td>
                 </tr>
             </tbody>
         </table>
         <a href="index.php" class="button">Go to Home Page</a>
         <a href="generate_invoice.php" class="button" target="_blank">Download Invoice as PDF</a>
-
-
     </div>
 </body>
 </html>
+
