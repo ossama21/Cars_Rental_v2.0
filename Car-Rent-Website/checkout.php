@@ -35,7 +35,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['car_id'])) {
 }
 
 // Fallback to default behavior for non-AJAX requests (rendering HTML, etc.)
-// Your existing HTML code goes here
 ?>
 <html>
 <head>
@@ -72,31 +71,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['car_id'])) {
             </div>
         </div>
 
-<!-- Booking and Payment Forms Section -->
-<div class="form-container">
-    <!-- Booking Information Form -->
-    <div class="booking-info">
-    <h2>Booking Information</h2>
-    <form id="bookingForm" action="confirmation.php" method="post">
-        <div>
-            <input placeholder="Full Name" type="text" name="name" required />
-            <input placeholder="Phone" type="text" name="phone" required />
-            
-            <input type="email" name="email" required placeholder="Enter your email">
-     
-        </div> 
-        <div>
-            <input type="date" name="startDate" required />
-            <input type="date" name="endDate" required />
-        </div>
-      
-        <input type="submit" value="Reserve Now" />
-    </form>
-</div>
+        <!-- Booking and Payment Forms Section -->
+        <div class="form-container">
+            <!-- Booking Information Form -->
+            <div class="booking-info">
+                <h2>Booking Information</h2>
+                <form id="bookingForm" action="confirmation.php" method="post">
+                    <div>
+                        <input placeholder="Full Name" type="text" name="name" required />
+                        <input placeholder="Phone" type="text" name="phone" required />
+                        <input type="email" name="email" required placeholder="Enter your email">
+                    </div> 
+                    <div>
+                        <input type="datetime-local" id="startDate" name="startDate" required />
+                        <input type="datetime-local" id="endDate" name="endDate" required />
+                    </div>
+                    <input type="submit" value="Reserve Now" />
+                </form>
+            </div>
 
-
-    <!-- Payment Information Form -->
-    <div class="payment-methods">
+            <!-- Payment Information Form (rest of the code) -->
+            <div class="payment-methods">
         <h2>Payment Information</h2> 
         <button id="bank-button" class="blue-btn">Direct Bank Transfer</button>
         <button id="cheque-button" class="blue-btn">Cheque Payment</button>
@@ -111,10 +106,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['car_id'])) {
         <label for="bank-routing">Routing Number:</label>
         <input type="text" id="bank-routing" name="bank-routing" required>
         <button  type="submit" class="clicked blue-btn submit-btn">Submit</button>
-        <button class="cancel-btn">Cancel</button>
-    </div>
-
-    <!-- Cheque Form -->
+        <button class="cancel-btn">Cancel</button>      
+      </div> 
+      <!-- Cheque Form -->
     <div class="payment-form" id="cheque-form" style="display:none;">
         <h4>Cheque Payment Details</h4> 
         <label for="cheque-number">Cheque Number:</label>
@@ -124,7 +118,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['car_id'])) {
         <button class="blue-btn submit-btn">Submit</button>
         <button class="cancel-btn">Cancel</button>
     </div>
-
     <!-- MasterCard Form -->
     <div class="payment-form" id="mastercard-form" style="display:none;">
         <h4>Enter MasterCard Details</h4>
@@ -150,6 +143,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['car_id'])) {
 
 
     <script type="module" src="./js/checkout.js"></script> <!-- Link to the JS file -->
-    
+
+    <script>
+        // Function to get the current date and time in the format YYYY-MM-DDTHH:MM
+        function getCurrentDateTime() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = ('0' + (now.getMonth() + 1)).slice(-2);
+            const day = ('0' + now.getDate()).slice(-2);
+            const hours = ('0' + now.getHours()).slice(-2);
+            const minutes = ('0' + now.getMinutes()).slice(-2);
+            return `${year}-${month}-${day}T${hours}:${minutes}`;
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const now = getCurrentDateTime();
+            const startDate = document.getElementById('startDate');
+            const endDate = document.getElementById('endDate');
+
+            // Set the minimum date and time for startDate and endDate
+            startDate.setAttribute('min', now);
+            endDate.setAttribute('min', now);
+
+            // Listen to changes on startDate and update endDate accordingly
+            startDate.addEventListener('change', function () {
+                const selectedStartDate = startDate.value;
+                if (selectedStartDate) {
+                    endDate.setAttribute('min', selectedStartDate);
+                }
+            });
+        });
+    </script>
 </body>
 </html>
