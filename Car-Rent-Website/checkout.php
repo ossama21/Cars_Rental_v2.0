@@ -81,14 +81,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['car_id'])) {
         <div>
             <input placeholder="Full Name" type="text" name="name" required />
             <input placeholder="Phone" type="text" name="phone" required />
+            
+            <input type="email" name="email" required placeholder="Enter your email">
+     
         </div> 
         <div>
             <input type="date" name="startDate" required />
             <input type="date" name="endDate" required />
         </div>
-        <div>
-            <input type="email" name="email" required placeholder="Enter your email">
-        </div>
+      
         <input type="submit" value="Reserve Now" />
     </form>
 </div>
