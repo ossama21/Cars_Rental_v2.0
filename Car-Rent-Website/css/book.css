@@ -374,4 +374,7 @@ h1{
     padding-left: 1.5rem;
     background-color: var(--secondary-light);
   }
-  
+  @media (max-width: 768px) {
+    .container { margin-top: 20px; }
+    .car-img { width: 100px; }
+}
