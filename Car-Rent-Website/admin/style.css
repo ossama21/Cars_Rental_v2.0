@@ -1,87 +1,44 @@
+/* Admin Panel Styles */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f8f9fa;
-}
-
-.container {
-    width: 80%;
-    margin: 0 auto;
+    font-family: 'Montserrat', sans-serif;
+    background-color: #f4f4f4;
     padding: 20px;
 }
-
-h1 {
-    text-align: center;
-    color: #343a40;
-}
-
-.add-car-section, .car-list-section {
-    background-color: #ffffff;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-label {
-    display: block;
-    margin: 10px 0 5px;
-}
-
-input, textarea, button {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 4px;
-    border: 1px solid #ced4da;
-}
-
-.blue-btn {
-    background-color: #007bff;
+.admin-header {
+    background-color: #333;
     color: white;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.blue-btn:hover {
-    background-color: #0056b3;
-}
-
-.car-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-}
-
-.car-item {
-    background-color: #ffffff;
-    border: 1px solid #ced4da;
-    border-radius: 8px;
     padding: 15px;
-    width: 30%;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     text-align: center;
 }
-
-.car-item img {
-    max-width: 100%;
-    border-radius: 8px;
-    margin-bottom: 10px;
+.admin-container {
+    margin-top: 30px;
 }
-
-.delete-btn, .edit-btn {
-    display: inline-block;
-    padding: 5px 10px;
-    margin: 5px;
+.admin-sidebar {
+    background-color: #444;
     color: white;
+    padding: 15px;
+}
+.admin-sidebar a {
+    color: #ddd;
     text-decoration: none;
-    border-radius: 4px;
+    padding: 10px;
+    display: block;
+    transition: 0.3s;
 }
-
-.delete-btn {
-    background-color: #dc3545;
+.admin-sidebar a:hover {
+    background-color: #555;
 }
-
-.edit-btn {
-    background-color: #ffc107;
+.admin-content {
+    padding: 20px;
+    background-color: white;
+    margin-left: 220px; /* Adjust for sidebar */
+}
+/* Responsive Design */
+@media (max-width: 768px) {
+    .admin-content {
+        margin-left: 0;
+    }
+    .admin-sidebar {
+        display: none;
+    }
 }

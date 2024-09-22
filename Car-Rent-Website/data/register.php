@@ -8,6 +8,7 @@ if(isset($_POST['signUp'])){
     $email = $_POST['email'];
     $password = $_POST['password'];
     $password = md5($password); // Note: Consider using password_hash() for better security.
+    $role = 'user';
 
     // Check if the email already exists
     $checkEmail = "SELECT * FROM users WHERE email='$email'";
@@ -16,11 +17,11 @@ if(isset($_POST['signUp'])){
     if($result->num_rows > 0){
         echo "Email Address Already Exists!";
     } else {
-        // Insert new user
-        $insertQuery = "INSERT INTO users (firstName, lastName, email, password)
-                        VALUES ('$firstName', '$lastName', '$email', '$password')";
+        // Insert new user with the role field
+        $insertQuery = "INSERT INTO users (firstName, lastName, email, password, role)
+                        VALUES ('$firstName', '$lastName', '$email', '$password', '$role')";
         if($conn->query($insertQuery) === TRUE){
-            header("Location: index.php");
+            header("Location: ../index.php");
         } else {
             echo "Error: " . $conn->error;
         }
@@ -43,8 +44,9 @@ if(isset($_POST['signIn'])){
         // Store the user's first name and email in the session
         $_SESSION['email'] = $row['email'];
         $_SESSION['firstName'] = $row['firstName']; // Fetching first name
+        $_SESSION['role'] = $row['role']; // Fetching user role
         
-        header("Location: homepage.php");
+        header("Location: ..\index.php");
         exit();
     } else {
         echo "Not Found, Incorrect Email or Password";

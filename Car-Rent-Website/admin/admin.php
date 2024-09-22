@@ -1,26 +1,23 @@
 <?php
+session_start();
+include '../data/connect.php';
 
-// Handle car addition
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add-car'])) {
-    $carName = $_POST['car-name'];
-    $carPrice = $_POST['car-price'];
-    $carDescription = $_POST['car-description'];
-    
-    // Image upload logic (limited to specific resolution)
-    if (isset($_FILES['car-image']) && $_FILES['car-image']['error'] === 0) {
-        $imageFile = $_FILES['car-image'];
-        $imagePath = 'car_images/' . basename($imageFile['name']);
-        move_uploaded_file($imageFile['tmp_name'], $imagePath);
-    }
-    
-    // Add the new car to your database (this is just a placeholder)
-    // INSERT INTO cars (name, price, description, image) VALUES ($carName, $carPrice, $carDescription, $imagePath);
+// Check if the user is logged in
+if (!isset($_SESSION['email'])) {
+    header('Location: index.php');
+    exit();
 }
 
-// Handle car deletion
-if (isset($_GET['delete'])) {
-    $carId = $_GET['delete'];
-    // DELETE FROM cars WHERE id = $carId;
+// Fetch the current user's role from the database
+$email = $_SESSION['email'];
+$sql = "SELECT role FROM users WHERE email='$email'";
+$result = $conn->query($sql);
+$user = $result->fetch_assoc();
+
+// Redirect non-admin users to homepage
+if ($user['role'] !== 'admin') {
+    header('Location: ../index.php');
+    exit();
 }
 
 ?>
@@ -30,50 +27,87 @@ if (isset($_GET['delete'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - Manage Cars</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Admin Panel</title>
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
+    
+    <!-- Custom CSS -->
+    <style>
+        /* Admin Panel Styles */
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        .admin-header {
+            background-color: #333;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        .admin-container {
+            margin-top: 30px;
+        }
+        .admin-sidebar {
+            background-color: #444;
+            color: white;
+            padding: 15px;
+        }
+        .admin-sidebar a {
+            color: #ddd;
+            text-decoration: none;
+            padding: 10px;
+            display: block;
+            transition: 0.3s;
+        }
+        .admin-sidebar a:hover {
+            background-color: #555;
+        }
+        .admin-content {
+            padding: 20px;
+            background-color: white;
+            margin-left: 220px; /* Adjust for sidebar */
+        }
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .admin-content {
+                margin-left: 0;
+            }
+            .admin-sidebar {
+                display: none;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Admin Panel - Manage Cars</h1>
-        
-        <div class="add-car-section">
-            <h2>Add a New Car</h2>
-            <form action="admin.php" method="POST" enctype="multipart/form-data">
-                <label for="car-name">Car Name:</label>
-                <input type="text" id="car-name" name="car-name" required>
-                
-                <label for="car-price">Price:</label>
-                <input type="number" id="car-price" name="car-price" required>
-                
-                <label for="car-description">Description:</label>
-                <textarea id="car-description" name="car-description" required></textarea>
-                
-                <label for="car-image">Car Image (Resolution: 800x600px):</label>
-                <input type="file" id="car-image" name="car-image" accept="image/*" required>
-                
-                <button type="submit" name="add-car" class="blue-btn">Add Car</button>
-            </form>
-        </div>
 
-        <hr>
+    <div class="admin-header">
+        <h1>Welcome to Admin Panel, <?= $_SESSION['firstName']; ?></h1>
+    </div>
 
-        <div class="car-list-section">
-            <h2>Manage Existing Cars</h2>
-            <div class="car-list">
-                <?php foreach ($cars as $car) { ?>
-                <div class="car-item">
-                    <img src="<?php echo $car['image']; ?>" alt="<?php echo $car['name']; ?>" width="200" height="150">
-                    <h3><?php echo $car['name']; ?></h3>
-                    <p>Price: $<?php echo $car['price']; ?></p>
-                    <p><?php echo $car['description']; ?></p>
-                    <a href="admin.php?delete=<?php echo $car['id']; ?>" class="delete-btn">Delete</a>
-                    <a href="edit.php?id=<?php echo $car['id']; ?>" class="edit-btn">Edit</a>
-                </div>
-                <?php } ?>
+    <div class="container-fluid admin-container">
+        <div class="row">
+            <!-- Admin Sidebar -->
+            <div class="col-md-3 admin-sidebar">
+                <h3>Admin Menu</h3>
+                <a href="manage_cars.php">Manage Cars</a>
+                <a href="manage_users.php">Manage Users</a>
+                <a href="manage_payments.php">Manage Payments</a>
+                <a href="../data/logout.php">Log Out</a>
+            </div>
+
+            <!-- Admin Content -->
+            <div class="col-md-9 admin-content">
+                <h2>Dashboard</h2>
+                <p>Here you can manage cars, users, and payments for the car rental system.</p>
             </div>
         </div>
     </div>
-    <script type="module" src="products.js"></script>
+
+    <!-- Bootstrap JS and Dependencies -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
 </body>
 </html>
