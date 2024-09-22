@@ -14,7 +14,7 @@ This project is a web application for a car rental company. It allows users to b
 ### Technologies Used
 
 - HTML5 
-- CSS3
+- CSS3 
 - JavaScript 
 - React.js
 - Node.js
