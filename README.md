@@ -32,7 +32,7 @@ This project is a web application for a car rental company. It allows users to b
 2. Install the dependencies:
 
     ```bash
-    cd Cars_Rental_WebSite-Project
+    cd Cars_Rental_WebSite-Project 
     npm install
     ```
 
