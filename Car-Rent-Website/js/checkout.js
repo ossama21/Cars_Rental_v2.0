@@ -71,9 +71,9 @@ function showPopupAlert() {
 }
 
     // Get all the payment method buttons
-    const bankButton = document.getElementById('bank-button');
+    const bankButton = document.getElementById('bank-button'); 
     const chequeButton = document.getElementById('cheque-button');
-    const mastercardButton = document.getElementById('mastercard-button');
+    const mastercardButton = document.getElementById('mastercard-button'); 
     const paypalButton = document.getElementById('paypal-button');
 
     // Add click event listeners to payment buttons
