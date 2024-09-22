@@ -1,6 +1,6 @@
 ## Cars Rental Website Project
 
-This project is a web application for a car rental company. It allows users to browse and rent cars online. The project is protected by the MIT License.
+This project is a web application for a car rental company. It allows users to browse and rent cars online. The project is protected by the MIT License. 
 
 ### Features
 
