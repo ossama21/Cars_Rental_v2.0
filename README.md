@@ -18,7 +18,7 @@ This project is a web application for a car rental company. It allows users to b
 - JavaScript
 - React.js
 - Node.js
-- Express.js
+- Express.js 
 
 
 ### Installation
