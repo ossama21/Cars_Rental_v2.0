@@ -60,7 +60,7 @@ session_start();
 
     <!-- Payment Information Form -->
     <div class="payment-methods">
-        <h2>Payment Information</h2>
+        <h2>Payment Information</h2> 
         <button id="bank-button" class="blue-btn">Direct Bank Transfer</button>
         <button id="cheque-button" class="blue-btn">Cheque Payment</button>
         <button id="mastercard-button" class="blue-btn">Master Card</button>
