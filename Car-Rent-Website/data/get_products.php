@@ -1,6 +1,6 @@
 <?php
-// get_products.php
-include 'connect.php'; // Adjust the path if necessary
+// get_connect.php
+include './connect.php'; // Adjust the path if necessary
 
 // Fetch all cars from the database
 $sql = "SELECT * FROM cars";

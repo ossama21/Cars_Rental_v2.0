@@ -1,5 +1,41 @@
 <?php
 session_start();
+$host="localhost";
+$user="root";
+$pass="";
+$db="car_rent";
+
+$conn = new mysqli($host, $user, $pass, $db);
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Check if it's an AJAX request and if car_id is passed
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['car_id'])) {
+    $car_id = intval($_POST['car_id']);
+
+    // Query the database for the specific car by ID
+    $stmt = $conn->prepare("SELECT * FROM cars WHERE id = ?");
+    $stmt->bind_param("i", $car_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        $car = $result->fetch_assoc();
+        // Return car details as JSON
+        echo json_encode(['car' => $car]);
+    } else {
+        echo json_encode(['car' => null]);
+    }
+
+    $stmt->close();
+    $conn->close();
+    exit;
+}
+
+// Fallback to default behavior for non-AJAX requests (rendering HTML, etc.)
+// Your existing HTML code goes here
 ?>
 <html>
 <head>
