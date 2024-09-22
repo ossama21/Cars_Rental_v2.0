@@ -85,12 +85,12 @@ function showPopupAlert() {
     // Add event listeners to cancel buttons to hide the forms
     document.querySelectorAll('.cancel-btn').forEach(button => {
         button.addEventListener('click', () => {
-            hidePaymentForm(); // Hide the payment form
+            hidePaymentForm(); // Hide the payment form 
         });
     });
 
     // Add event listeners to submit buttons to show the alert message
-    document.querySelectorAll('.submit-btn').forEach(button => {
+    document.querySelectorAll('.submit-btn').forEach(button => { 
         button.addEventListener('click', (event) => {
             event.preventDefault(); // Prevent form submission and page reload
             showPopupAlert(); // Show the popup alert
