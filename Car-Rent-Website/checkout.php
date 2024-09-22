@@ -12,7 +12,7 @@ session_start();
     <div class="container">
         <!-- Car Details Section -->
         <div class="car-details">
-            <div class="car-image">
+            <div class="car-image"> 
                 <img id="car-image" alt="Car Image" height="300" width="400"/>
             </div>
             <div class="car-info">
