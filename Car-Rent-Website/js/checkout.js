@@ -1,5 +1,3 @@
-import products from "./products.js";
-
 // Wrap all the code to ensure it runs after the DOM is fully loaded
 window.addEventListener('DOMContentLoaded', function () {
     // Extract car details from URL parameters
@@ -7,22 +5,35 @@ window.addEventListener('DOMContentLoaded', function () {
     const carId = params.get('product_id');
 
     if (carId) {
-        // Retrieve the car details based on the ID
-        const selectedCar = products.find(car => car.id === carId);
-        
-        if (selectedCar) {
-            // Update the car details in the checkout page
-            document.getElementById('car-name').textContent = selectedCar.name;
-            document.getElementById('car-description').textContent = selectedCar.description;
-            document.getElementById('car-price').textContent = `$${selectedCar.price} / Day`;
-            document.getElementById('car-image').src = selectedCar.image;
-            document.getElementById('car-model').textContent = selectedCar.model;
-            document.getElementById('car-transmission').textContent = selectedCar.transmission;
-            document.getElementById('car-interior').textContent = selectedCar.interior;
-            document.getElementById('car-brand').textContent = selectedCar.brand;
-        } else {
-            console.error('Car not found');
-        }
+        // Send AJAX request to retrieve car details from the server
+        fetch('checkout.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `car_id=${carId}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data && data.car) {
+                const selectedCar = data.car;
+
+                // Update the car details in the checkout page
+                document.getElementById('car-name').textContent = selectedCar.name;
+                document.getElementById('car-description').textContent = selectedCar.description;
+                document.getElementById('car-price').textContent = `$${selectedCar.price} / Day`;
+                document.getElementById('car-image').src = selectedCar.image;
+                document.getElementById('car-model').textContent = selectedCar.model;
+                document.getElementById('car-transmission').textContent = selectedCar.transmission;
+                document.getElementById('car-interior').textContent = selectedCar.interior;
+                document.getElementById('car-brand').textContent = selectedCar.brand;
+            } else {
+                console.error('Car not found');
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching car details:', error);
+        });
     } else {
         console.error('Car ID not found in URL');
     }

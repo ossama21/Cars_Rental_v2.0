@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="./css/book.css">
-    <!-- Import products.js -->
+    
 
 
   </head>
