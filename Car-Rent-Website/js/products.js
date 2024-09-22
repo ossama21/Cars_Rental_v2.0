@@ -8,7 +8,7 @@ const products = [
         transmission: 'Automatic',
         interior: 'Fabric',
         brand: 'Hyundai',
-        image: 'images/img1.png',
+        image: 'images/img1.png', 
     },
     {
         id: '2',
