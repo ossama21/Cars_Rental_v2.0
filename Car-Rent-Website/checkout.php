@@ -81,7 +81,7 @@ session_start();
     <div class="payment-form" id="cheque-form" style="display:none;">
         <h4>Cheque Payment Details</h4> 
         <label for="cheque-number">Cheque Number:</label>
-        <input type="text" id="cheque-number" name="cheque-number" required>
+        <input type="text" id="cheque-number" name="cheque-number" required> 
         <label for="cheque-date">Date:</label>
         <input type="date" id="cheque-date" name="cheque-date" required>
         <button class="blue-btn submit-btn">Submit</button>
