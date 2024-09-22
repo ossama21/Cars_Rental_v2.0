@@ -80,7 +80,7 @@ function showPopupAlert() {
     bankButton.addEventListener('click', () => showPaymentForm('bank-form'));
     chequeButton.addEventListener('click', () => showPaymentForm('cheque-form'));
     mastercardButton.addEventListener('click', () => showPaymentForm('mastercard-form'));
-    paypalButton.addEventListener('click', () => showPaymentForm('paypal-form'));
+    paypalButton.addEventListener('click', () => showPaymentForm('paypal-form')); 
 
     // Add event listeners to cancel buttons to hide the forms
     document.querySelectorAll('.cancel-btn').forEach(button => {
