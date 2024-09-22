@@ -99,7 +99,7 @@ session_start();
         <input type="text" id="mastercard-cvc" name="mastercard-cvc" required>
         <button class="blue-btn submit-btn">Submit</button>
         <button class="cancel-btn">Cancel</button>
-    </div>
+    </div> 
 
     <!-- PayPal Form -->
     <div class="payment-form" id="paypal-form" style="display:none;">
