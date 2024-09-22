@@ -17,7 +17,7 @@ session_start();
             </div>
             <div class="car-info">
                 <h1 id="car-name">Car Name</h1>
-                <div id="car-price" class="price">$0.00 / Day</div>
+                <div id="car-price" class="price">$0.00 / Day</div> 
                 <div class="rating">
                     <i class="fas fa-star"></i>
                     <i class="fas fa-star"></i>
