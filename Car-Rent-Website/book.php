@@ -1,6 +1,36 @@
 <?php
 session_start();
-// include('homepage.php');
+
+// Database connection
+// change the host, user, password and db when connecting 
+$host="localhost";
+$user="root";
+$pass="";
+$db="car_rent"; // Replace with your DB password
+
+$conn = new mysqli($host, $user, $pass, $db);
+
+// Check for connection errors
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Fetch car data from MySQL
+$sql = "SELECT * FROM cars";
+$result = $conn->query($sql);
+
+// Store the cars in an array
+$cars = [];
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $cars[] = $row;
+    }
+} else {
+    echo "No cars found!";
+}
+
+$conn->close();
+
 ?>
 <!doctype html>
 <html lang="en">
@@ -16,13 +46,9 @@ session_start();
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&family=Open+Sans&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-
     <!-- Custom CSS -->
     <link rel="stylesheet" href="./css/book.css">
-    <!-- Import products.js -->
 
 
   </head>
@@ -105,10 +131,23 @@ session_start();
     <!-- Heading Section -->
     <h1 class="text-center">Choose the best here.</h1>
 
-   <!-- Container for Cars (dynamic content will be injected here) -->
-   <div class="row car-section" id="car-listings">
-    <!-- Cars will be dynamically added here using JavaScript -->
-  </div>
+    <!-- Container for Cars -->
+    <div class="row car-section" id="car-listings">
+      <?php foreach ($cars as $car) { ?>
+        <div class="col-md-4">
+          <div class="car">
+            <img src="<?php echo $car['image']; ?>" class="img-fluid" alt="<?php echo $car['name']; ?>" style="max-width:100%; height:auto;">
+            <h3><?php echo $car['name']; ?></h3>
+            <p><?php echo $car['description']; ?></p>
+            <p><strong>Price:</strong> $<?php echo $car['price']; ?> per day</p>
+            <p><strong>Model:</strong> <?php echo $car['model']; ?></p>
+            <p><strong>Transmission:</strong> <?php echo $car['transmission']; ?></p>
+            <p><strong>Interior:</strong> <?php echo $car['interior']; ?></p>
+            <p><strong>Brand:</strong> <?php echo $car['brand']; ?></p>
+          </div>
+        </div>
+      <?php } ?>
+    </div>
 
   <!-- Footer Section -->
   <footer>
@@ -139,7 +178,7 @@ session_start();
   <!-- Bootstrap JS and Dependencies -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-  <script type="module" src="products.js"></script>
+  
   <script src="./js/dropdown.js"></script>
 
   <!-- Custom JavaScript file -->
