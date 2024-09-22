@@ -15,7 +15,7 @@ This project is a web application for a car rental company. It allows users to b
 
 - HTML5
 - CSS3
-- JavaScript
+- JavaScript 
 - React.js
 - Node.js
 - Express.js 
