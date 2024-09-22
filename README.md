@@ -9,7 +9,7 @@ This project is a web application for a car rental company. It allows users to b
 - Car search and filtering options
 - Booking and reservation system
 - Payment integration 
-- User profile management
+- User profile management 
 
 ### Technologies Used
 
