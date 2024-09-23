@@ -27,6 +27,9 @@ window.addEventListener('DOMContentLoaded', function () {
                 document.getElementById('car-transmission').textContent = selectedCar.transmission;
                 document.getElementById('car-interior').textContent = selectedCar.interior;
                 document.getElementById('car-brand').textContent = selectedCar.brand;
+
+                // Set the car_id value in the hidden input field
+                document.getElementById('car_id').value = selectedCar.id;
             } else {
                 console.error('Car not found');
             }
