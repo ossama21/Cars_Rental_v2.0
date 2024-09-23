@@ -1,9 +1,9 @@
 <?php
 session_start();
-$host="localhost";
-$user="root";
-$pass="";
-$db="car_rent";
+$host = "localhost";
+$user = "root";
+$pass = "";
+$db = "car_rent";
 
 $conn = new mysqli($host, $user, $pass, $db);
 
@@ -11,27 +11,50 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Check if it's an AJAX request and if car_id is passed
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['car_id'])) {
-    $car_id = intval($_POST['car_id']);
+// Check if it's a POST request
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['car_id'])) {
+        $car_id = intval($_POST['car_id']);
 
-    // Query the database for the specific car by ID
-    $stmt = $conn->prepare("SELECT * FROM cars WHERE id = ?");
-    $stmt->bind_param("i", $car_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
+        // Query the database for the specific car by ID
+        $stmt = $conn->prepare("SELECT * FROM cars WHERE id = ?");
+        $stmt->bind_param("i", $car_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-    if ($result->num_rows > 0) {
-        $car = $result->fetch_assoc();
-        // Return car details as JSON
-        echo json_encode(['car' => $car]);
-    } else {
-        echo json_encode(['car' => null]);
+        if ($result->num_rows > 0) {
+            $car = $result->fetch_assoc();
+            echo json_encode(['car' => $car]);
+        } else {
+            echo json_encode(['car' => null]);
+        }
+
+        $stmt->close();
+        exit;
     }
 
-    $stmt->close();
-    $conn->close();
-    exit;}
+    // Handle Bank Transfer form submission
+    if (isset($_POST['bank-account']) && isset($_POST['bank-routing'])) {
+        $payment_method = 'Bank Transfer';
+        $account_number = $_POST['bank-account'];
+        $routing_number = $_POST['bank-routing'];
+        $payment_details = "Account Number: $account_number, Routing Number: $routing_number";
+
+        // Insert payment details into the 'services' table
+        $stmt = $conn->prepare("INSERT INTO services (payment_method, payment_details) VALUES (?, ?)");
+        $stmt->bind_param("ss", $payment_method, $payment_details);
+
+        if ($stmt->execute()) {
+            echo "Payment details saved successfully.";
+        } else {
+            echo "Error: " . $stmt->error;
+        }
+
+        $stmt->close();
+    }
+}
+
+$conn->close();
 ?>
 
 <!doctype html>
@@ -280,12 +303,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['car_id'])) {
                     <!-- Bank Transfer Form -->
                     <div class="payment-form" id="bank-form" style="display:none;">
                         <h4>Bank Transfer Details</h4>
-                        <label for="bank-account">Account Number:</label>
-                        <input type="text" id="bank-account" name="bank-account" required>
-                        <label for="bank-routing">Routing Number:</label>
-                        <input type="text" id="bank-routing" name="bank-routing" required>
-                        <button type="submit" class="blue-btn submit-btn">Submit</button>
-                        <button class="cancel-btn">Cancel</button>      
+                        <form method="POST" action="checkout.php">
+                            <label for="bank-account">Account Number:</label>
+                            <input type="text" id="bank-account" name="bank-account" required>
+                            <label for="bank-routing">Routing Number:</label>
+                            <input type="text" id="bank-routing" name="bank-routing" required>
+                            <button type="submit" class="blue-btn submit-btn">Submit</button>
+                        </form>
+                        <button class="cancel-btn">Cancel</button>
                     </div> 
 
                     <!-- Cheque Form -->
