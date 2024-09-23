@@ -12,6 +12,7 @@ $sql = "SELECT role FROM users WHERE email='$email'";
 $result = $conn->query($sql);
 $user = $result->fetch_assoc();
 
+// Uncomment this if you want to restrict access based on user role
 // if ($user['role'] !== 'admin') {
 //     header('Location: ../index.php');
 //     exit();
@@ -29,66 +30,108 @@ $carsResult = $conn->query($sqlCars);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Cars</title>
     
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        .top-buttons {
-            margin-top: 20px;
-            display: flex;
-            justify-content: space-between;
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        .top-buttons a {
-            margin-bottom: 20px;
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        h2 {
+            color: #0d6efd;
+            font-weight: 600;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .top-buttons {
+            margin-bottom: 30px;
+        }
+        .table {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .table th {
+            background-color: #0d6efd;
+            color: #ffffff;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+        .table th, .table td {
+            vertical-align: middle;
+        }
+        .btn-action {
+            padding: 5px 10px;
+            font-size: 0.875rem;
+        }
+        .btn-edit {
+            background-color: #ffc107;
+            border-color: #ffc107;
+            color: #000;
+        }
+        .btn-delete {
+            background-color: #dc3545;
+            border-color: #dc3545;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="top-buttons">
-        <a href="../admin/admin.php" class="btn btn-secondary">Back to Admin</a>
-        <a href="add_car.php" class="btn btn-primary">Add New Car</a>
+    <div class="top-buttons d-flex justify-content-between align-items-center">
+        <a href="../admin/admin.php" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-2"></i>Back to Admin</a>
+        <a href="add_car.php" class="btn btn-success"><i class="fas fa-plus me-2"></i>Add New Car</a>
     </div>
 
-    <h2 class="mt-3">Manage Cars</h2>
-    <table class="table table-bordered mt-3">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Price</th>
-                <th>Description</th>
-                <th>Model</th>
-                <th>Transmission</th>
-                <th>Interior</th>
-                <th>Brand</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php while ($car = $carsResult->fetch_assoc()) { ?>
+    <h2>Manage Cars</h2>
+    <div class="table-responsive">
+        <table class="table table-hover table-striped">
+            <thead>
                 <tr>
-                    <td><?= $car['id']; ?></td>
-                    <td><?= $car['name']; ?></td>
-                    <td><?= $car['price']; ?></td>
-                    <td><?= $car['description']; ?></td>
-                    <td><?= $car['model']; ?></td>
-                    <td><?= $car['transmission']; ?></td>
-                    <td><?= $car['interior']; ?></td>
-                    <td><?= $car['brand']; ?></td>
-                    <td>
-                        <a href="edit_car.php?id=<?= $car['id']; ?>" class="btn btn-primary">Edit</a>
-                        <a href="delete_car.php?id=<?= $car['id']; ?>" class="btn btn-danger">Delete</a>
-                    </td>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Description</th>
+                    <th>Model</th>
+                    <th>Transmission</th>
+                    <th>Interior</th>
+                    <th>Brand</th>
+                    <th>Actions</th>
                 </tr>
-            <?php } ?>
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                <?php while ($car = $carsResult->fetch_assoc()) { ?>
+                    <tr>
+                        <td><?= $car['id']; ?></td>
+                        <td><?= $car['name']; ?></td>
+                        <td><?= $car['price']; ?> $/day</td>
+                        <td><?= substr($car['description'], 0, 50) . '...'; ?></td>
+                        <td><?= $car['model']; ?></td>
+                        <td><?= $car['transmission']; ?></td>
+                        <td><?= $car['interior']; ?></td>
+                        <td><?= $car['brand']; ?></td>
+                        <td>
+                            <a href="edit_car.php?id=<?= $car['id']; ?>" class="btn btn-action btn-edit"><i class="fas fa-edit me-1"></i>Edit</a>
+                            <a href="delete_car.php?id=<?= $car['id']; ?>" class="btn btn-action btn-delete"><i class="fas fa-trash me-1"></i>Delete</a>
+                        </td>
+                    </tr>
+                <?php } ?>
+            </tbody>
+        </table>
+    </div>
 </div>
 
-<!-- Bootstrap JS -->
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<!-- Bootstrap 5 JS Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

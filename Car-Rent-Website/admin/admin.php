@@ -1,107 +1,63 @@
-<?php
-session_start();
-include '../data/connect.php';
-
-// Check if the user is logged in and has admin privileges
+<?php session_start(); include '../data/connect.php';
 if (!isset($_SESSION['email'])) {
     header('Location: ../index.php');
     exit();
 }
-
 $email = $_SESSION['email'];
 $sql = "SELECT role FROM users WHERE email='$email'";
 $result = $conn->query($sql);
 $user = $result->fetch_assoc();
-
-// Redirect if not admin
-// if ($user['role'] !== 'admin') {
-//     header('Location: ../index.php');
-//     exit();
-// }
-
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
-    
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    
-    <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        .admin-header {
-            margin-top: 50px;
-            text-align: center;
-            color: #343a40;
-        }
-        .admin-section {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-top: 30px;
-        }
-        .admin-card {
-            width: 280px;
-            height: 180px;
-            margin: 15px;
-            background-color: #007bff;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            border-radius: 15px;
-            transition: 0.3s;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .admin-card:hover {
-            background-color: #0056b3;
-            transform: translateY(-5px);
-        }
-        .admin-card a {
-            text-decoration: none;
-            color: white;
-            font-size: 18px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-        }
-        .admin-card i {
-            font-size: 30px;
-            margin-bottom: 10px;
-        }
-    </style>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
-<body>
-
-<div class="container admin-header">
-    <h1>Admin Dashboard</h1>
-    <p class="lead">Welcome, Admin! Manage your application efficiently from here.</p>
-</div>
-
-<div class="container admin-section">
-    <div class="admin-card">
-        <i class="fas fa-car"></i>
-        <a href="manage_cars.php">Manage Cars</a>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-800">Admin Dashboard</h1>
+            <p class="text-gray-600 mt-2">Welcome back, <?php echo htmlspecialchars($email); ?></p>
+        </header>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-white rounded-lg shadow-md overflow-hidden transform transition duration-500 hover:scale-105">
+                <div class="p-6 bg-blue-600">
+                    <i class="fas fa-car text-white text-4xl mb-4"></i>
+                    <h2 class="text-xl font-semibold text-white">Manage Cars</h2>
+                </div>
+                <div class="p-6">
+                    <p class="text-gray-600 mb-4">Add, edit, or remove cars from the system.</p>
+                    <a href="manage_cars.php" class="inline-block bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition duration-300">Go to Cars</a>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-md overflow-hidden transform transition duration-500 hover:scale-105">
+                <div class="p-6 bg-green-600">
+                    <i class="fas fa-users text-white text-4xl mb-4"></i>
+                    <h2 class="text-xl font-semibold text-white">Manage Users</h2>
+                </div>
+                <div class="p-6">
+                    <p class="text-gray-600 mb-4">View and manage user accounts and permissions.</p>
+                    <a href="manage_users.php" class="inline-block bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 transition duration-300">Go to Users</a>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-md overflow-hidden transform transition duration-500 hover:scale-105">
+                <div class="p-6 bg-purple-600">
+                    <i class="fas fa-credit-card text-white text-4xl mb-4"></i>
+                    <h2 class="text-xl font-semibold text-white">Manage Payments</h2>
+                </div>
+                <div class="p-6">
+                    <p class="text-gray-600 mb-4">Review and process payment transactions.</p>
+                    <a href="manage_payments.php" class="inline-block bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700 transition duration-300">Go to Payments</a>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="admin-card">
-        <i class="fas fa-users"></i>
-        <a href="manage_users.php">Manage Users</a>
-    </div>
-    <div class="admin-card">
-        <i class="fas fa-dollar-sign"></i>
-        <a href="manage_payments.php">Manage Payments</a>
-    </div>
-</div>
-
 </body>
 </html>

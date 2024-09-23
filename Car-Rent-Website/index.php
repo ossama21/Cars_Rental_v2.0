@@ -1,6 +1,8 @@
 <?php
 session_start();
 // include('homepage.php');
+$firstName = isset($_SESSION['firstName'])  ;
+$isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
 ?>
 <!doctype html>
 <html lang="en">
@@ -20,76 +22,49 @@ session_start();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 
     <title>CARrent</title>
-   
-    <body>
-      <?php
-    // include './data/connect.php'; 
-    
-    $firstName = isset($_SESSION['firstName'])  ;
-    // $sel = "SELECT * FROM users"; 
-    // $query = mysqli_query($conn, $sel);
-    // $resul = mysqli_fetch_assoc($query); 
-    ?>
-
-   
   </head>
-  
+  <body>
   <nav class="navbar navbar-expand-md">
     <a style="font-weight: 900;color:#333" href="#" class="navbar-brand">
-      <span style="color: #ffff;">CARS</span>RENT
+        <span style="color: #ffff;">CARS</span>RENT
     </a>
     <div class="collapse navbar-collapse" id="navbarCollapse">
-      <div class="navbar-nav ml-auto">
-        <li class="nav-item">
-          <a href="#" class="nav-item nav-link" style="color: white;">Home</a>
-        </li>
-        <li class="nav-item">
-          <a href="./book.php" class="nav-item nav-link" style="color: white;">Book Now</a>
-        </li>
-        <li class="nav-item">
-          <a href="about.php" class="nav-item nav-link" style="color: white;">About Us</a>
-        </li>
-        <li class="nav-item">
-          <a href="#con" class="nav-item nav-link" style="color: white;">Contact Us</a>
-        </li>
-        <!-- <div class="signup">
-          <div class="nav-item dropdown">
-            <b><a href="./data/index.php" class="nav-item nav-link" style="color: white;">Sign Up</a></b>
-          </div>
-        </div> -->
-        <!-- Profile Dropdown for Signed-In User -->
-        <li  class="nav-item dropdown">
-  <div  class="profile-dropdown">
-    <?php if (empty($_SESSION['firstName'])): ?>
-      <!-- Display sign-in link if the user is not signed in -->
-     <div class="signin-link" style="margin: 8px !important;">
-      <a  id="sign-in-link" style="text-decoration: none; color: #fff;" href="./data/index.php">Sign In</a>
-      </div>
-      <?php else: ?>
-      <!-- Show dropdown with the user's name if signed in -->
-      <div id="profile-btn" onclick="toggleDropdown()" class="profile-dropdown-btn">
-        <div class="profile-img">
-          <i class="fa-solid fa-circle"></i>
-        </div>
-        <span id="user-name-display" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color:#fff; font-size:16px; font-weight:900">
-          <?= htmlspecialchars($_SESSION['firstName']); ?>
-        </span>
-        <i class="fa-solid fa-angle-down"></i>
-      </div>
-      <ul class="profile-dropdown-list">
-        <li class="profile-dropdown-list-item">
-          <a href="./data/logout.php">
-            <i class="fa-solid fa-arrow-right-from-bracket"></i> Log out
-          </a>
-        </li>
-      </ul>
-    <?php endif; ?>
-  </div>
-</li>
+        <div class="navbar-nav ml-auto">
+            <li class="nav-item"><a href="#" class="nav-item nav-link" style="color: white;">Home</a></li>
+            <li class="nav-item"><a href="./book.php" class="nav-item nav-link" style="color: white;">Book Now</a></li>
+            <li class="nav-item"><a href="about.php" class="nav-item nav-link" style="color: white;">About Us</a></li>
+            <li class="nav-item"><a href="#con" class="nav-item nav-link" style="color: white;">Contact Us</a></li>
 
-      </div>
+            <li class="nav-item dropdown">
+                <div class="profile-dropdown">
+                    <?php if (empty($_SESSION['firstName'])): ?>
+                        <div class="signin-link" style="margin: 8px !important;">
+                            <a id="sign-in-link" style="text-decoration: none; color: #fff;" href="./data/index.php">Sign In</a>
+                        </div>
+                    <?php else: ?>
+                        <div id="profile-btn" onclick="toggleDropdown()" class="profile-dropdown-btn">
+                            <div class="profile-img"><i class="fa-solid fa-circle"></i></div>
+                            <span id="user-name-display" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color:#fff; font-size:16px; font-weight:900">
+                                <?= htmlspecialchars($_SESSION['firstName']); ?>
+                            </span>
+                            <i class="fa-solid fa-angle-down"></i>
+                        </div>
+                        <ul class="profile-dropdown-list">
+                            <li class="profile-dropdown-list-item">
+                                <a href="./data/logout.php"><i class="fa-solid fa-arrow-right-from-bracket"></i> Log out</a>
+                            </li>
+                            <?php if ($isAdmin): ?>
+                                <li class="profile-dropdown-list-item">
+                                    <a href="./admin/admin.php"><i class="fa-solid fa-cog"></i> Admin Panel</a>
+                                </li>
+                            <?php endif; ?>
+                        </ul>
+                    <?php endif; ?>
+                </div>
+            </li>
+        </div>
     </div>
-  </nav>
+</nav></nav>
     <div id="carouselExampleInterval" class="carousel slide" data-ride="carousel" data-interval="5000">
         <div class="carousel-inner">
           <div class="carousel-item active" >

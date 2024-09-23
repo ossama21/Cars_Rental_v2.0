@@ -18,14 +18,14 @@ if (isset($_POST['addCar'])) {
     $brand = $_POST['brand'];
 
     // Handle image upload
-    $targetDir = "uploads/";
+    $targetDir = "./images/"; // Make sure this folder exists
     $imageFileType = strtolower(pathinfo($_FILES["image"]["name"], PATHINFO_EXTENSION));
-    $targetFile = $targetDir . basename($_FILES["image"]["name"]);
+    $targetFile = $targetDir . basename($_FILES["image"]["name"]); // Full path to store the image
 
     // Specify image resolution constraints
     $allowedTypes = ['jpg', 'jpeg', 'png'];
     
-    if (in_array($imageFileType, $allowedTypes) && $_FILES["image"]["size"] < 2000000) { // 2MB limit
+    if (in_array($imageFileType, $allowedTypes) && $_FILES["image"]["size"] < 3000000) { // 3MB limit
         move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile);
         
         $sql = "INSERT INTO cars (name, price, description, model, transmission, interior, brand, image)
