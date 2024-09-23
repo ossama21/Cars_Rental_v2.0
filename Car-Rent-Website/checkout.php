@@ -78,6 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['car_id'])) {
             <div class="booking-info">
                 <h2>Booking Information</h2>
                 <form id="bookingForm" action="confirmation.php" method="post">
+                <input type="hidden" name="car_id" id="car_id" value="" /> 
                     <div>
                         <input placeholder="Full Name" type="text" name="name" required />
                         <input placeholder="Phone" type="text" name="phone" required />
@@ -143,7 +144,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['car_id'])) {
 </div>
 
 
-    <script type="module" src="./js/checkout.js"></script> <!-- Link to the JS file -->
+    <script type="module" src="./js/checkout.js"></script> 
 
     <script>
         // Function to get the current date and time in the format YYYY-MM-DDTHH:MM

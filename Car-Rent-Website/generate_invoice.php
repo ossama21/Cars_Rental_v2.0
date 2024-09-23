@@ -24,6 +24,8 @@ $pdf->Cell(95, 10, 'Cars Rent', 0, 0, 'L', true);
 $pdf->Cell(95, 10, htmlspecialchars($_SESSION['username']), 0, 1, 'L', true);
 $pdf->Cell(95, 10, 'Email: support@carsrent.com', 0, 0, 'L', true);
 $pdf->Cell(95, 10, 'Email: ' . htmlspecialchars($_SESSION['email']), 0, 1, 'L', true);
+$pdf->Cell(95, 10, 'Phone: +212 0678963254', 0, 0, 'L', true); // Added company phone number here
+$pdf->Cell(95, 10, 'Phone: ' . htmlspecialchars($_SESSION['phone']), 0, 1, 'L', true); // Added user phone number here
 $pdf->Ln(5);
 
 // Date Issued
@@ -45,13 +47,16 @@ $pdf->SetFillColor(220, 220, 220);
 $pdf->Cell(40, 10, 'Start Date', 1, 0, 'C', true);
 $pdf->Cell(40, 10, 'End Date', 1, 0, 'C', true);
 $pdf->Cell(40, 10, 'Duration (days)', 1, 0, 'C', true);
-$pdf->Cell(60, 10, 'Phone', 1, 1, 'C', true);
+$pdf->Cell(70, 10, 'Amount', 1, 1, 'C', true);  // Adjusted the width for Amount
 
 $pdf->SetFont('Arial', '', 12);
 $pdf->Cell(40, 10, htmlspecialchars($_SESSION['startDate']), 1, 0, 'C');
 $pdf->Cell(40, 10, htmlspecialchars($_SESSION['endDate']), 1, 0, 'C');
 $pdf->Cell(40, 10, htmlspecialchars($_SESSION['duration']), 1, 0, 'C');
-$pdf->Cell(60, 10, htmlspecialchars($_SESSION['phone']), 1, 1, 'C');
+
+// Calculate the total amount (price * duration)
+$totalAmount = $_SESSION['totalAmount'];
+$pdf->Cell(70, 10, '$' . number_format($totalAmount, 2), 1, 1, 'C');  // Display the total amount
 
 $pdf->Ln(15);
 
