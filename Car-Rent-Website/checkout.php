@@ -30,6 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $stmt->close();
+      
         exit;
     }
 
@@ -283,6 +284,7 @@ $conn->close();
                 <div class="booking-info">
                     <h2>Booking Information</h2>
                     <form id="bookingForm" action="confirmation.php" method="post">
+                    <input type="hidden" name="car_id" id="car_id" value="" /> 
                         <input placeholder="Full Name" type="text" name="name" required />
                         <input placeholder="Phone" type="text" name="phone" required />
                         <input type="email" name="email" required placeholder="Enter your email">
