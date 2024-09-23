@@ -49,6 +49,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="./images/image.png">
+
     <title>Invoice</title>
     <style>
         body {
@@ -126,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <table>
             <tbody>
                 <tr>
-                    <td><strong>Car Waiting for You:</strong> <?php echo htmlspecialchars($_SESSION['username']); ?></td>
+                    <td><strong>Your Car Waiting for You:</strong> <?php echo htmlspecialchars($_SESSION['username']); ?></td>
                     <td align="right"><strong>Date Issued:</strong> <?php echo htmlspecialchars($_SESSION['startDate']); ?></td>
                 </tr>
                 <tr>

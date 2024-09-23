@@ -42,6 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['car_id'])) {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/> 
     <link rel="stylesheet" type="text/css" href="./css/checkout.css">
     <link rel="icon" type="image/png" href="./images/image.png"> 
+    
 </head>
 <body>
     <div class="container">
