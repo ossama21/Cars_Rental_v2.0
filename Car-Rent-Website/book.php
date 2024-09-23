@@ -1,5 +1,7 @@
 <?php
 session_start();
+$firstName = isset($_SESSION['firstName']) ? $_SESSION['firstName'] : '';
+$isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
 $host="localhost";
 $user="root";
 $pass="";
@@ -60,77 +62,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   
   <body>
     <!-- Navbar Section -->
-    <nav  class="navbar navbar-expand-md  " > 
-      <a style="font-weight: 900; color:#333;" href="#" class="navbar-brand">
-         <span style="color: #ffff ;" >CARS</span>RENT
-      </a>
-      <!-- <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
-          <span class="navbar-toggler-icon"></span>
-      </button> -->
-      <div class="collapse navbar-collapse" id="navbarCollapse">
-          <div class="navbar-nav">
-              
-          </div>
-  
-      
-          <div class="navbar-nav ml-auto">
-              <li class="nav-item dropdown">
-                
-                <b><a href="index.php" class="nav-item nav-link"  style="color: white;">Home</a></b>
+    <nav class="navbar navbar-expand-md">
+    <a style="font-weight: 900;color:#333" href="#" class="navbar-brand">
+        <span style="color: #ffff;">CARS</span>RENT
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item"><a href="./index.php" class="nav-link" style="color: white;">Home</a></li>
+            <li class="nav-item"><a href="./book.php" class="nav-link" style="color: white;">Book Now</a></li>
+            <li class="nav-item"><a href="about.php" class="nav-link" style="color: white;">About Us</a></li>
+            <li class="nav-item"><a href="#con" class="nav-link" style="color: white;">Contact Us</a></li>
+
+            <?php if (empty($firstName)): ?>
+                <li class="nav-item"><a class="nav-link" href="./data/index.php" style="color: white;">Sign In</a></li>
+            <?php else: ?>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white;" data-toggle="dropdown">
+                        <?= htmlspecialchars($firstName); ?>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                        <a class="dropdown-item" href="./data/logout.php">Log out</a>
+                        <?php if ($isAdmin): ?>
+                            <a class="dropdown-item" href="./admin/admin.php">Admin Panel</a>
+                        <?php endif; ?>
+                    </div>
                 </li>
-                <li class="nav-item dropdown">
-                  <b><a href="#" class="nav-item nav-link"></a></b>
-                  </li>
-                <li class="nav-item dropdown">
-                  <b><a href="book.php" class="nav-item nav-link" style="color: white;">Book Now</a></b>
-                  </li>
-                  <li class="nav-item">
-                   <a href="about.php" class="nav-item nav-link" style="color: white;">About Us</a>
-                  </li>
-                    <li class="nav-item dropdown">
-                      <b><a href="#con" class="nav-item nav-link" style="color: white;">Contact Us</a></b>
-                      </li>
-                      <li class="nav-item dropdown">
-                        <b><a href="#" class="nav-item nav-link"></a></b>
-                        </li>
-                      
-              
-       
-      <!-- <div class="signup">
-        <div class="nav-item dropdown">
-          <b><a href="./data/index.php" class="nav-item nav-link" style="color: white;">Sign Up</a></b>
-        </div>
-      </div> -->
-      <li  class="nav-item dropdown">
-  <div  class="profile-dropdown">
-    <?php if (empty($_SESSION['firstName'])): ?>
-      <!-- Display sign-in link if the user is not signed in -->
-     <div class="signin-link" style="margin: 8px !important;">
-      <a  id="sign-in-link" style="text-decoration: none; color: #fff;" href="./data/index.php">Sign In</a>
-      </div>
-      <?php else: ?>
-      <!-- Show dropdown with the user's name if signed in -->
-      <div id="profile-btn" onclick="toggleDropdown()" class="profile-dropdown-btn">
-        <div class="profile-img">
-          <i class="fa-solid fa-circle"></i>
-        </div>
-        <span id="user-name-display" style="font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color:#fff; font-size:16px; font-weight:900">
-          <?= htmlspecialchars($_SESSION['firstName']); ?>
-        </span>
-        <i class="fa-solid fa-angle-down"></i>
-      </div>
-      <ul class="profile-dropdown-list">
-        <li class="profile-dropdown-list-item">
-          <a href="./data/logout.php">
-            <i class="fa-solid fa-arrow-right-from-bracket"></i> Log out
-          </a>
-        </li>
-      </ul>
-    <?php endif; ?>
-  </div>
-</li>
-</div>
+            <?php endif; ?>
+        </ul>
+    </div>
   </nav>
+
 
     <!-- Heading Section -->
     <h1 class="text-center">Choose the best here.</h1>
