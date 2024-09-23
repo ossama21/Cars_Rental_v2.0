@@ -71,7 +71,7 @@ h1{
   }
   
   .card-img-top:hover{
-    transform: scale(1.1);
+    transform: translateY(-5px);
   }
   
   @media (min-width: 1024px) and (max-width: 2000px){
