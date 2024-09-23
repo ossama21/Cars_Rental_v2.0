@@ -121,7 +121,7 @@ $carsResult = $conn->query($sqlCars);
                         <td><?= $car['brand']; ?></td>
                         <td>
                             <a href="edit_car.php?id=<?= $car['id']; ?>" class="btn btn-action btn-edit"><i class="fas fa-edit me-1"></i>Edit</a>
-                            <a href="delete_car.php?id=<?= $car['id']; ?>" class="btn btn-action btn-delete"><i class="fas fa-trash me-1"></i>Delete</a>
+                            <a href="delete_car.php?id=<?= $car['id']; ?>" class="btn btn-action btn-delete" onclick="return confirmDelete(event);"> <i class="fas fa-trash me-1"></i>Delete</a>
                         </td>
                     </tr>
                 <?php } ?>
@@ -132,6 +132,13 @@ $carsResult = $conn->query($sqlCars);
 
 <!-- Bootstrap 5 JS Bundle with Popper -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function confirmDelete(event) {
+        if (!confirm("Do you really want to delete this car?")) {
+            event.preventDefault();  // Stop the navigation if the user cancels
+        }
+    }
+</script>
 
 </body>
 </html>
