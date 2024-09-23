@@ -24,7 +24,7 @@ $user = $result->fetch_assoc();
             <p class="text-gray-600 mt-2">Welcome back, <?php echo htmlspecialchars($email); ?></p>
         </header>
         
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div class="bg-white rounded-lg shadow-md overflow-hidden transform transition duration-500 hover:scale-105">
                 <div class="p-6 bg-blue-600">
                     <i class="fas fa-car text-white text-4xl mb-4"></i>
@@ -46,16 +46,7 @@ $user = $result->fetch_assoc();
                     <a href="manage_users.php" class="inline-block bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 transition duration-300">Go to Users</a>
                 </div>
             </div>
-            
-            <div class="bg-white rounded-lg shadow-md overflow-hidden transform transition duration-500 hover:scale-105">
-                <div class="p-6 bg-purple-600">
-                    <i class="fas fa-credit-card text-white text-4xl mb-4"></i>
-                    <h2 class="text-xl font-semibold text-white">Manage Payments</h2>
-                </div>
-                <div class="p-6">
-                    <p class="text-gray-600 mb-4">Review and process payment transactions.</p>
-                    <a href="manage_payments.php" class="inline-block bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700 transition duration-300">Go to Payments</a>
-                </div>
+        
             </div>
         </div>
     </div>
