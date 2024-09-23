@@ -28,6 +28,12 @@ body {
 .admin-sidebar a:hover {
     background-color: #555;
 }
+
+.btn-back {
+    padding-left: 0%;
+    position: absolute;
+    left: 0;
+}
 .admin-content {
     padding: 20px;
     background-color: white;

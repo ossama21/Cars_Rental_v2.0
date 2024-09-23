@@ -83,7 +83,7 @@ $usersResult = $conn->query($sqlUsers);
         
         <div class="top-actions d-flex justify-content-between align-items-center">
             <a href="../admin/admin.php" class="btn btn-back"><i class="fas fa-arrow-left me-2"></i>Back to Admin Panel</a>
-            <button class="btn btn-success" onclick="alert('Add user functionality not implemented')"><i class="fas fa-user-plus me-2"></i>Add New User</button>
+            
         </div>
        
         <div class="table-responsive">
