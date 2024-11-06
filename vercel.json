@@ -1,0 +1,12 @@
+{
+  "routes": [
+    {
+      "src": "/",
+      "dest": "/Car-Rent-Website/"
+    },
+    {
+      "src": "/Car-Rent-Website/index.php",
+      "dest": "/"
+    }
+  ]
+}
