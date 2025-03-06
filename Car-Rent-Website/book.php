@@ -47,60 +47,84 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&family=Open+Sans&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="./css/book.css">
-    <!-- Import products.js -->
-
-    
-
+    <link rel="stylesheet" href="./css/modern.css">
   </head>
   
   <body>
-    <!-- Navbar Section -->
-    <nav class="navbar navbar-expand-md">
-    <a style="font-weight: 900;color:#333" href="#" class="navbar-brand">
-        <span style="color: #ffff;">CARS</span>RENT
-    </a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarCollapse">
-        <ul class="navbar-nav ml-auto">
-            <li class="nav-item"><a href="./index.php" class="nav-link" style="color: white;">Home</a></li>
-            <li class="nav-item"><a href="./book.php" class="nav-link" style="color: white;">Book Now</a></li>
-            <li class="nav-item"><a href="about.php" class="nav-link" style="color: white;">About Us</a></li>
-            <li class="nav-item"><a href="#con" class="nav-link" style="color: white;">Contact Us</a></li>
-
-            <?php if (empty($firstName)): ?>
-                <li class="nav-item"><a class="nav-link" href="./data/index.php" style="color: white;">Sign In</a></li>
-            <?php else: ?>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white;" data-toggle="dropdown">
-                        <?= htmlspecialchars($firstName); ?>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
-                        <a class="dropdown-item" href="./data/logout.php">Log out</a>
-                        <?php if ($isAdmin): ?>
-                            <a class="dropdown-item" href="./admin/admin.php">Admin Panel</a>
-                        <?php endif; ?>
-                    </div>
+    <!-- Navigation Bar -->
+    <header>
+      <nav class="navbar">
+        <div class="navbar-container">
+          <div class="navbar-left">
+            <a href="index.php" class="navbar-brand">
+              <span class="brand-highlight">CARS</span>RENT
+            </a>
+            <div class="nav-menu">
+              <ul class="nav-list">
+                <li class="nav-item">
+                  <a href="index.php" class="nav-link">Home</a>
                 </li>
-            <?php endif; ?>
-        </ul>
-    </div>
-  </nav>
+                <li class="nav-item">
+                  <a href="about.php" class="nav-link">About</a>
+                </li>
+                <li class="nav-item">
+                  <a href="book.php" class="nav-link active">Cars</a>
+                </li>
+                <li class="nav-item">
+                  <a href="#contact" class="nav-link">Contact</a>
+                </li>
+              </ul>
+            </div>
+          </div>
 
+          <div class="nav-buttons">
+            <?php if (isset($_SESSION['firstName'])): ?>
+              <div class="profile-dropdown">
+                <button class="profile-toggle">
+                  <div class="profile-avatar">
+                    <img src="./images/profile-pic.png" alt="Profile">
+                  </div>
+                  <span class="profile-name"><?= htmlspecialchars($_SESSION['firstName']); ?></span>
+                  <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="profile-menu">
+                  <a href="data/homepage.php" class="profile-menu-item">
+                    <i class="fas fa-user"></i> My Account
+                  </a>
+                  <?php if ($isAdmin): ?>
+                  <a href="admin/admin.php" class="profile-menu-item">
+                    <i class="fas fa-cog"></i> Admin Dashboard
+                  </a>
+                  <?php endif; ?>
+                  <a href="data/logout.php" class="profile-menu-item">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                  </a>
+                </div>
+              </div>
+            <?php else: ?>
+              <a href="data/index.php" class="nav-btn login-btn">Login</a>
+              <a href="data/index.php" class="nav-btn signup-btn">Sign Up</a>
+            <?php endif; ?>
+          </div>
+
+          <button class="menu-toggle" aria-label="Toggle navigation">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+        </div>
+      </nav>
+    </header>
 
     <!-- Heading Section -->
     <h1 class="text-center">Choose the best here.</h1>
 
-<!-- Container for Cars -->
-<div class="row car-section" id="car-listings">
+    <!-- Container for Cars -->
+    <div class="row car-section" id="car-listings">
       <?php foreach ($cars as $car) { ?>
         <div class="col-md-4">
           <div class="car">
@@ -146,8 +170,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- Bootstrap JS and Dependencies -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-    <script src="./js/dropdown.js"></script>
     <script type='module' src="./js/script.js"></script>
     <script type="module" src="./js/checkout.js"></script>
-</body>
+    <script>
+      // Profile dropdown toggle
+      document.addEventListener('DOMContentLoaded', function() {
+        const profileToggle = document.querySelector('.profile-toggle');
+        const profileMenu = document.querySelector('.profile-menu');
+        
+        if (profileToggle) {
+          profileToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            profileMenu.classList.toggle('active');
+          });
+          
+          // Close dropdown when clicking outside
+          document.addEventListener('click', function(e) {
+            if (!profileToggle.contains(e.target) && !profileMenu.contains(e.target)) {
+              profileMenu.classList.remove('active');
+            }
+          });
+        }
+        
+        // Mobile menu toggle
+        const menuToggle = document.querySelector('.menu-toggle');
+        const navMenu = document.querySelector('.nav-menu');
+        
+        if (menuToggle) {
+          menuToggle.addEventListener('click', function() {
+            menuToggle.classList.toggle('active');
+            navMenu.classList.toggle('active');
+            document.body.classList.toggle('menu-open');
+          });
+        }
+      });
+    </script>
+  </body>
 </html>

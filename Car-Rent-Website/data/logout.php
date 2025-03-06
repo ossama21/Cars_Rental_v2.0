@@ -1,16 +1,18 @@
 <?php
 session_start(); // Start the session
 
+// Clear all session variables
+$_SESSION = array();
+
+// If a session cookie is used, delete it
+if (isset($_COOKIE[session_name()])) {
+    setcookie(session_name(), '', time()-42000, '/');
+}
+
 // Destroy the session
 session_destroy();
 
-// Start a new session to set the session variable
-session_start();
-
-// Set a link as the session variable
-$_SESSION['firstName'] = "";
-
-// Redirect to index.php
-header("location: ./index.php");
+// Redirect to main index.php (homepage)
+header("location: ../index.php");
 exit();
 ?>

@@ -1,11 +1,16 @@
-<?php session_start(); include '../data/connect.php';
-if (!isset($_SESSION['email'])) {
-    header('Location: ../index.php');
-    exit();
-}
+<?php 
+session_start(); 
+include '../data/connect.php';
+include '../data/auth.php';
+
+checkAdminAccess();
+
 $email = $_SESSION['email'];
-$sql = "SELECT role FROM users WHERE email='$email'";
-$result = $conn->query($sql);
+$sql = "SELECT role FROM users WHERE email=?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $email);
+$stmt->execute();
+$result = $stmt->get_result();
 $user = $result->fetch_assoc();
 ?>
 <!DOCTYPE html>
@@ -23,9 +28,8 @@ $user = $result->fetch_assoc();
             <h1 class="text-4xl font-bold text-gray-800">Admin Dashboard</h1>
             <p class="text-gray-600 mt-2">Welcome back, <?php echo htmlspecialchars($email); ?></p>
             <button onclick="window.location.href='../index.php';" class="inline-block bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-700 transition duration-300">
-    <i class="fas fa-arrow-left me-2"></i>Back to HOME
-</button>
-
+                <i class="fas fa-arrow-left me-2"></i>Back to HOME
+            </button>
         </header>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -49,8 +53,6 @@ $user = $result->fetch_assoc();
                     <p class="text-gray-600 mb-4">View and manage user accounts and permissions.</p>
                     <a href="manage_users.php" class="inline-block bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 transition duration-300">Go to Users</a>
                 </div>
-            </div>
-        
             </div>
         </div>
     </div>

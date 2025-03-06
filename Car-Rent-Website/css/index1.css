@@ -206,7 +206,7 @@
           font-family: 'open sans';
         }
         .navbar{
-        position: absolute;
+        position: fixed;
         width: 100%;
         background-color: #3182ce;
         box-shadow: 0px 1px 8px rgba(0, 0, 0, 0.25);
@@ -226,7 +226,7 @@
   
       .nav-link{
         margin-right: 10px;
-        color: #fff !important;
+        
       }
   
       .nav-link:hover{

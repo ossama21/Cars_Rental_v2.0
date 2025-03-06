@@ -1,55 +1,91 @@
-<?php 
+<?php
 session_start();
 include 'connect.php';
 
-if(isset($_POST['signUp'])){
-    $firstName = $_POST['fName'];
-    $lastName = $_POST['lName'];
-    $email = $_POST['email'];
+if (isset($_POST['signUp'])) {
+    $fName = trim($_POST['fName']);
+    $lName = trim($_POST['lName']);
+    $email = trim($_POST['email']);
     $password = $_POST['password'];
-    $password = md5($password); // Note: Consider using password_hash() for better security.
-    $role = 'user';
+    $confirmPassword = $_POST['confirmPassword'];
+    $age = isset($_POST['age']) ? intval($_POST['age']) : null;
+    $phone = trim($_POST['phone']);
+    $address = trim($_POST['address']);
 
-    // Check if the email already exists
-    $checkEmail = "SELECT * FROM users WHERE email='$email'";
-    $result = $conn->query($checkEmail);
-    
-    if($result->num_rows > 0){
-        echo "Email Address Already Exists!";
-    } else {
-        // Insert new user with the role field
-        $insertQuery = "INSERT INTO users (firstName, lastName, email, password, role)
-                        VALUES ('$firstName', '$lastName', '$email', '$password', '$role')";
-        if($conn->query($insertQuery) === TRUE){
-            header("Location: ./index.php");
-        } else {
-            echo "Error: " . $conn->error;
-        }
+    if ($password !== $confirmPassword) {
+        $_SESSION['error'] = "Passwords do not match!";
+        header('Location: index.php');
+        exit();
     }
-}
 
-if(isset($_POST['signIn'])){
-    $email = $_POST['email'];
-    $password = $_POST['password'];
-    $password = md5($password); // Again, consider password_hash() and password_verify()
+    // Check if email already exists
+    $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    if ($stmt->get_result()->num_rows > 0) {
+        $_SESSION['error'] = "Email already registered!";
+        header('Location: index.php');
+        exit();
+    }
 
-    // Query to check login credentials
-    $sql = "SELECT * FROM users WHERE email='$email' AND password='$password'";
-    $result = $conn->query($sql);
+    // Hash password
+    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+    // Insert new user without visa field
+    $stmt = $conn->prepare("INSERT INTO users (firstName, lastName, email, password, age, phone, address, role) VALUES (?, ?, ?, ?, ?, ?, ?, 'user')");
+    $stmt->bind_param("sssssss", $fName, $lName, $email, $hashedPassword, $age, $phone, $address);
     
-    if($result->num_rows > 0){
-        session_start();
-        $row = $result->fetch_assoc();
-        
-        // Store the user's first name and email in the session
-        $_SESSION['email'] = $row['email'];
-        $_SESSION['firstName'] = $row['firstName']; // Fetching first name
-        $_SESSION['role'] = $row['role']; // Fetching user role
-        
-        header("Location: ..\index.php");
+    if ($stmt->execute()) {
+        $_SESSION['id'] = $stmt->insert_id;
+        $_SESSION['firstName'] = $fName;
+        $_SESSION['lastName'] = $lName;
+        $_SESSION['email'] = $email;
+        $_SESSION['age'] = $age;
+        $_SESSION['phone'] = $phone;
+        $_SESSION['address'] = $address;
+        $_SESSION['role'] = 'user';
+        header('Location: ../index.php');
         exit();
     } else {
-        echo "Not Found, Incorrect Email or Password";
+        $_SESSION['error'] = "Registration failed. Please try again.";
+        header('Location: index.php');
+        exit();
     }
 }
+
+if (isset($_POST['signIn'])) {
+    $email = trim($_POST['email']);
+    $password = $_POST['password'];
+
+    $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if ($user = $result->fetch_assoc()) {
+        if (password_verify($password, $user['password'])) {
+            $_SESSION['id'] = $user['id'];
+            $_SESSION['firstName'] = $user['firstName'];
+            $_SESSION['lastName'] = $user['lastName'];
+            $_SESSION['email'] = $user['email'];
+            $_SESSION['age'] = $user['age'];
+            $_SESSION['phone'] = $user['phone'];
+            $_SESSION['address'] = $user['address'];
+            $_SESSION['role'] = $user['role'];
+            
+            if ($user['role'] === 'admin') {
+                header('Location: ../admin/admin.php');
+            } else {
+                header('Location: ../index.php');
+            }
+            exit();
+        }
+    }
+    
+    $_SESSION['error'] = "Invalid email or password!";
+    header('Location: index.php');
+    exit();
+}
+
+header('Location: index.php');
 ?>
