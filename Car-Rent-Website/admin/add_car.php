@@ -139,7 +139,222 @@ while ($brandRow = $brandsResult->fetch_assoc()) {
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="../css/modern.css">
-    <link rel="stylesheet" href="style.css">
+    
+    <!-- Add inline CSS for this specific page -->
+    <style>
+        .admin-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        .admin-sidebar {
+            width: 250px;
+            background-color: #2d3748;
+            color: #fff;
+            transition: all 0.3s;
+            position: fixed;
+            height: 100%;
+            z-index: 1000;
+        }
+        
+        .admin-sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .admin-logo {
+            color: #fff;
+            font-weight: 700;
+            text-decoration: none;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .admin-sidebar-menu {
+            padding: 20px 0;
+        }
+        
+        .sidebar-menu-item {
+            margin-bottom: 5px;
+        }
+        
+        .sidebar-menu-link {
+            padding: 10px 20px;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s;
+        }
+        
+        .sidebar-menu-link:hover, .sidebar-menu-link.active {
+            color: #fff;
+            background-color: rgba(255,255,255,0.1);
+        }
+        
+        .admin-main {
+            flex: 1;
+            margin-left: 250px;
+            transition: all 0.3s;
+        }
+        
+        .form-card {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .form-header {
+            padding: 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .form-body {
+            padding: 30px;
+        }
+        
+        .image-preview-container {
+            width: 100%;
+            height: 200px;
+            border: 2px dashed #cbd5e0;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8fafc;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .image-preview {
+            max-width: 100%;
+            max-height: 100%;
+        }
+        
+        .upload-placeholder {
+            text-align: center;
+        }
+        
+        .upload-placeholder i {
+            font-size: 2.5rem;
+            color: #cbd5e0;
+            margin-bottom: 10px;
+        }
+        
+        .field-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        
+        .required-asterisk {
+            color: #e53e3e;
+            margin-left: 3px;
+        }
+        
+        .form-hint {
+            font-size: 0.8rem;
+            color: #718096;
+            margin-top: 5px;
+        }
+        
+        .input-group-text {
+            background-color: #f8fafc;
+        }
+        
+        .admin-btn-lg {
+            padding: 12px 24px;
+            font-size: 1rem;
+        }
+        
+        .admin-btn-primary {
+            background-color: #3182ce;
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            transition: all 0.3s;
+        }
+        
+        .admin-btn-primary:hover {
+            background-color: #2c5282;
+            color: white;
+        }
+        
+        .admin-btn {
+            display: inline-block;
+            font-weight: 500;
+            text-align: center;
+            vertical-align: middle;
+            user-select: none;
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            border-radius: 0.375rem;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        
+        .admin-topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background-color: #fff;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .admin-user {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .admin-user-info {
+            text-align: right;
+        }
+        
+        .admin-user-name {
+            font-weight: 600;
+        }
+        
+        .admin-user-role {
+            font-size: 0.8rem;
+            color: #718096;
+        }
+        
+        .admin-user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+        
+        .admin-user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        @media (max-width: 992px) {
+            .admin-sidebar {
+                left: -250px;
+            }
+            
+            .admin-sidebar.show {
+                left: 0;
+            }
+            
+            .admin-main {
+                margin-left: 0;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="admin-wrapper" id="adminWrapper">
@@ -230,7 +445,7 @@ while ($brandRow = $brandsResult->fetch_assoc()) {
                 </div>
             </div>
             
-            <div class="admin-content p-4">
+            <div class="admin-content">
                 <!-- Page Header -->
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
@@ -267,7 +482,7 @@ while ($brandRow = $brandsResult->fetch_assoc()) {
                                     <div class="field-group">
                                         <label class="form-label d-block">Car Image</label>
                                         <div class="image-preview-container" id="imagePreviewContainer">
-                                            <img src="#" alt="Preview" class="image-preview" id="imagePreview">
+                                            <img src="#" alt="Preview" class="image-preview" id="imagePreview" style="display: none;">
                                             <div class="upload-placeholder" id="uploadPlaceholder">
                                                 <i class="fas fa-cloud-upload-alt"></i>
                                                 <p>Click or drop image here</p>
@@ -341,16 +556,6 @@ while ($brandRow = $brandsResult->fetch_assoc()) {
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="field-group">
-                                                <label for="transmission" class="form-label">Transmission</label>
-                                                <select class="form-select" id="transmission" name="transmission">
-                                                    <option value="Automatic">Automatic</option>
-                                                    <option value="Manual">Manual</option>
-                                                    <option value="Semi-Automatic">Semi-Automatic</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="field-group">
                                                 <label for="interior" class="form-label">Interior</label>
                                                 <select class="form-select" id="interior" name="interior">
                                                     <option value="Fabric">Fabric</option>
@@ -374,7 +579,7 @@ while ($brandRow = $brandsResult->fetch_assoc()) {
                             
                             <div class="d-flex justify-content-end">
                                 <a href="manage_cars.php" class="btn btn-light me-2">Cancel</a>
-                                <button type="submit" class="btn btn-primary px-4">
+                                <button type="submit" class="admin-btn admin-btn-primary admin-btn-lg px-5">
                                     <i class="fas fa-plus-circle me-2"></i>Add Car
                                 </button>
                             </div>

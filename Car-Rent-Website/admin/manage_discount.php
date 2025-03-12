@@ -100,9 +100,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 throw new Exception("Failed to apply bulk discount.");
             }
-        } 
+        }
+        // Handle selective discount (multiple selected cars)
+        elseif (isset($_POST['selective_discount']) && isset($_POST['selected_cars']) && is_array($_POST['selected_cars'])) {
+            $selected_cars = array_map('intval', $_POST['selected_cars']);
+            
+            if (empty($selected_cars)) {
+                throw new Exception("No cars selected for discount application.");
+            }
+            
+            // Remove existing discounts for selected cars
+            $placeholders = str_repeat('?,', count($selected_cars) - 1) . '?';
+            $delete_sql = "DELETE FROM car_discounts WHERE car_id IN ($placeholders)";
+            $delete_stmt = $conn->prepare($delete_sql);
+            
+            // Create dynamic binding parameters
+            $delete_types = str_repeat('i', count($selected_cars));
+            $delete_params = $selected_cars;
+            
+            // Use reflection to bind parameters dynamically
+            $delete_ref = new ReflectionClass('mysqli_stmt');
+            $delete_method = $delete_ref->getMethod('bind_param');
+            $delete_method->invokeArgs($delete_stmt, refValues(array_merge(array($delete_types), $delete_params)));
+            
+            $delete_stmt->execute();
+            
+            // Insert new discounts for each selected car
+            $insert_sql = "INSERT INTO car_discounts (car_id, discount_type, discount_value, start_date, end_date) VALUES (?, ?, ?, ?, ?)";
+            $insert_stmt = $conn->prepare($insert_sql);
+            
+            $success_count = 0;
+            foreach ($selected_cars as $car_id) {
+                $insert_stmt->bind_param("isdss", $car_id, $discount_type, $discount_value, $start_date, $end_date);
+                if ($insert_stmt->execute()) {
+                    $success_count++;
+                }
+            }
+            
+            if ($success_count > 0) {
+                $_SESSION['success'] = "Discounts applied successfully to {$success_count} cars.";
+            } else {
+                throw new Exception("Failed to apply discounts to selected cars.");
+            }
+        }
         // Handle individual car discount
-        else {
+        elseif (isset($_POST['car_id'])) {
             $car_id = (int)$_POST['car_id'];
             
             // Remove existing discount for this car
@@ -122,6 +164,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 throw new Exception("Failed to apply discount.");
             }
+        } else {
+            throw new Exception("Invalid discount request.");
         }
         
         // Commit transaction
@@ -135,5 +179,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     header("Location: manage_cars.php");
     exit();
+}
+
+/**
+ * Helper function to pass parameters by reference
+ */
+function refValues($arr) {
+    if (strnatcmp(phpversion(), '5.3') >= 0) {
+        $refs = array();
+        foreach ($arr as $key => $value) {
+            $refs[$key] = &$arr[$key];
+        }
+        return $refs;
+    }
+    return $arr;
 }
 ?>

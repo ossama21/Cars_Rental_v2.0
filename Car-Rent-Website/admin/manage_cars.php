@@ -42,7 +42,8 @@ $sqlCars = "SELECT c.*,
     END as discounted_price
 FROM cars c 
 LEFT JOIN car_discounts d ON c.id = d.car_id 
-    AND CURRENT_DATE BETWEEN d.start_date AND d.end_date 
+    AND CURRENT_TIMESTAMP BETWEEN d.start_date AND d.end_date 
+    AND d.end_date > CURRENT_TIMESTAMP
 WHERE 1=1";
 $params = [];
 $types = "";
@@ -190,7 +191,7 @@ if (!empty($status)) {
         }
         
         .admin-sidebar {
-            width: 250px;
+            width: 270px;
             background-color: #2d3748;
             color: #fff;
             transition: all 0.3s;
@@ -253,12 +254,22 @@ if (!empty($status)) {
         }
         
         .admin-topbar {
-            background-color: #fff;
-            padding: 15px 30px;
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 280px;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 0.75rem 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.01);
             display: flex;
-            justify-content: space-between;
+            
             align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            z-index: 999;
+            height: 60px;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         .admin-user {
@@ -800,9 +811,7 @@ if (!empty($status)) {
                                                     <button type="button" class="admin-btn admin-btn-primary admin-btn-sm" title="View" data-bs-toggle="modal" data-bs-target="#carModal<?php echo $car['id']; ?>">
                                                         <i class="fas fa-eye"></i>
                                                     </button>
-                                                    <button type="button" class="admin-btn admin-btn-info admin-btn-sm" title="Manage Discount" data-bs-toggle="modal" data-bs-target="#discountModal<?php echo $car['id']; ?>">
-                                                        <i class="fas fa-tag"></i>
-                                                    </button>
+                                                    <!-- Removed tag icon button -->
                                                     <a href="delete_car.php?id=<?php echo $car['id']; ?>" class="admin-btn admin-btn-danger admin-btn-sm" title="Delete" onclick="return confirm('Are you sure you want to delete this car?')">
                                                         <i class="fas fa-trash"></i>
                                                     </a>
@@ -1203,67 +1212,274 @@ if (!empty($status)) {
     
     <!-- Bulk Discount Modal -->
     <div class="modal fade" id="bulkDiscountModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Apply Bulk Discount</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title"><i class="fas fa-tags me-2"></i>Apply Discounts</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="manage_discount.php" method="POST">
-                    <div class="modal-body">
-                        <input type="hidden" name="bulk_discount" value="1">
-                        
-                        <div class="mb-3">
-                            <label class="form-label">Apply Discount To</label>
-                            <select name="discount_scope" class="form-select" required>
-                                <option value="all">All Cars</option>
-                                <option value="available">Available Cars Only</option>
-                                <option value="brand">Specific Brand</option>
-                            </select>
-                        </div>
+                
+                <!-- Discount Type Tabs -->
+                <ul class="nav nav-tabs nav-fill" id="discountTypeTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="bulk-tab" data-bs-toggle="tab" data-bs-target="#bulk-discount" 
+                                type="button" role="tab" aria-controls="bulk-discount" aria-selected="true">
+                            <i class="fas fa-layer-group me-2"></i>Bulk Discount
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="selective-tab" data-bs-toggle="tab" data-bs-target="#selective-discount" 
+                                type="button" role="tab" aria-controls="selective-discount" aria-selected="false">
+                            <i class="fas fa-hand-pointer me-2"></i>Selective Discount
+                        </button>
+                    </li>
+                </ul>
+                
+                <div class="tab-content p-4" id="discountTypeContent">
+                    <!-- Bulk Discount Tab -->
+                    <div class="tab-pane fade show active" id="bulk-discount" role="tabpanel" aria-labelledby="bulk-tab">
+                        <form action="manage_discount.php" method="POST">
+                            <input type="hidden" name="bulk_discount" value="1">
+                            
+                            <div class="card border-0 shadow-sm mb-4">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0"><i class="fas fa-filter me-2"></i>Select Target Cars</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Apply Discount To</label>
+                                        <select name="discount_scope" class="form-select form-select-lg" required>
+                                            <option value="all">All Cars</option>
+                                            <option value="available">Available Cars Only</option>
+                                            <option value="brand">Specific Brand</option>
+                                        </select>
+                                    </div>
 
-                        <div class="mb-3 brand-select" style="display: none;">
-                            <label class="form-label">Select Brand</label>
-                            <select name="brand" class="form-select">
-                                <?php foreach($brands as $brand): ?>
-                                    <option value="<?php echo htmlspecialchars($brand); ?>"><?php echo htmlspecialchars($brand); ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
+                                    <div class="mb-3 brand-select" style="display: none;">
+                                        <label class="form-label fw-bold">Select Brand</label>
+                                        <select name="brand" class="form-select">
+                                            <?php foreach($brands as $brand): ?>
+                                                <option value="<?php echo htmlspecialchars($brand); ?>"><?php echo htmlspecialchars($brand); ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Discount Type</label>
-                            <select name="discount_type" class="form-select" required>
-                                <option value="percentage">Percentage Off</option>
-                                <option value="fixed">Fixed Amount Off</option>
-                            </select>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label">Discount Value</label>
-                            <input type="number" name="discount_value" class="form-control" 
-                                   min="0" step="0.01" required>
-                            <div class="form-text">For percentage, enter a number between 0-100. For fixed amount, enter the dollar value.</div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label">Start Date</label>
-                            <input type="date" name="start_date" class="form-control" required 
-                                   min="<?php echo date('Y-m-d'); ?>"
-                                   value="<?php echo date('Y-m-d'); ?>">
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label">End Date</label>
-                            <input type="date" name="end_date" class="form-control" required 
-                                   min="<?php echo date('Y-m-d'); ?>">
-                        </div>
+                            <div class="card border-0 shadow-sm mb-4">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0"><i class="fas fa-percentage me-2"></i>Discount Details</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">Discount Type</label>
+                                                <select name="discount_type" class="form-select" required>
+                                                    <option value="percentage">Percentage Off</option>
+                                                    <option value="fixed">Fixed Amount Off</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">Discount Value</label>
+                                                <div class="input-group">
+                                                    <input type="number" name="discount_value" class="form-control" 
+                                                        min="0" step="0.01" required>
+                                                    <span class="input-group-text discount-symbol">%</span>
+                                                </div>
+                                                <div class="form-text">For percentage, enter a number between 0-100. For fixed amount, enter the dollar value.</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card border-0 shadow-sm mb-4">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Discount Period</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">Start Date</label>
+                                                <input type="date" name="start_date" class="form-control" required 
+                                                    min="<?php echo date('Y-m-d'); ?>"
+                                                    value="<?php echo date('Y-m-d'); ?>">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">End Date</label>
+                                                <input type="date" name="end_date" class="form-control" required 
+                                                    min="<?php echo date('Y-m-d'); ?>">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-end mt-4">
+                                <button type="button" class="btn btn-lg btn-secondary" data-bs-dismiss="modal">
+                                    <i class="fas fa-times me-2"></i>Cancel
+                                </button>
+                                <button type="submit" class="btn btn-lg btn-primary ms-2">
+                                    <i class="fas fa-check me-2"></i>Apply Bulk Discount
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="admin-btn admin-btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="admin-btn admin-btn-primary">Apply Bulk Discount</button>
+                    
+                    <!-- Selective Discount Tab -->
+                    <div class="tab-pane fade" id="selective-discount" role="tabpanel" aria-labelledby="selective-tab">
+                        <form action="manage_discount.php" method="POST">
+                            <input type="hidden" name="selective_discount" value="1">
+                            
+                            <div class="card border-0 shadow-sm mb-4">
+                                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-0"><i class="fas fa-car me-2"></i>Select Cars</h6>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="selectAllCars">
+                                        <label class="form-check-label" for="selectAllCars">Select All</label>
+                                    </div>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="car-selection-list overflow-auto bg-light rounded" style="max-height: 300px;">
+                                        <table class="table table-hover mb-0">
+                                            <thead class="sticky-top bg-white">
+                                                <tr>
+                                                    <th width="40"></th>
+                                                    <th width="60">Image</th>
+                                                    <th>Car Name</th>
+                                                    <th>Brand</th>
+                                                    <th>Current Price</th>
+                                                    <th>Current Discount</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php 
+                                                // Reset the cars result pointer to the beginning
+                                                $carsResult->data_seek(0);
+                                                while($car = $carsResult->fetch_assoc()): 
+                                                ?>
+                                                <tr>
+                                                    <td>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input car-select" type="checkbox" 
+                                                                   name="selected_cars[]" value="<?php echo $car['id']; ?>"
+                                                                   id="car-<?php echo $car['id']; ?>">
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <label for="car-<?php echo $car['id']; ?>">
+                                                            <?php if(!empty($car['image']) && file_exists('../' . $car['image'])): ?>
+                                                                <img src="../<?php echo htmlspecialchars($car['image']); ?>" 
+                                                                    alt="<?php echo htmlspecialchars($car['name']); ?>" 
+                                                                    class="img-thumbnail"
+                                                                    style="width: 50px; height: 40px; object-fit: cover; cursor: pointer;">
+                                                            <?php else: ?>
+                                                                <div class="img-thumbnail d-flex align-items-center justify-content-center"
+                                                                    style="width: 50px; height: 40px; cursor: pointer;">
+                                                                    <i class="fas fa-car text-secondary"></i>
+                                                                </div>
+                                                            <?php endif; ?>
+                                                        </label>
+                                                    </td>
+                                                    <td>
+                                                        <label for="car-<?php echo $car['id']; ?>" style="cursor: pointer;">
+                                                            <?php echo htmlspecialchars($car['name']); ?>
+                                                        </label>
+                                                    </td>
+                                                    <td><?php echo htmlspecialchars($car['brand']); ?></td>
+                                                    <td>$<?php echo number_format($car['price'], 2); ?></td>
+                                                    <td>
+                                                        <?php if (isset($car['discount_display'])): ?>
+                                                            <span class="badge bg-success">
+                                                                <?php echo $car['discount_display']; ?>
+                                                            </span>
+                                                        <?php else: ?>
+                                                            <span class="badge bg-secondary">None</span>
+                                                        <?php endif; ?>
+                                                    </td>
+                                                </tr>
+                                                <?php endwhile; ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="bg-light p-2 border-top">
+                                        <span class="badge bg-primary car-count">0</span> cars selected
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card border-0 shadow-sm mb-4">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0"><i class="fas fa-percentage me-2"></i>Discount Details</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">Discount Type</label>
+                                                <select name="discount_type" class="form-select" required>
+                                                    <option value="percentage">Percentage Off</option>
+                                                    <option value="fixed">Fixed Amount Off</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">Discount Value</label>
+                                                <div class="input-group">
+                                                    <input type="number" name="discount_value" class="form-control" 
+                                                        min="0" step="0.01" required>
+                                                    <span class="input-group-text selective-discount-symbol">%</span>
+                                                </div>
+                                                <div class="form-text">For percentage, enter a number between 0-100. For fixed amount, enter the dollar value.</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card border-0 shadow-sm mb-4">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Discount Period</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">Start Date</label>
+                                                <input type="date" name="start_date" class="form-control" required 
+                                                    min="<?php echo date('Y-m-d'); ?>"
+                                                    value="<?php echo date('Y-m-d'); ?>">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">End Date</label>
+                                                <input type="date" name="end_date" class="form-control" required 
+                                                    min="<?php echo date('Y-m-d'); ?>">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-end mt-4">
+                                <button type="button" class="btn btn-lg btn-secondary" data-bs-dismiss="modal">
+                                    <i class="fas fa-times me-2"></i>Cancel
+                                </button>
+                                <button type="submit" class="btn btn-lg btn-primary ms-2">
+                                    <i class="fas fa-check me-2"></i>Apply Selective Discount
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
@@ -1307,6 +1523,207 @@ if (!empty($status)) {
             const brandSelect = document.querySelector('.brand-select');
             brandSelect.style.display = this.value === 'brand' ? 'block' : 'none';
         });
+        
+        // Selective discount - Handle select all checkbox
+        document.getElementById('selectAllCars').addEventListener('change', function() {
+            const isChecked = this.checked;
+            document.querySelectorAll('.car-select').forEach(checkbox => {
+                checkbox.checked = isChecked;
+            });
+            updateSelectedCarsCount();
+        });
+        
+        // Update select all state when individual checkboxes are clicked
+        document.querySelectorAll('.car-select').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const totalCheckboxes = document.querySelectorAll('.car-select').length;
+                const checkedCheckboxes = document.querySelectorAll('.car-select:checked').length;
+                
+                document.getElementById('selectAllCars').checked = checkedCheckboxes === totalCheckboxes;
+                document.getElementById('selectAllCars').indeterminate = checkedCheckboxes > 0 && checkedCheckboxes < totalCheckboxes;
+                
+                updateSelectedCarsCount();
+            });
+        });
+        
+        // Update the count of selected cars
+        function updateSelectedCarsCount() {
+            const checkedCount = document.querySelectorAll('.car-select:checked').length;
+            const countBadge = document.querySelector('.car-count');
+            if (countBadge) {
+                countBadge.textContent = checkedCount;
+                
+                // Change badge color based on selection
+                if (checkedCount === 0) {
+                    countBadge.className = 'badge bg-secondary car-count';
+                } else {
+                    countBadge.className = 'badge bg-primary car-count';
+                }
+            }
+        }
+        
+        // Update discount symbol (% or $) based on selected discount type
+        document.querySelectorAll('select[name="discount_type"]').forEach(select => {
+            select.addEventListener('change', function() {
+                const isPercentage = this.value === 'percentage';
+                
+                // Find the closest input-group-text that represents the discount symbol
+                let symbolElement;
+                if (this.closest('#bulk-discount')) {
+                    symbolElement = document.querySelector('.discount-symbol');
+                } else if (this.closest('#selective-discount')) {
+                    symbolElement = document.querySelector('.selective-discount-symbol');
+                } else {
+                    // For individual car discount modals
+                    symbolElement = this.closest('.modal-content').querySelector('.input-group-text');
+                }
+                
+                if (symbolElement) {
+                    symbolElement.textContent = isPercentage ? '%' : '$';
+                    
+                    // Add a highlight animation to notify the user of the change
+                    symbolElement.classList.add('text-primary', 'fw-bold');
+                    setTimeout(() => {
+                        symbolElement.classList.remove('text-primary', 'fw-bold');
+                    }, 500);
+                }
+            });
+        });
+        
+        // Run this on page load to ensure the discount count is initialized
+        document.addEventListener('DOMContentLoaded', function() {
+            updateSelectedCarsCount();
+            
+            // Add animation to modal when it appears
+            document.querySelector('#bulkDiscountModal').addEventListener('shown.bs.modal', function() {
+                const cards = this.querySelectorAll('.card');
+                cards.forEach((card, index) => {
+                    setTimeout(() => {
+                        card.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+                        card.style.transform = 'translateY(0)';
+                        card.style.opacity = '1';
+                    }, index * 100);
+                });
+            });
+            
+            // Reset animation when modal is hidden
+            document.querySelector('#bulkDiscountModal').addEventListener('hide.bs.modal', function() {
+                const cards = this.querySelectorAll('.card');
+                cards.forEach(card => {
+                    card.style.transform = 'translateY(20px)';
+                    card.style.opacity = '0';
+                });
+            });
+        });
+        
+        // Make the tag buttons work properly in the table
+        document.querySelectorAll('.admin-btn-info').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                // The button is already configured to open the modal via data-bs-toggle and data-bs-target
+                // This just ensures it works properly
+                e.preventDefault();
+                const targetModalId = this.getAttribute('data-bs-target');
+                if (targetModalId) {
+                    const modal = new bootstrap.Modal(document.querySelector(targetModalId));
+                    modal.show();
+                }
+            });
+        });
+        
+        // Initialize all tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
+        
+        // Form validation for the discount forms
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                if (form.querySelector('input[name="selective_discount"]')) {
+                    const selectedCars = form.querySelectorAll('input[name="selected_cars[]"]:checked');
+                    if (selectedCars.length === 0) {
+                        e.preventDefault();
+                        alert('Please select at least one car to apply the discount.');
+                    }
+                }
+            });
+        });
     </script>
+    
+    <style>
+        /* Additional styles for modal animations */
+        #bulkDiscountModal .card {
+            transform: translateY(20px);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        
+        .nav-tabs .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+            border-bottom: none;
+            color: #6c757d;
+            font-weight: 500;
+            padding: 12px 16px;
+        }
+        
+        .nav-tabs .nav-link.active {
+            color: #4299e1;
+            font-weight: 600;
+        }
+        
+        .nav-tabs .nav-link.active:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #4299e1;
+            transform: scaleX(1);
+        }
+        
+        .nav-tabs .nav-link:hover {
+            color: #4299e1;
+        }
+        
+        .table-hover tbody tr {
+            transition: background-color 0.2s ease;
+        }
+        
+        .table-hover tbody tr:hover {
+            background-color: rgba(66, 153, 225, 0.08) !important;
+        }
+        
+        .form-check-input:checked {
+            background-color: #4299e1;
+            border-color: #4299e1;
+        }
+        
+        .input-group-text.discount-symbol,
+        .input-group-text.selective-discount-symbol {
+            transition: all 0.3s ease;
+        }
+        
+        .car-count {
+            display: inline-flex;
+            min-width: 24px;
+            height: 24px;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
 </body>
 </html>

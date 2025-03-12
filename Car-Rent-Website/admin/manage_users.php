@@ -90,7 +90,7 @@ $totalActiveUsers = $conn->query($sqlActiveUsers)->fetch_assoc()['total'];
         }
         
         .admin-sidebar {
-            width: 250px;
+            width: 270px;
             background-color: #2d3748;
             color: #fff;
             transition: all 0.3s;

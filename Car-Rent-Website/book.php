@@ -395,90 +395,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             color: white;
         }
 
-        .no-cars-found {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 3rem;
+        /* Add styles for discount tag popover */
+        .discount-tag {
+            cursor: pointer;
+            position: relative;
+        }
+
+        .discount-popover {
+            position: absolute;
             background: white;
-            border-radius: var(--card-radius);
-            box-shadow: 0 5px 15px var(--shadow-color);
+            border-radius: 8px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.2);
+            padding: 15px;
+            width: 220px;
+            z-index: 100;
+            display: none;
+            top: calc(100% + 10px);
+            left: 50%;
+            transform: translateX(-50%);
         }
 
-        .no-cars-found i {
-            font-size: 3rem;
-            color: var(--text-light);
-            margin-bottom: 1rem;
-        }
-
-        @media (max-width: 768px) {
-            .filters-section {
-                position: static;
-                margin-bottom: 2rem;
-            }
-
-            .filter-group {
-                margin-bottom: 1rem;
-            }
-        }
-
-        /* Add dark gradient overlay at the top */
-        body::before {
+        .discount-popover::before {
             content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 200px;
-            background: linear-gradient(to bottom, 
-                rgba(0,0,0,0.4) 0%,
-                rgba(0,0,0,0.2) 50%,
-                rgba(0,0,0,0) 100%);
-            pointer-events: none;
-            z-index: 900;
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 0 10px 10px 10px;
+            border-style: solid;
+            border-color: transparent transparent white transparent;
         }
 
-        /* Ensure navbar stays above the overlay */
-        .navbar {
-            z-index: 1000;
-        }
-
-        /* Profile dropdown color updates */
-        .profile-toggle {
-            color: white !important;
-            transition: color 0.3s ease;
-        }
-
-        .navbar.scrolled .profile-toggle {
-            color: var(--text-dark) !important;
-        }
-
-        .profile-name {
-            color: inherit;
-        }
-
-        .profile-toggle i {
-            color: inherit;
-        }
-
-        .availability-badge {
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.875rem;
-            font-weight: 500;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-top: 0.5rem;
-        }
-
-        .availability-badge.available {
-            background: rgba(46, 204, 113, 0.1);
-            color: #27ae60;
-        }
-
-        .availability-badge.unavailable {
-            background: rgba(231, 76, 60, 0.1);
-            color: #e74c3c;
+        .discount-popover.show {
+            display: block;
         }
 
         .rent-now.disabled {
@@ -1059,9 +1008,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             searchInput.addEventListener('input', filterCars);
             brandFilter.addEventListener('change', filterCars);
             sortBy.addEventListener('change', sortCars);
-        });
 
-        document.addEventListener('DOMContentLoaded', function() {
+            // Make discount tag elements interactive
+            const discountBadges = document.querySelectorAll('.discount-badge');
+            
+            discountBadges.forEach(badge => {
+                // Add discount-tag class to make them interactive
+                badge.classList.add('discount-tag');
+                
+                // Create popover element for each badge
+                const popover = document.createElement('div');
+                popover.className = 'discount-popover';
+                
+                // Get discount information
+                const discountText = badge.textContent.trim();
+                const originalPrice = badge.closest('.price-content').dataset.originalPrice;
+                const discountedPrice = badge.closest('.discounted-price').textContent.trim().split('/')[0].trim();
+                const endDate = badge.closest('.price-content').querySelector('.discount-countdown')?.dataset.end;
+                
+                // Calculate savings
+                const savings = parseFloat(originalPrice) - parseFloat(discountedPrice.replace('$', ''));
+                
+                // Build popover content
+                popover.innerHTML = `
+                    <h5 class="mb-2">Special Offer!</h5>
+                    <p><strong>${discountText} discount</strong> applied to this car rental.</p>
+                    <p class="mb-1">You save: <span class="text-success">$${savings.toFixed(2)}</span></p>
+                    ${endDate ? `<small class="text-muted">Offer valid until ${new Date(endDate).toLocaleDateString()}</small>` : ''}
+                `;
+                
+                // Add popover to the DOM
+                badge.appendChild(popover);
+                
+                // Toggle popover on click
+                badge.addEventListener('click', function(e) {
+                    e.stopPropagation(); // Prevent event bubbling
+                    this.querySelector('.discount-popover').classList.toggle('show');
+                });
+            });
+            
+            // Close popovers when clicking elsewhere
+            document.addEventListener('click', function() {
+                document.querySelectorAll('.discount-popover.show').forEach(popup => {
+                    popup.classList.remove('show');
+                });
+            });
+
             // Update all countdown timers
             const countdowns = document.querySelectorAll('.discount-countdown');
             

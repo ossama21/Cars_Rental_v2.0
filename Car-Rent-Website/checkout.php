@@ -40,7 +40,8 @@ if (isset($_GET['car_id'])) {
             END as discount_display
         FROM cars c 
         LEFT JOIN car_discounts d ON c.id = d.car_id 
-            AND CURRENT_DATE BETWEEN d.start_date AND d.end_date 
+            AND CURRENT_TIMESTAMP BETWEEN d.start_date AND d.end_date 
+            AND d.end_date > CURRENT_TIMESTAMP 
         WHERE c.id = ?");
     
     $car_id = intval($_GET['car_id']);

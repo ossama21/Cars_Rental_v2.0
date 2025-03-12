@@ -429,6 +429,7 @@ $paymentsResult = $conn->query($sqlPayments);
                 overflow-x: auto;
             }
         }
+        
     </style>
 </head>
 <body>
