@@ -63,15 +63,22 @@ INSERT INTO `cars` (`id`, `name`, `price`, `description`, `model`, `transmission
 --
 
 CREATE TABLE `services` (
-  `id` int(11) NOT NULL,
-  `username` varchar(255) NOT NULL,
-  `phone` varchar(20) NOT NULL,
-  `start_date` date NOT NULL,
-  `end_date` date NOT NULL,
-  `duration` int(11) NOT NULL,
-  `amount` decimal(10,2) DEFAULT NULL,
-  `email` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `username` varchar(255) NOT NULL,
+    `phone` varchar(50) NOT NULL,
+    `start_date` datetime NOT NULL,
+    `end_date` datetime NOT NULL,
+    `duration` int(11) NOT NULL,
+    `email` varchar(255) NOT NULL,
+    `amount` decimal(10,2) NOT NULL,
+    `car_id` int(11) NOT NULL,
+    `payment_method` varchar(50) NOT NULL,
+    `payment_details` text,
+    `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `car_id` (`car_id`),
+    CONSTRAINT `services_car_fk` FOREIGN KEY (`car_id`) REFERENCES `cars` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `services`
@@ -86,6 +93,25 @@ INSERT INTO `services` (`id`, `username`, `phone`, `start_date`, `end_date`, `du
 (79, 'new', '0123456789', '2024-09-23', '2024-09-26', 3, 750.00, 'new@gmail.com'),
 (80, 'new', '0123456789', '2024-09-25', '2024-09-28', 3, 840.00, 'new@gmail.com'),
 (81, 'new', '0123456789', '2024-09-24', '2024-10-04', 10, 1200.00, 'new@gmail.com');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `payments`
+--
+
+CREATE TABLE `payments` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `booking_id` int(11) NOT NULL,
+    `method` varchar(50) NOT NULL,
+    `amount` decimal(10,2) NOT NULL,
+    `status` enum('completed','pending','failed') DEFAULT 'completed',
+    `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `transaction_id` varchar(255) DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    KEY `booking_id` (`booking_id`),
+    CONSTRAINT `payments_booking_fk` FOREIGN KEY (`booking_id`) REFERENCES `services` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 

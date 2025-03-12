@@ -466,3 +466,98 @@ h1{
     padding: 80px 15px 20px;
   }
 }
+
+/* Preorder section styles */
+.preorder-section {
+  background: rgba(52, 152, 219, 0.1);
+  border-radius: 10px;
+  padding: 1rem;
+  margin: 1rem 0;
+  text-align: center;
+}
+
+.next-available {
+  color: #2c3e50;
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+}
+
+.preorder-btn {
+  display: inline-block;
+  background: #3498db;
+  color: white;
+  padding: 8px 20px;
+  border-radius: 20px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.preorder-btn:hover {
+  background: #2980b9;
+  transform: translateY(-2px);
+  text-decoration: none;
+  color: white;
+}
+
+.preorder-fee {
+  display: block;
+  color: #7f8c8d;
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+}
+
+/* Update existing styles */
+.car-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.unavailable-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+/* Car status badges */
+.car-status {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    z-index: 2;
+}
+
+.car-status.available {
+    background: #2ecc71;
+    color: white;
+}
+
+.car-status.rented {
+    background: #e74c3c;
+    color: white;
+    animation: pulse 2s infinite;
+}
+
+.car-status i {
+    font-size: 1rem;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.8; }
+    50% { opacity: 1; }
+    100% { opacity: 0.8; }
+}

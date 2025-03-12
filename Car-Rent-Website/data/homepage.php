@@ -2,181 +2,678 @@
 session_start();
 include("connect.php");
 
-// Check if the user is logged in by checking the session variable
+// Check if the user is logged in
 if (!isset($_SESSION['email'])) {
-    // Redirect to the new login/signup page instead of login.php
     header("Location: index.php");
     exit();
 }
 
-// Retrieve the session variables
+// Retrieve user info
 $email = $_SESSION['email'];
 $firstName = isset($_SESSION['firstName']) ? $_SESSION['firstName'] : 'User';
 $lastName = isset($_SESSION['lastName']) ? $_SESSION['lastName'] : '';
 $age = isset($_SESSION['age']) ? $_SESSION['age'] : 'Not provided';
 $phone = isset($_SESSION['phone']) ? $_SESSION['phone'] : 'Not provided';
 $address = isset($_SESSION['address']) ? $_SESSION['address'] : 'Not provided';
-$visa = isset($_SESSION['visa']) && !empty($_SESSION['visa']) ? '****-****-****-' . substr($_SESSION['visa'], -4) : 'Not provided';
-?>
 
+// Get saved payment methods
+$savedPaymentMethods = [];
+if (isset($_SESSION['id'])) {
+    $userId = $_SESSION['id'];
+    $stmt = $conn->prepare("SELECT * FROM saved_payment_methods WHERE user_id = ? ORDER BY created_at DESC");
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    while ($row = $result->fetch_assoc()) {
+        $savedPaymentMethods[] = $row;
+    }
+    $stmt->close();
+
+    // Get order history with status
+    $stmt = $conn->prepare("
+        SELECT s.*, c.name as car_name, c.brand, c.model, c.image,
+        CASE 
+            WHEN s.status = 'preorder' THEN 'preorder'
+            WHEN CURRENT_DATE < DATE(s.start_date) THEN 'upcoming'
+            WHEN CURRENT_DATE BETWEEN DATE(s.start_date) AND DATE(s.end_date) THEN 'active'
+            ELSE 'completed'
+        END as rental_status
+        FROM services s 
+        JOIN cars c ON s.car_id = c.id 
+        WHERE s.email = ? 
+        ORDER BY 
+            CASE 
+                WHEN s.status = 'preorder' THEN 1
+                WHEN CURRENT_DATE < DATE(s.start_date) THEN 2
+                WHEN CURRENT_DATE BETWEEN DATE(s.start_date) AND DATE(s.end_date) THEN 3
+                ELSE 4
+            END,
+            s.start_date DESC
+    ");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $orderHistory = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+}
+
+// Handle order cancellation
+$cancellationMessage = '';
+if (isset($_POST['cancel_order'])) {
+    $orderId = intval($_POST['order_id']);
+    
+    // Check if the order belongs to the user
+    $stmt = $conn->prepare("SELECT * FROM services WHERE id = ? AND email = ?");
+    $stmt->bind_param("is", $orderId, $email);
+    $stmt->execute();
+    $order = $stmt->get_result()->fetch_assoc();
+    
+    if ($order) {
+        $startDate = new DateTime($order['start_date']);
+        $now = new DateTime();
+        
+        // Allow cancellation if rental hasn't started
+        if ($startDate > $now) {
+            $stmt = $conn->prepare("DELETE FROM services WHERE id = ?");
+            $stmt->bind_param("i", $orderId);
+            if ($stmt->execute()) {
+                $cancellationMessage = '<div class="alert alert-success">Order cancelled successfully.</div>';
+                // Refresh order history
+                $stmt = $conn->prepare("
+                    SELECT s.*, c.name as car_name, c.brand, c.model, c.image 
+                    FROM services s 
+                    JOIN cars c ON s.car_id = c.id 
+                    WHERE s.email = ? 
+                    ORDER BY s.created_at DESC
+                ");
+                $stmt->bind_param("s", $email);
+                $stmt->execute();
+                $orderHistory = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+            } else {
+                $cancellationMessage = '<div class="alert alert-danger">Failed to cancel order.</div>';
+            }
+        } else {
+            $cancellationMessage = '<div class="alert alert-danger">Cannot cancel orders that have already started.</div>';
+        }
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Account - CARSrent</title>
+    <title>My Profile - CARSrent</title>
     <link rel="icon" type="image/png" href="../images/image.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f8f9fa;
+        :root {
+            --primary-color: #3182ce;
+            --secondary-color: #2c5282;
+            --accent-color: #f6ad55;
+            --success-color: #48bb78;
+            --danger-color: #e53e3e;
+            --warning-color: #ecc94b;
+            --background-color: #f7fafc;
+            --surface-color: #ffffff;
+            --text-primary: #2d3748;
+            --text-secondary: #718096;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --border-radius: 12px;
+        }
+
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-primary);
+            line-height: 1.6;
         }
 
         .navbar {
-            background-color: #3182ce;
-            padding: 1rem;
-            color: white;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 2rem auto;
-            padding: 2rem;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-        }
-
-        .profile-header {
-            text-align: center;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid #e2e8f0;
-        }
-
-        .profile-header h1 {
-            color: #2d3748;
-            margin: 0;
-            font-size: 2rem;
-        }
-
-        .welcome-message {
-            color: #718096;
-            margin-top: 0.5rem;
-        }
-
-        .profile-info {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .info-card {
-            background: #f7fafc;
-            padding: 1.5rem;
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .info-card h2 {
-            color: #3182ce;
-            font-size: 1.2rem;
-            margin-top: 0;
-            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            padding: 1rem 2rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow-md);
             display: flex;
+            justify-content: space-between;
             align-items: center;
         }
 
-        .info-card h2 i {
+        .navbar-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .nav-link i {
             margin-right: 0.5rem;
         }
 
-        .info-card p {
-            color: #4a5568;
-            margin: 0.5rem 0;
+        .logout-btn {
+            background: var(--danger-color);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        .button-group {
+        .logout-btn:hover {
+            background: #c53030;
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 5rem auto 2rem;
+            padding: 0 1.5rem;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 5rem;
+            height: fit-content;
+        }
+
+        .profile-card {
+            background: var(--surface-color);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin: 0 auto 1.5rem;
+            border: 4px solid var(--primary-color);
+            padding: 4px;
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .nav-tabs {
             display: flex;
             gap: 1rem;
-            margin-top: 2rem;
-            justify-content: center;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+
+        .nav-tab {
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .tab-content > div {
+            display: none;
+        }
+
+        .tab-content > div.active {
+            display: block;
+        }
+
+        .info-section {
+            background: var(--surface-color);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 1.5rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .info-item {
+            background: var(--background-color);
+            padding: 1rem;
+            border-radius: var(--border-radius);
+        }
+
+        .info-item strong {
+            color: var(--text-secondary);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .order-card {
+            background: var(--surface-color);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            display: grid;
+            grid-template-columns: 120px 1fr auto;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .order-image {
+            width: 120px;
+            height: 90px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .order-details h3 {
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .order-meta {
+            display: flex;
+            gap: 1.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .order-status {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-active {
+            background: rgba(46, 204, 113, 0.1);
+            color: #27ae60;
+        }
+
+        .status-upcoming {
+            background: rgba(52, 152, 219, 0.1);
+            color: #3498db;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .status-upcoming::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(52, 152, 219, 0.2);
+            animation: pulse 2s infinite;
+        }
+
+        .status-completed {
+            background: rgba(149, 165, 166, 0.1);
+            color: #7f8c8d;
+        }
+
+        .status-preorder {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .status-preorder i {
+            color: white;
+        }
+
+        .preorder-note {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
+        .preorder-fee {
+            color: #e67e22;
+            font-weight: 500;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        .rental-dates {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
+        .rental-dates strong {
+            color: #2c3e50;
         }
 
         .btn {
             padding: 0.75rem 1.5rem;
             border: none;
-            border-radius: 5px;
+            border-radius: var(--border-radius);
             cursor: pointer;
-            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
             text-decoration: none;
-            transition: background-color 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c53030;
         }
 
         .btn-primary {
-            background-color: #3182ce;
+            background: var(--primary-color);
             color: white;
         }
 
-        .btn-secondary {
-            background-color: #718096;
-            color: white;
+        .btn-primary:hover {
+            background: var(--secondary-color);
         }
 
-        .btn:hover {
-            opacity: 0.9;
+        .payment-method-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background: var(--background-color);
+            border-radius: var(--border-radius);
+            margin-bottom: 0.75rem;
+        }
+
+        .payment-method-item p {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 0;
+            flex: 1;
+        }
+
+        .payment-method-item i {
+            color: var(--primary-color);
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-success {
+            background: rgba(72, 187, 120, 0.1);
+            color: var(--success-color);
+        }
+
+        .alert-danger {
+            background: rgba(229, 62, 62, 0.1);
+            color: var(--danger-color);
         }
 
         @media (max-width: 768px) {
-            .container {
-                margin: 1rem;
-                padding: 1rem;
+            .grid-container {
+                grid-template-columns: 1fr;
             }
 
-            .profile-info {
+            .sidebar {
+                position: static;
+            }
+
+            .order-card {
                 grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .order-image {
+                margin: 0 auto;
+            }
+
+            .order-meta {
+                justify-content: center;
+                flex-wrap: wrap;
             }
         }
     </style>
 </head>
 <body>
-    <div class="navbar">
-        <h1>CARSrent</h1>
-    </div>
+    <nav class="navbar">
+        <a href="../index.php" style="color: white; text-decoration: none;">
+            <h1><span style="color: var(--accent-color);">CARS</span>rent</h1>
+        </a>
+        <div class="navbar-links">
+            <a href="../index.php" class="nav-link">
+                <i class="fas fa-home"></i> Home
+            </a>
+            <a href="../book.php" class="nav-link">
+                <i class="fas fa-car"></i> Cars
+            </a>
+            <a href="logout.php" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </nav>
 
     <div class="container">
-        <div class="profile-header">
-            <h1>My Account</h1>
-            <p class="welcome-message">Welcome back, <?php echo htmlspecialchars($firstName . ' ' . $lastName); ?>!</p>
-        </div>
+        <?php if ($cancellationMessage): ?>
+            <?php echo $cancellationMessage; ?>
+        <?php endif; ?>
 
-        <div class="profile-info">
-            <div class="info-card">
-                <h2><i class="fas fa-user"></i>Personal Information</h2>
-                <p><strong>Name:</strong> <?php echo htmlspecialchars($firstName . ' ' . $lastName); ?></p>
-                <p><strong>Email:</strong> <?php echo htmlspecialchars($email); ?></p>
-                <p><strong>Age:</strong> <?php echo htmlspecialchars($age); ?></p>
-            </div>
+        <div class="grid-container">
+            <aside class="sidebar">
+                <div class="profile-card">
+                    <div class="profile-avatar">
+                        <img src="../images/profile-pic.png" alt="Profile Picture">
+                    </div>
+                    <h2><?php echo htmlspecialchars($firstName . ' ' . $lastName); ?></h2>
+                    <p style="color: var(--text-secondary);"><?php echo htmlspecialchars($email); ?></p>
+                </div>
+                <div class="nav-tabs">
+                    <div class="nav-tab active" data-tab="orders">My Orders</div>
+                    <div class="nav-tab" data-tab="info">My Info</div>
+                </div>
+            </aside>
 
-            <div class="info-card">
-                <h2><i class="fas fa-address-card"></i>Contact Details</h2>
-                <p><strong>Phone:</strong> <?php echo htmlspecialchars($phone); ?></p>
-                <p><strong>Address:</strong> <?php echo htmlspecialchars($address); ?></p>
-            </div>
+            <main class="tab-content">
+                <div id="orders" class="active">
+                    <div class="info-section">
+                        <h2>My Orders</h2>
+                        <?php if (empty($orderHistory)): ?>
+                            <p>No orders found.</p>
+                        <?php else: ?>
+                            <?php foreach ($orderHistory as $order): ?>
+                                <div class="order-card">
+                                    <img src="../<?php echo htmlspecialchars($order['image']); ?>" alt="<?php echo htmlspecialchars($order['car_name']); ?>" class="order-image">
+                                    <div class="order-details">
+                                        <h3><?php echo htmlspecialchars($order['car_name']); ?></h3>
+                                        <p class="rental-dates">
+                                            <strong>From:</strong> <?php echo date('M j, Y', strtotime($order['start_date'])); ?>
+                                            <strong>To:</strong> <?php echo date('M j, Y', strtotime($order['end_date'])); ?>
+                                        </p>
+                                        <div class="order-meta">
+                                            <span class="order-price">$<?php echo number_format($order['amount'], 2); ?></span>
+                                            <div class="order-status status-<?php echo $order['rental_status']; ?>">
+                                                <i class="fas fa-<?php 
+                                                    echo $order['rental_status'] === 'preorder' ? 'clock' : 
+                                                        ($order['rental_status'] === 'upcoming' ? 'calendar' : 
+                                                        ($order['rental_status'] === 'active' ? 'car' : 'check')); 
+                                                ?>"></i>
+                                                <?php 
+                                                    $status_text = $order['rental_status'] === 'preorder' ? 'Pre-ordered' : ucfirst($order['rental_status']);
+                                                    echo $status_text; 
+                                                ?>
+                                            </div>
+                                            
+                                            <?php if ($order['rental_status'] === 'upcoming'): ?>
+                                                <form method="post" style="display: inline-block;" 
+                                                      onsubmit="return confirm('Are you sure you want to cancel this booking?');">
+                                                    <input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
+                                                    <button type="submit" name="cancel_order" class="btn btn-danger btn-sm">
+                                                        <i class="fas fa-times"></i> Cancel Booking
+                                                    </button>
+                                                </form>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </div>
+                </div>
 
-            <div class="info-card">
-                <h2><i class="fas fa-credit-card"></i>Payment Information</h2>
-                <p><strong>Visa Card:</strong> <?php echo htmlspecialchars($visa); ?></p>
-            </div>
-        </div>
+                <div id="info">
+                    <div class="info-section">
+                        <h2>Personal Information</h2>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <strong>Full Name</strong>
+                                <span><?php echo htmlspecialchars($firstName . ' ' . $lastName); ?></span>
+                            </div>
+                            <div class="info-item">
+                                <strong>Email</strong>
+                                <span><?php echo htmlspecialchars($email); ?></span>
+                            </div>
+                            <div class="info-item">
+                                <strong>Phone</strong>
+                                <span><?php echo htmlspecialchars($phone); ?></span>
+                            </div>
+                            <div class="info-item">
+                                <strong>Age</strong>
+                                <span><?php echo htmlspecialchars($age); ?></span>
+                            </div>
+                            <div class="info-item">
+                                <strong>Address</strong>
+                                <span><?php echo htmlspecialchars($address); ?></span>
+                            </div>
+                        </div>
+                    </div>
 
-        <div class="button-group">
-            <a href="../index.php" class="btn btn-primary">Back to Home</a>
-            <a href="logout.php" class="btn btn-secondary">Log Out</a>
+                    <div class="info-section">
+                        <h2>Saved Payment Methods</h2>
+                        <?php if (empty($savedPaymentMethods)): ?>
+                            <p>No saved payment methods.</p>
+                        <?php else: ?>
+                            <?php foreach ($savedPaymentMethods as $method): ?>
+                                <div class="payment-method-item">
+                                    <?php 
+                                    $details = json_decode($method['payment_details'], true);
+                                    $icon = '';
+                                    $displayInfo = '';
+                                    
+                                    switch ($method['payment_type']) {
+                                        case 'credit-card':
+                                            $icon = 'fa-credit-card';
+                                            $lastFour = substr($details['cardNumber'], -4);
+                                            $displayInfo = "Card ending in {$lastFour}";
+                                            break;
+                                        case 'paypal':
+                                            $icon = 'fa-paypal';
+                                            $displayInfo = $details['email'];
+                                            break;
+                                        case 'bank':
+                                            $icon = 'fa-university';
+                                            $lastFour = substr($details['accountNumber'], -4);
+                                            $displayInfo = "Account ending in {$lastFour}";
+                                            break;
+                                    }
+                                    ?>
+                                    <p>
+                                        <i class="fas <?php echo $icon; ?>"></i>
+                                        <?php echo htmlspecialchars($displayInfo); ?>
+                                    </p>
+                                    <form method="post" action="delete_payment_method.php" style="margin-left: auto;">
+                                        <input type="hidden" name="method_id" value="<?php echo $method['id']; ?>">
+                                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to remove this payment method?');">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </main>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.nav-tab');
+            const tabContents = document.querySelectorAll('.tab-content > div');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const targetId = tab.getAttribute('data-tab');
+
+                    // Update active tab
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+
+                    // Update active content
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === targetId) {
+                            content.classList.add('active');
+                        }
+                    });
+                });
+            });
+        });
+    </script>
 </body>
 </html>

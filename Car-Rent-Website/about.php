@@ -25,9 +25,34 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
     <link rel="stylesheet" href="./css/about.css">
     <link rel="stylesheet" href="./css/modern.css">
     <link rel="stylesheet" href="./css/index1.css">
+
+    <style>
+      /* Loading overlay styles */
+      #loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to bottom, rgba(63, 81, 181, 0.9), rgba(63, 81, 181, 0) 100%);
+        z-index: 9999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: opacity 0.5s ease-out;
+      }
+      
+      .loading-container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    </style>
   </head>
   
-  <body>
+  <body class="loading-active">
     <!-- Header -->
     <header>
       <nav class="navbar">
@@ -604,6 +629,11 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
 
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    
+    <!-- GSAP Animation Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.3/TweenMax.min.js"></script>
+    <script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/16327/MorphSVGPlugin.min.js"></script>
+    
     <!-- Bootstrap 5 Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <!-- AOS Animation Library -->
@@ -613,58 +643,8 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
       AOS.init({
         duration: 800,
         easing: 'ease-in-out',
-        once: true
-      });
-      
-      // Navbar color change on scroll
-      $(window).scroll(function() {
-        if ($(window).scrollTop() > 50) {
-          $('.navbar').addClass('scrolled');
-        } else {
-          $('.navbar').removeClass('scrolled');
-        }
-      });
-      
-      // Profile dropdown toggle
-      document.addEventListener('DOMContentLoaded', function() {
-        const profileToggle = document.querySelector('.profile-toggle');
-        const profileMenu = document.querySelector('.profile-menu');
-        
-        if (profileToggle) {
-          profileToggle.addEventListener('click', function(e) {
-            e.preventDefault();
-            profileMenu.classList.toggle('active');
-          });
-          
-          // Close dropdown when clicking outside
-          document.addEventListener('click', function(e) {
-            if (!profileToggle.contains(e.target) && !profileMenu.contains(e.target)) {
-              profileMenu.classList.remove('active');
-            }
-          });
-        }
-      });
-      
-      // Smooth scroll for anchor links
-      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-          const targetId = this.getAttribute('href');
-          if (targetId === '#') return;
-          
-          e.preventDefault();
-          const targetElement = document.querySelector(targetId);
-          
-          if (targetElement) {
-            const headerOffset = 100;
-            const elementPosition = targetElement.getBoundingClientRect().top;
-            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-            
-            window.scrollTo({
-              top: offsetPosition,
-              behavior: 'smooth'
-            });
-          }
-        });
+        once: true,
+        mirror: false
       });
     </script>
   </body>

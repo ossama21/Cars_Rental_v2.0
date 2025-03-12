@@ -260,3 +260,33 @@ display: none;
         margin-bottom: 20px;
     }
 }
+
+.navbar {
+  background: rgba(26, 32, 44, 0.95) !important; /* Dark background with slight transparency */
+}
+
+.navbar.scrolled {
+  background: var(--white) !important;
+}
+
+.navbar-brand,
+.nav-link,
+.profile-name,
+.profile-toggle {
+  color: var(--white) !important;
+}
+
+.navbar.scrolled .navbar-brand,
+.navbar.scrolled .nav-link,
+.navbar.scrolled .profile-name,
+.navbar.scrolled .profile-toggle {
+  color: var(--text-color) !important;
+}
+
+.profile-avatar {
+  border-color: var(--white);
+}
+
+.navbar.scrolled .profile-avatar {
+  border-color: var(--text-color);
+}

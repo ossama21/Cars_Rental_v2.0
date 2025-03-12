@@ -19,89 +19,64 @@ $user = $result->fetch_assoc();
 $displayName = ($user) ? $user['firstName'] . ' ' . $user['lastName'] : $email;
 
 // Initialize variables
-$editUser = [];
 $errors = [];
 $success = "";
-
-// Check if user ID is provided
-if (isset($_GET['id']) && is_numeric($_GET['id'])) {
-    $userId = $_GET['id'];
-    
-    // Get user details
-    $sqlUser = "SELECT * FROM users WHERE id = ?";
-    $stmtUser = $conn->prepare($sqlUser);
-    $stmtUser->bind_param("i", $userId);
-    $stmtUser->execute();
-    $resultUser = $stmtUser->get_result();
-    
-    if ($resultUser->num_rows > 0) {
-        $editUser = $resultUser->fetch_assoc();
-    } else {
-        // Redirect to manage users if user not found
-        header("Location: manage_users.php?error=User not found");
-        exit;
-    }
-} else {
-    // Redirect to manage users if no ID provided
-    header("Location: manage_users.php?error=No user specified");
-    exit;
-}
 
 // Handle form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Get form data
     $firstName = trim($_POST['firstName']);
     $lastName = trim($_POST['lastName']);
-    $updateEmail = trim($_POST['email']);
+    $userEmail = trim($_POST['email']);
     $role = $_POST['role'];
-    $updatePassword = trim($_POST['password']);
+    $password = trim($_POST['password']);
+    $confirmPassword = trim($_POST['confirmPassword']);
     
     // Validate required fields
     if (empty($firstName)) $errors[] = "First name is required";
     if (empty($lastName)) $errors[] = "Last name is required";
-    if (empty($updateEmail)) {
+    if (empty($userEmail)) {
         $errors[] = "Email is required";
-    } elseif (!filter_var($updateEmail, FILTER_VALIDATE_EMAIL)) {
+    } elseif (!filter_var($userEmail, FILTER_VALIDATE_EMAIL)) {
         $errors[] = "Invalid email format";
     }
-    
-    // Check if email exists for another user
-    if ($updateEmail !== $editUser['email']) {
-        $checkEmailSql = "SELECT id FROM users WHERE email = ? AND id != ?";
-        $checkEmailStmt = $conn->prepare($checkEmailSql);
-        $checkEmailStmt->bind_param("si", $updateEmail, $userId);
-        $checkEmailStmt->execute();
-        $checkEmailResult = $checkEmailStmt->get_result();
-        
-        if ($checkEmailResult->num_rows > 0) {
-            $errors[] = "Email already exists for another user";
-        }
+    if (empty($password)) {
+        $errors[] = "Password is required";
+    } elseif (strlen($password) < 6) {
+        $errors[] = "Password must be at least 6 characters";
+    }
+    if ($password !== $confirmPassword) {
+        $errors[] = "Passwords do not match";
     }
     
-    // If no errors, proceed with database update
+    // Check if email already exists
+    $checkEmailSql = "SELECT id FROM users WHERE email = ?";
+    $checkEmailStmt = $conn->prepare($checkEmailSql);
+    $checkEmailStmt->bind_param("s", $userEmail);
+    $checkEmailStmt->execute();
+    $checkEmailResult = $checkEmailStmt->get_result();
+    
+    if ($checkEmailResult->num_rows > 0) {
+        $errors[] = "Email address already exists";
+    }
+    
+    // If no errors, proceed with database insertion
     if (empty($errors)) {
-        if (!empty($updatePassword)) {
-            // Update with new password (MD5 hashed)
-            $hashedPassword = md5($updatePassword);
-            $sqlUpdate = "UPDATE users SET firstName=?, lastName=?, email=?, role=?, password=? WHERE id=?";
-            $updateStmt = $conn->prepare($sqlUpdate);
-            $updateStmt->bind_param("sssssi", $firstName, $lastName, $updateEmail, $role, $hashedPassword, $userId);
-        } else {
-            // Update without changing password
-            $sqlUpdate = "UPDATE users SET firstName=?, lastName=?, email=?, role=? WHERE id=?";
-            $updateStmt = $conn->prepare($sqlUpdate);
-            $updateStmt->bind_param("ssssi", $firstName, $lastName, $updateEmail, $role, $userId);
-        }
+        // Hash the password (using MD5 as per your existing system)
+        $hashedPassword = md5($password);
         
-        if ($updateStmt->execute()) {
-            $success = "User updated successfully!";
-            
-            // Refresh user data from database
-            $stmtUser->execute();
-            $resultUser = $stmtUser->get_result();
-            $editUser = $resultUser->fetch_assoc();
+        // Insert new user
+        $sqlInsert = "INSERT INTO users (firstName, lastName, email, password, role) VALUES (?, ?, ?, ?, ?)";
+        $insertStmt = $conn->prepare($sqlInsert);
+        $insertStmt->bind_param("sssss", $firstName, $lastName, $userEmail, $hashedPassword, $role);
+        
+        if ($insertStmt->execute()) {
+            $success = "User created successfully!";
+            // Clear form data
+            $firstName = $lastName = $userEmail = $password = $confirmPassword = "";
+            $role = "user"; // Default role
         } else {
-            $errors[] = "Error: " . $updateStmt->error;
+            $errors[] = "Error: " . $insertStmt->error;
         }
     }
 }
@@ -112,7 +87,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit User - Admin Dashboard</title>
+    <title>Add User - Admin Dashboard</title>
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -126,8 +101,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <!-- Custom CSS -->
     <link rel="stylesheet" href="../css/modern.css">
     
+    <!-- Add inline CSS for this specific page -->
     <style>
-        /* Using the same styles as manage_cars.php */
         .admin-wrapper {
             display: flex;
             min-height: 100vh;
@@ -222,7 +197,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             margin-top: 5px;
         }
         
-        .user-avatar {
+        .user-avatar-placeholder {
             width: 150px;
             height: 150px;
             border-radius: 50%;
@@ -233,7 +208,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             font-size: 3rem;
             color: #a0aec0;
             margin: 0 auto 20px;
-            overflow: hidden;
         }
         
         .role-badge {
@@ -265,6 +239,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         .password-toggle {
             cursor: pointer;
+        }
+        
+        .password-strength {
+            height: 5px;
+            border-radius: 5px;
+            margin-top: 5px;
         }
         
         @media (max-width: 992px) {
@@ -375,8 +355,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <!-- Page Header -->
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
-                        <h1 class="h3 mb-0"><i class="fas fa-user-edit me-2"></i>Edit User</h1>
-                        <p class="text-muted">Update user account information</p>
+                        <h1 class="h3 mb-0"><i class="fas fa-user-plus me-2"></i>Add New User</h1>
+                        <p class="text-muted">Create a new user account</p>
                     </div>
                     <div>
                         <a href="manage_users.php" class="btn btn-outline-secondary">
@@ -403,44 +383,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
                 <?php endif; ?>
                 
-                <!-- Edit User Form -->
+                <!-- Add User Form -->
                 <div class="form-card">
                     <div class="form-header">
                         <h5 class="mb-0">User Information</h5>
                     </div>
                     <div class="form-body">
-                        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"] . '?id=' . $userId); ?>" method="post">
+                        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                             <div class="row">
                                 <!-- Left Column -->
                                 <div class="col-md-4 mb-4 mb-md-0 text-center">
-                                    <div class="user-avatar">
-                                        <?php 
-                                        // Display initials as avatar placeholder
-                                        $initials = mb_substr($editUser['firstName'], 0, 1) . mb_substr($editUser['lastName'], 0, 1);
-                                        echo htmlspecialchars(strtoupper($initials));
-                                        ?>
+                                    <div class="user-avatar-placeholder">
+                                        <i class="fas fa-user"></i>
                                     </div>
                                     
-                                    <div class="mb-4">
-                                        <h5><?php echo htmlspecialchars($editUser['firstName'] . ' ' . $editUser['lastName']); ?></h5>
-                                        <p class="text-muted"><?php echo htmlspecialchars($editUser['email']); ?></p>
-                                        <span class="badge bg-<?php echo $editUser['role'] === 'admin' ? 'danger' : 'success'; ?>">
-                                            <?php echo ucfirst(htmlspecialchars($editUser['role'])); ?>
-                                        </span>
+                                    <div class="text-center mb-4">
+                                        <h5>New User Account</h5>
+                                        <p class="text-muted small">Auto-assigned avatar based on user's initials</p>
                                     </div>
                                     
-                                    <div class="text-start mb-4">
+                                    <div class="text-start">
                                         <div class="field-group">
                                             <label class="form-label">User Role</label>
                                             <div>
-                                                <label class="role-badge admin <?php echo $editUser['role'] === 'admin' ? 'selected' : ''; ?>">
-                                                    <input type="radio" name="role" value="admin" <?php echo $editUser['role'] === 'admin' ? 'checked' : ''; ?> 
-                                                           class="d-none">
+                                                <label class="role-badge admin <?php echo isset($role) && $role === 'admin' ? 'selected' : ''; ?>">
+                                                    <input type="radio" name="role" value="admin" <?php echo isset($role) && $role === 'admin' ? 'checked' : ''; ?> class="d-none">
                                                     <i class="fas fa-user-shield"></i> Admin
                                                 </label>
-                                                <label class="role-badge user <?php echo $editUser['role'] === 'user' ? 'selected' : ''; ?>">
-                                                    <input type="radio" name="role" value="user" <?php echo $editUser['role'] === 'user' ? 'checked' : ''; ?> 
-                                                           class="d-none">
+                                                <label class="role-badge user <?php echo !isset($role) || $role === 'user' ? 'selected' : ''; ?>">
+                                                    <input type="radio" name="role" value="user" <?php echo !isset($role) || $role === 'user' ? 'checked' : ''; ?> class="d-none">
                                                     <i class="fas fa-user"></i> User
                                                 </label>
                                             </div>
@@ -448,9 +419,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                         </div>
                                     </div>
                                     
-                                    <div class="text-start">
-                                        <p class="mb-1 text-muted small">Account created on:</p>
-                                        <p class="mb-0 fw-bold"><?php echo isset($editUser['created_at']) ? date('M d, Y', strtotime($editUser['created_at'])) : 'N/A'; ?></p>
+                                    <div class="alert alert-info mt-4" role="alert">
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-3">
+                                                <i class="fas fa-info-circle"></i>
+                                            </div>
+                                            <div class="text-start">
+                                                <p class="mb-0 small">
+                                                    Admin users have full access to the admin dashboard and all management functions.
+                                                </p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 
@@ -461,14 +440,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                             <div class="field-group">
                                                 <label for="firstName" class="form-label">First Name <span class="required-asterisk">*</span></label>
                                                 <input type="text" class="form-control" id="firstName" name="firstName" 
-                                                       value="<?php echo htmlspecialchars($editUser['firstName']); ?>" required>
+                                                       value="<?php echo isset($firstName) ? htmlspecialchars($firstName) : ''; ?>" required>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="field-group">
                                                 <label for="lastName" class="form-label">Last Name <span class="required-asterisk">*</span></label>
                                                 <input type="text" class="form-control" id="lastName" name="lastName" 
-                                                       value="<?php echo htmlspecialchars($editUser['lastName']); ?>" required>
+                                                       value="<?php echo isset($lastName) ? htmlspecialchars($lastName) : ''; ?>" required>
                                             </div>
                                         </div>
                                     </div>
@@ -476,31 +455,47 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     <div class="field-group">
                                         <label for="email" class="form-label">Email Address <span class="required-asterisk">*</span></label>
                                         <input type="email" class="form-control" id="email" name="email" 
-                                               value="<?php echo htmlspecialchars($editUser['email']); ?>" required>
+                                               value="<?php echo isset($userEmail) ? htmlspecialchars($userEmail) : ''; ?>" required>
+                                        <div class="form-hint">This will be used as the username for login</div>
                                     </div>
                                     
-                                    <div class="field-group">
-                                        <label for="password" class="form-label">Reset Password</label>
-                                        <div class="input-group">
-                                            <input type="password" class="form-control" id="password" name="password" 
-                                                   placeholder="Leave blank to keep current password">
-                                            <button class="btn btn-outline-secondary password-toggle" type="button">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="field-group">
+                                                <label for="password" class="form-label">Password <span class="required-asterisk">*</span></label>
+                                                <div class="input-group">
+                                                    <input type="password" class="form-control" id="password" name="password" required>
+                                                    <button class="btn btn-outline-secondary password-toggle" type="button" data-target="password">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                </div>
+                                                <div class="password-strength bg-secondary w-100" id="passwordStrength"></div>
+                                                <div class="form-hint">Minimum 6 characters</div>
+                                            </div>
                                         </div>
-                                        <div class="form-hint">Only fill this out if you want to change the user's password</div>
+                                        <div class="col-md-6">
+                                            <div class="field-group">
+                                                <label for="confirmPassword" class="form-label">Confirm Password <span class="required-asterisk">*</span></label>
+                                                <div class="input-group">
+                                                    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+                                                    <button class="btn btn-outline-secondary password-toggle" type="button" data-target="confirmPassword">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                     
-                                    <div class="alert alert-info" role="alert">
+                                    <div class="alert alert-warning" role="alert">
                                         <div class="d-flex">
                                             <div class="me-3">
-                                                <i class="fas fa-info-circle fa-2x"></i>
+                                                <i class="fas fa-exclamation-triangle fa-2x"></i>
                                             </div>
                                             <div>
-                                                <h5 class="mb-1">Important Note</h5>
+                                                <h5 class="mb-1">Password Security</h5>
                                                 <p class="mb-0 small">
-                                                    Changing a user's role will affect their permissions and access to certain features.
-                                                    If you change a user from admin to regular user, they will lose access to the admin dashboard.
+                                                    Create a strong password that includes uppercase and lowercase letters,
+                                                    numbers, and special characters for better security.
                                                 </p>
                                             </div>
                                         </div>
@@ -510,18 +505,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             
                             <hr class="my-4">
                             
-                            <div class="d-flex justify-content-between">
-                                <a href="delete_user.php?id=<?php echo $userId; ?>" class="btn btn-outline-danger" 
-                                   onclick="return confirm('Are you sure you want to delete this user? This action cannot be undone.')">
-                                    <i class="fas fa-trash me-2"></i>Delete User
-                                </a>
-                                
-                                <div class="d-flex gap-2">
-                                    <a href="manage_users.php" class="btn btn-light px-4">Cancel</a>
-                                    <button type="submit" class="btn btn-primary px-5">
-                                        <i class="fas fa-save me-2"></i>Save Changes
-                                    </button>
-                                </div>
+                            <div class="d-flex justify-content-end gap-2">
+                                <a href="manage_users.php" class="btn btn-light px-4">Cancel</a>
+                                <button type="submit" class="btn btn-primary px-5">
+                                    <i class="fas fa-user-plus me-2"></i>Create User
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -548,17 +536,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         });
         
         // Password visibility toggle
-        const passwordToggle = document.querySelector('.password-toggle');
-        const passwordField = document.getElementById('password');
+        const passwordToggles = document.querySelectorAll('.password-toggle');
         
-        passwordToggle.addEventListener('click', function() {
-            const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
-            passwordField.setAttribute('type', type);
-            
-            // Toggle icon
-            const icon = this.querySelector('i');
-            icon.classList.toggle('fa-eye');
-            icon.classList.toggle('fa-eye-slash');
+        passwordToggles.forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                const targetId = this.getAttribute('data-target');
+                const passwordField = document.getElementById(targetId);
+                
+                const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordField.setAttribute('type', type);
+                
+                // Toggle icon
+                const icon = this.querySelector('i');
+                icon.classList.toggle('fa-eye');
+                icon.classList.toggle('fa-eye-slash');
+            });
         });
         
         // Role badge selection
@@ -569,6 +561,51 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 roleBadges.forEach(b => b.classList.remove('selected'));
                 this.classList.add('selected');
             });
+        });
+        
+        // Simple password strength meter
+        const passwordInput = document.getElementById('password');
+        const strengthMeter = document.getElementById('passwordStrength');
+        
+        passwordInput.addEventListener('input', function() {
+            const value = this.value;
+            let strength = 0;
+            
+            // Length check
+            if (value.length >= 6) strength += 25;
+            
+            // Contains lowercase
+            if (/[a-z]/.test(value)) strength += 25;
+            
+            // Contains uppercase
+            if (/[A-Z]/.test(value)) strength += 25;
+            
+            // Contains number or special char
+            if (/[0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value)) strength += 25;
+            
+            // Update strength meter
+            strengthMeter.style.width = `${strength}%`;
+            
+            if (strength <= 25) {
+                strengthMeter.style.backgroundColor = '#e53e3e'; // Weak
+            } else if (strength <= 50) {
+                strengthMeter.style.backgroundColor = '#ed8936'; // Fair
+            } else if (strength <= 75) {
+                strengthMeter.style.backgroundColor = '#ecc94b'; // Good
+            } else {
+                strengthMeter.style.backgroundColor = '#48bb78'; // Strong
+            }
+        });
+        
+        // Password confirmation check
+        const confirmPasswordInput = document.getElementById('confirmPassword');
+        
+        confirmPasswordInput.addEventListener('input', function() {
+            if (this.value === passwordInput.value) {
+                this.style.borderColor = '#48bb78';
+            } else {
+                this.style.borderColor = '#e53e3e';
+            }
         });
     </script>
 </body>

@@ -33,8 +33,8 @@
             <div class="form-content">
                 <!-- Tabs for switching between login and register -->
                 <div class="form-tabs">
-                    <button class="tab-btn active" id="login-tab">Sign In</button>
-                    <button class="tab-btn" id="register-tab">Sign Up</button>
+                    <button class="tab-btn active" id="login-tab" data-panel="login-panel">Sign In</button>
+                    <button class="tab-btn" id="register-tab" data-panel="register-panel">Sign Up</button>
                 </div>
                 
                 <!-- Login Form -->

@@ -14,18 +14,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     if ($result->num_rows == 1) {
         $row = $result->fetch_assoc();
-        if (password_verify($password, $row['password'])) {
+        if (md5($password) === $row['password']) {  // Using md5 since that's what's in the database
             $_SESSION['id'] = $row['id'];
             $_SESSION['firstName'] = $row['firstName'];
             $_SESSION['lastName'] = $row['lastName'];
             $_SESSION['email'] = $row['email'];
             $_SESSION['role'] = $row['role'];
             
-            if ($row['role'] === 'admin') {
-                header("Location: ../admin/admin.php");
-            } else {
-                header("Location: ../index.php");
-            }
+            // Redirect all users to index page first, admin can navigate to admin panel from there
+            header("Location: ../index.php");
             exit();
         } else {
             $error = "Invalid email or password";

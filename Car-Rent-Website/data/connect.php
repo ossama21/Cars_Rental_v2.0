@@ -1,6 +1,6 @@
 <?php
 
-$host="localhost";
+$host="127.0.0.1"; // Changed from 'localhost' to IP address
 $user="root";
 $pass="";
 $db="car_rent";
