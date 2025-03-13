@@ -432,6 +432,18 @@ if (!empty($status)) {
             border-color: #4299e1;
         }
         
+        /* Override hover effect for admin buttons */
+        .admin-table-actions .admin-btn-primary:hover {
+            background-color: #4299e1;
+            color: #fff;
+        }
+
+        .admin-table-actions .admin-btn-primary:active {
+            background-color: #4299e1 !important;
+            color: #fff !important;
+        }
+
+
         @media (max-width: 992px) {
             .admin-sidebar {
                 left: -250px;
@@ -545,6 +557,13 @@ if (!empty($status)) {
                     <a href="../data/logout.php" class="sidebar-menu-link">
                         <i class="fas fa-sign-out-alt"></i>
                         <span>Logout</span>
+                    </a>
+                </div>
+                
+                <div class="sidebar-menu-item mt-2">
+                    <a href="../index.php" class="sidebar-menu-link">
+                        <i class="fas fa-home"></i>
+                        <span>Back to Home</span>
                     </a>
                 </div>
             </nav>
@@ -679,6 +698,9 @@ if (!empty($status)) {
                         <div class="admin-table-actions d-flex gap-2">
                             <button class="admin-btn admin-btn-primary admin-btn-sm" data-bs-toggle="modal" data-bs-target="#bulkDiscountModal">
                                 <i class="fas fa-tags me-1"></i> Bulk Discount
+                            </button>
+                            <button class="admin-btn admin-btn-primary admin-btn-sm" data-bs-toggle="modal" data-bs-target="#couponModal">
+                                <i class="fas fa-ticket-alt me-1"></i> Manage Coupons
                             </button>
                             <div class="dropdown">
                                 <button class="admin-btn admin-btn-secondary admin-btn-sm dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -1296,6 +1318,7 @@ if (!empty($status)) {
                                 </div>
                             </div>
                             
+
                             <div class="card border-0 shadow-sm mb-4">
                                 <div class="card-header bg-light">
                                     <h6 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Discount Period</h6>
@@ -1306,7 +1329,7 @@ if (!empty($status)) {
                                             <div class="mb-3">
                                                 <label class="form-label fw-bold">Start Date</label>
                                                 <input type="date" name="start_date" class="form-control" required 
-                                                    min="<?php echo date('Y-m-d'); ?>"
+                                                    min="<?php echo date('Y-m-d'); ?> "
                                                     value="<?php echo date('Y-m-d'); ?>">
                                             </div>
                                         </div>
@@ -1454,7 +1477,7 @@ if (!empty($status)) {
                                             <div class="mb-3">
                                                 <label class="form-label fw-bold">Start Date</label>
                                                 <input type="date" name="start_date" class="form-control" required 
-                                                    min="<?php echo date('Y-m-d'); ?>"
+                                                    min="<?php echo date('Y-m-d'); ?>" 
                                                     value="<?php echo date('Y-m-d'); ?>">
                                             </div>
                                         </div>
@@ -1648,8 +1671,412 @@ if (!empty($status)) {
                 }
             });
         });
+
+        // Coupon Management Scripts
+        document.addEventListener('DOMContentLoaded', function() {
+            const addNewCouponBtn = document.getElementById('addNewCouponBtn');
+            const couponForm = document.getElementById('couponForm');
+            const cancelCouponBtn = document.getElementById('cancelCouponBtn');
+            const generateCodeBtn = document.getElementById('generateCode');
+
+            // Toggle coupon form
+            addNewCouponBtn.addEventListener('click', function() {
+                couponForm.style.display = 'block';
+                addNewCouponBtn.style.display = 'none';
+            });
+
+            cancelCouponBtn.addEventListener('click', function() {
+                couponForm.style.display = 'none';
+                addNewCouponBtn.style.display = 'block';
+                document.getElementById('newCouponForm').reset();
+            });
+
+            // Generate random coupon code
+            generateCodeBtn.addEventListener('click', function() {
+                const code = 'RENT' + Math.random().toString(36).substring(2, 8).toUpperCase();
+                document.querySelector('input[name="coupon_code"]').value = code;
+            });
+
+            // Update discount symbol based on discount type
+            document.querySelector('select[name="discount_type"]').addEventListener('change', function() {
+                const symbol = document.querySelector('.coupon-symbol');
+                symbol.textContent = this.value === 'percentage' ? '%' : '$';
+            });
+
+            // Form submission
+            document.getElementById('newCouponForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                // Add your form submission logic here
+                alert('Coupon saved successfully!'); // Replace with actual save logic
+                this.reset();
+                couponForm.style.display = 'none';
+                addNewCouponBtn.style.display = 'block';
+            });
+        });
     </script>
     
+    <!-- Additional styles for modal animations -->
+    <style>
+        #couponForm {
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .coupon-symbol {
+            transition: all 0.3s ease;
+        }
+    </style>
+
+    <!-- Coupon Management Modal -->
+    <div class="modal fade" id="couponModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title"><i class="fas fa-ticket-alt me-2"></i>Manage Coupons</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body p-4">
+                    <!-- Coupon List -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0"><i class="fas fa-list me-2"></i>Active Coupons</h6>
+                            <button class="btn btn-sm btn-primary" id="addNewCouponBtn">
+                                <i class="fas fa-plus me-1"></i> Add New Coupon
+                            </button>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Code</th>
+                                            <th>Discount</th>
+                                            <th>Valid Until</th>
+                                            <th>Usage Limit                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="couponsList">
+                                        <!-- Sample coupon row - Replace with dynamic data -->
+                                        <tr>
+                                            <td><span class="badge bg-light text-dark">SUMMER2023</span></td>
+                                            <td>20% OFF</td>
+                                            <td>Aug 31, 2023</td>
+                                            <td>100/500</td>
+                                            <td><span class="badge bg-success">Active</span></td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <button class="btn btn-outline-primary"><i class="fas fa-edit"></i></button>
+                                                    <button class="btn btn-outline-danger"><i class="fas fa-trash"></i></button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Add/Edit Coupon Form -->
+                    <div id="couponForm" class="card border-0 shadow-sm" style="display: none;">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Create New Coupon</h6>
+                        </div>
+                        <div class="card-body">
+                            <form id="newCouponForm">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Coupon Code</label>
+                                            <div class="input-group">
+                                                <input type="text" name="coupon_code" class="form-control" required>
+                                                <button type="button" class="btn btn-outline-secondary" id="generateCode">
+                                                    Generate
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Discount Type</label>
+                                            <select name="discount_type" class="form-select" required>
+                                                <option value="percentage">Percentage Off</option>
+                                                <option value="fixed">Fixed Amount Off</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Discount Value</label>
+                                            <div class="input-group">
+                                                <input type="number" name="discount_value" class="form-control" min="0" max="100" step="0.01" required>
+                                                <span class="input-group-text coupon-symbol">%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Usage Limit</label>
+                                            <input type="number" name="usage_limit" class="form-control" min="1" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Start Date</label>
+                                            <input type="date" name="start_date" class="form-control" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">End Date</label>
+                                            <input type="date" name="end_date" class="form-control" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Description</label>
+                                            <textarea name="description" class="form-control" rows="2"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="mb-3">
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="isActive" name="is_active" checked>
+                                                <label class="form-check-label" for="isActive">Active</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-end mt-3">
+                                    <button type="button" class="btn btn-secondary" id="cancelCouponBtn">
+                                        <i class="fas fa-times me-1"></i> Cancel
+                                    </button>
+                                    <button type="submit" class="btn btn-primary ms-2">
+                                        <i class="fas fa-save me-1"></i> Save Coupon
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom Scripts -->
+    <script>
+        // Toggle sidebar
+        const toggleSidebar = document.getElementById('toggleSidebar');
+        const adminWrapper = document.getElementById('adminWrapper');
+        const adminSidebar = document.getElementById('adminSidebar');
+        
+        toggleSidebar.addEventListener('click', function() {
+            adminWrapper.classList.toggle('sidebar-collapsed');
+            if (window.innerWidth < 992) {
+                adminSidebar.classList.toggle('show');
+            }
+        });
+        
+        // Handle submenu toggles
+        const submenuToggles = document.querySelectorAll('.has-submenu');
+        
+        submenuToggles.forEach(toggle => {
+            toggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                this.classList.toggle('active');
+                
+                const targetId = this.getAttribute('id');
+                const submenu = document.getElementById(targetId.replace('Menu', 'Submenu'));
+                
+                if (submenu) {
+                    submenu.classList.toggle('active');
+                }
+            });
+        });
+
+        // Show/hide brand select based on discount scope
+        document.querySelector('select[name="discount_scope"]').addEventListener('change', function() {
+            const brandSelect = document.querySelector('.brand-select');
+            brandSelect.style.display = this.value === 'brand' ? 'block' : 'none';
+        });
+        
+        // Selective discount - Handle select all checkbox
+        document.getElementById('selectAllCars').addEventListener('change', function() {
+            const isChecked = this.checked;
+            document.querySelectorAll('.car-select').forEach(checkbox => {
+                checkbox.checked = isChecked;
+            });
+            updateSelectedCarsCount();
+        });
+        
+        // Update select all state when individual checkboxes are clicked
+        document.querySelectorAll('.car-select').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const totalCheckboxes = document.querySelectorAll('.car-select').length;
+                const checkedCheckboxes = document.querySelectorAll('.car-select:checked').length;
+                
+                document.getElementById('selectAllCars').checked = checkedCheckboxes === totalCheckboxes;
+                document.getElementById('selectAllCars').indeterminate = checkedCheckboxes > 0 && checkedCheckboxes < totalCheckboxes;
+                
+                updateSelectedCarsCount();
+            });
+        });
+        
+        // Update the count of selected cars
+        function updateSelectedCarsCount() {
+            const checkedCount = document.querySelectorAll('.car-select:checked').length;
+            const countBadge = document.querySelector('.car-count');
+            if (countBadge) {
+                countBadge.textContent = checkedCount;
+                
+                // Change badge color based on selection
+                if (checkedCount === 0) {
+                    countBadge.className = 'badge bg-secondary car-count';
+                } else {
+                    countBadge.className = 'badge bg-primary car-count';
+                }
+            }
+        }
+        
+        // Update discount symbol (% or $) based on selected discount type
+        document.querySelectorAll('select[name="discount_type"]').forEach(select => {
+            select.addEventListener('change', function() {
+                const isPercentage = this.value === 'percentage';
+                
+                // Find the closest input-group-text that represents the discount symbol
+                let symbolElement;
+                if (this.closest('#bulk-discount')) {
+                    symbolElement = document.querySelector('.discount-symbol');
+                } else if (this.closest('#selective-discount')) {
+                    symbolElement = document.querySelector('.selective-discount-symbol');
+                } else {
+                    // For individual car discount modals
+                    symbolElement = this.closest('.modal-content').querySelector('.input-group-text');
+                }
+                
+                if (symbolElement) {
+                    symbolElement.textContent = isPercentage ? '%' : '$';
+                    
+                    // Add a highlight animation to notify the user of the change
+                    symbolElement.classList.add('text-primary', 'fw-bold');
+                    setTimeout(() => {
+                        symbolElement.classList.remove('text-primary', 'fw-bold');
+                    }, 500);
+                }
+            });
+        });
+        
+        // Run this on page load to ensure the discount count is initialized
+        document.addEventListener('DOMContentLoaded', function() {
+            updateSelectedCarsCount();
+            
+            // Add animation to modal when it appears
+            document.querySelector('#bulkDiscountModal').addEventListener('shown.bs.modal', function() {
+                const cards = this.querySelectorAll('.card');
+                cards.forEach((card, index) => {
+                    setTimeout(() => {
+                        card.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+                        card.style.transform = 'translateY(0)';
+                        card.style.opacity = '1';
+                    }, index * 100);
+                });
+            });
+            
+            // Reset animation when modal is hidden
+            document.querySelector('#bulkDiscountModal').addEventListener('hide.bs.modal', function() {
+                const cards = this.querySelectorAll('.card');
+                cards.forEach(card => {
+                    card.style.transform = 'translateY(20px)';
+                    card.style.opacity = '0';
+                });
+            });
+        });
+        
+        // Make the tag buttons work properly in the table
+        document.querySelectorAll('.admin-btn-info').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                // The button is already configured to open the modal via data-bs-toggle and data-bs-target
+                // This just ensures it works properly
+                e.preventDefault();
+                const targetModalId = this.getAttribute('data-bs-target');
+                if (targetModalId) {
+                    const modal = new bootstrap.Modal(document.querySelector(targetModalId));
+                    modal.show();
+                }
+            });
+        });
+        
+        // Initialize all tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
+        
+        // Form validation for the discount forms
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                if (form.querySelector('input[name="selective_discount"]')) {
+                    const selectedCars = form.querySelectorAll('input[name="selected_cars[]"]:checked');
+                    if (selectedCars.length === 0) {
+                        e.preventDefault();
+                        alert('Please select at least one car to apply the discount.');
+                    }
+                }
+            });
+        });
+
+        // Coupon Management Scripts
+        document.addEventListener('DOMContentLoaded', function() {
+            const addNewCouponBtn = document.getElementById('addNewCouponBtn');
+            const couponForm = document.getElementById('couponForm');
+            const cancelCouponBtn = document.getElementById('cancelCouponBtn');
+            const generateCodeBtn = document.getElementById('generateCode');
+
+            // Toggle coupon form
+            addNewCouponBtn.addEventListener('click', function() {
+                couponForm.style.display = 'block';
+                addNewCouponBtn.style.display = 'none';
+            });
+
+            cancelCouponBtn.addEventListener('click', function() {
+                couponForm.style.display = 'none';
+                addNewCouponBtn.style.display = 'block';
+                document.getElementById('newCouponForm').reset();
+            });
+
+            // Generate random coupon code
+            generateCodeBtn.addEventListener('click', function() {
+                const code = 'RENT' + Math.random().toString(36).substring(2, 8).toUpperCase();
+                document.querySelector('input[name="coupon_code"]').value = code;
+            });
+
+            // Update discount symbol based on discount type
+            document.querySelector('select[name="discount_type"]').addEventListener('change', function() {
+                const symbol = document.querySelector('.coupon-symbol');
+                symbol.textContent = this.value === 'percentage' ? '%' : '$';
+            });
+
+            // Form submission
+            document.getElementById('newCouponForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                // Add your form submission logic here
+                alert('Coupon saved successfully!'); // Replace with actual save logic
+                this.reset();
+                couponForm.style.display = 'none';
+                addNewCouponBtn.style.display = 'block';
+            });
+        });
+    </script>
+    
+    <!-- Additional styles for modal animations -->
     <style>
         /* Additional styles for modal animations */
         #bulkDiscountModal .card {
@@ -1714,15 +2141,27 @@ if (!empty($status)) {
             transition: all 0.3s ease;
         }
         
+        .coupon-symbol {
+            transition: all 0.3s ease;
+        }
+        
+        .car-count {
+            display: inline-flex;
+            color: #000;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+
+        .table-hover tbody tr:hover {
+            background: rgba(0, 112, 221, 0.08);
+        }
+
+        .card-header-height {
+            position: relative;
+            height: 55px;
         }
     </style>
 </body>

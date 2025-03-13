@@ -23,10 +23,15 @@
 }
 
 body {
-  font-family: 'Poppins', sans-serif;
-  color: var(--text-color);
-  overflow-x: hidden;
-  scroll-behavior: smooth;
+    font-family: 'Poppins', sans-serif;
+    color: var(--text-color);
+    position: relative;
+    overflow-y: auto !important;
+    background: transparent !important;
+}
+
+body.loading-active {
+    overflow: hidden;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -133,7 +138,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .nav-link {
-  color: #b3b0b0;
+  color: #ffffff;
   text-decoration: none;
   font-size: 0.95rem;
   font-weight: 500;
@@ -405,13 +410,13 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 15px;
   box-shadow: var(--box-shadow);
   padding: 2rem;
-}
+  }
 
-.search-container h3 {
-  margin-bottom: 1.5rem;
+  .search-container h3 {
+    margin-bottom: 1.5rem;
   font-weight: 600;
   color: var(--text-color);
-}
+  }
 
 .search-form .form-control,
 .search-form .form-select {
@@ -892,10 +897,10 @@ h1, h2, h3, h4, h5, h6 {
   transition: width 1.5s ease;
 }
 
-.stat-item:nth-child(1) .progress-bar { animation: progress1 1.5s ease forwards; }
-.stat-item:nth-child(2) .progress-bar { animation: progress2 1.5s ease forwards; }
-.stat-item:nth-child(3) .progress-bar { animation: progress3 1.5s ease forwards; }
-.stat-item:nth-child(4) .progress-bar { animation: progress4 1.5s ease forwards; }
+.stat-item:nth-child(1) .progress-bar { animation: progress1 1s ease forwards; }
+.stat-item:nth-child(2) .progress-bar { animation: progress2 1s ease forwards; }
+.stat-item:nth-child(3) .progress-bar { animation: progress3 1s ease forwards; }
+.stat-item:nth-child(4) .progress-bar { animation: progress4 1s ease forwards; }
 
 @keyframes progress1 { to { width: 75%; } }
 @keyframes progress2 { to { width: 90%; } }
@@ -1666,6 +1671,16 @@ footer h5::after {
   transition: var(--admin-transition);
 }
 
+.sidebar-menu-link {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  transition: var(--admin-transition);
+  cursor: pointer;
+}
+
 .sidebar-menu-link i {
   margin-right: 0.75rem;
   width: 20px;
@@ -2285,7 +2300,6 @@ footer h5::after {
 .admin-btn-primary:hover {
   background-color: var(--admin-primary);
   color: white;
-  text-coloor: white;
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(49, 130, 206, 0.2);
 }

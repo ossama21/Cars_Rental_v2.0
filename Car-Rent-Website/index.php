@@ -36,7 +36,6 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
 
     <title>CARrent</title>
     <style>
-      /* Loading overlay styles */
       #loading-overlay {
         position: fixed;
         top: 0;
@@ -48,7 +47,7 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
         display: flex;
         justify-content: center;
         align-items: center;
-        transition: opacity 0.5s ease-out;
+        transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
       }
       
       .loading-container {
@@ -57,6 +56,22 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
         display: flex;
         justify-content: center;
         align-items: center;
+        position: relative;
+      }
+
+      #loading-overlay.hidden {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      body {
+        overflow-y: auto !important;
+        height: auto !important;
+      }
+
+      body.loading-active {
+        overflow: hidden;
       }
     </style>
   </head>
@@ -735,17 +750,15 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
     <!-- Custom JS -->
     <script>
-      // Handle loading animation
       window.addEventListener('load', function() {
         const loadingOverlay = document.getElementById('loading-overlay');
+        const body = document.body;
+        
         if (loadingOverlay) {
           setTimeout(function() {
-            loadingOverlay.style.opacity = '0';
-            setTimeout(function() {
-              loadingOverlay.style.display = 'none';
-              document.body.classList.remove('loading-active');
-            }, 500);
-          }, 1500); // Show loading for 1.5 seconds minimum
+            loadingOverlay.classList.add('hidden');
+            body.classList.remove('loading-active');
+          }, 1500);
         }
       });
       

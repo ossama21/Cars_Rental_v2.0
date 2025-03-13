@@ -67,255 +67,219 @@ $paymentsResult = $conn->query($sqlPayments);
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="../css/modern.css">
-    <link rel="stylesheet" href="style.css">
-
+    
+    <!-- Add inline CSS for this specific page -->
     <style>
-        /* Enhanced Admin Layout */
         .admin-wrapper {
-            display: grid;
-            grid-template-columns: 280px 1fr;
+            display: flex;
             min-height: 100vh;
-            background-color: #f8fafc;
         }
-
-        .admin-content {
-            padding: 1.5rem;
-            max-width: 100%;
-            margin: 0;
-        }
-
-        /* Updated Top Bar and Profile Styling */
-        .admin-topbar {
+        
+        .admin-sidebar {
+            width: 280px;
+            background-color: #2d3748;
+            color: #fff;
+            transition: all 0.3s;
             position: fixed;
-            top: 0;
-            right: 0;
-            left: 280px;
-            background: rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            padding: 0.75rem 2rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.01);
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            z-index: 999;
-            height: 60px;
-            transition: all 0.3s ease;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            height: 100%;
+            z-index: 1000;
         }
-
-        .sidebar-collapsed .admin-topbar {
-            left: 0;
+        
+        .admin-sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
-
-        .toggle-sidebar {
-            margin-right: auto;
-            background: none;
-            border: none;
-            color: #4a5568;
-            font-size: 1.25rem;
-            cursor: pointer;
-            padding: 0.5rem;
+        
+        .admin-logo {
+            color: #fff;
+            font-weight: 700;
+            text-decoration: none;
+            font-size: 1.2rem;
             display: flex;
             align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
+            gap: 10px;
         }
-
-        .toggle-sidebar:hover {
-            color: #2d3748;
-            transform: scale(1.05);
+        
+        .admin-sidebar-menu {
+            padding: 20px 0;
         }
-
+        
+        .sidebar-menu-item {
+            margin-bottom: 5px;
+        }
+        
+        .sidebar-menu-link {
+            padding: 10px 20px;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s;
+        }
+        
+        .sidebar-menu-link:hover, .sidebar-menu-link.active {
+            color: #fff;
+            background-color: rgba(255,255,255,0.1);
+        }
+        
+        .sidebar-submenu {
+            padding-left: 30px;
+            display: none;
+        }
+        
+        .sidebar-submenu.active {
+            display: block;
+        }
+        
+        .admin-main {
+            flex: 1;
+            margin-left: 250px;
+            transition: all 0.3s;
+        }
+        
+        .admin-topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background-color: #fff;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
         .admin-user {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            padding: 0.5rem 1rem;
-            border-radius: 50px;
-            transition: all 0.2s ease;
-            background: rgba(255, 255, 255, 0.9);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            gap: 15px;
         }
-
-        .admin-user:hover {
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transform: translateY(-1px);
-        }
-
+        
         .admin-user-info {
             text-align: right;
-            margin-right: 0.75rem;
         }
-
+        
         .admin-user-name {
             font-weight: 600;
-            color: #2d3748;
-            font-size: 0.95rem;
-            margin-bottom: 0.25rem;
         }
-
+        
         .admin-user-role {
             font-size: 0.8rem;
             color: #718096;
         }
-
+        
         .admin-user-avatar {
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             overflow: hidden;
-            border: 2px solid #e2e8f0;
-            flex-shrink: 0;
-            transition: all 0.2s ease;
         }
-
-        .admin-user-avatar:hover {
-            border-color: #4299e1;
-            transform: scale(1.05);
-        }
-
+        
         .admin-user-avatar img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-
-        /* Adjust main content padding to account for fixed topbar */
-        .admin-main {
-            padding-top: 60px;
+        
+        .admin-content {
+            padding: 30px;
         }
-
-        /* Responsive adjustments */
-        @media (max-width: 991px) {
-            .admin-topbar {
-                left: 0;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .admin-topbar {
-                padding: 0.5rem 1rem;
-            }
-
-            .admin-user-info {
-                display: none;
-            }
-
-            .admin-user {
-                padding: 0.25rem;
-                background: transparent;
-                box-shadow: none;
-            }
-        }
-
+        
         /* Stats Cards Styling */
         .admin-stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 1.25rem;
-            margin-bottom: 2rem;
+            gap: 20px;
+            margin-bottom: 30px;
         }
-
+        
         .admin-stat-card {
-            background: white;
-            border-radius: 15px;
-            padding: 1.75rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
-
-        .admin-stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-        }
-
+        
         .admin-stat-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1rem;
+            margin-bottom: 15px;
         }
-
+        
         .admin-stat-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
+            width: 50px;
+            height: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
+            border-radius: 10px;
             font-size: 1.5rem;
         }
-
+        
         .admin-stat-icon.revenue {
             background-color: rgba(72, 187, 120, 0.1);
             color: #48bb78;
         }
-
+        
         .admin-stat-icon.success {
             background-color: rgba(66, 153, 225, 0.1);
             color: #4299e1;
         }
-
+        
         .admin-stat-icon.warning {
             background-color: rgba(237, 137, 54, 0.1);
             color: #ed8936;
         }
-
+        
         .admin-stat-icon.danger {
             background-color: rgba(229, 62, 62, 0.1);
             color: #e53e3e;
         }
-
+        
         .admin-stat-value {
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: 700;
-            color: #2d3748;
-            margin: 0.5rem 0;
+            margin-bottom: 5px;
         }
-
+        
         /* Table Card Styling */
         .admin-table-card {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             overflow: hidden;
         }
-
+        
         .admin-table-header {
-            padding: 1.5rem;
+            padding: 20px;
             border-bottom: 1px solid #e2e8f0;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-
+        
         .admin-table {
             width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
         }
-
+        
         .admin-table th {
-            background: #f7fafc;
-            padding: 1rem 1.5rem;
+            background-color: #f8f9fa;
+            padding: 15px;
+            text-align: left;
             font-weight: 600;
             color: #4a5568;
-            text-align: left;
-            border-bottom: 2px solid #e2e8f0;
+            border-bottom: 1px solid #e2e8f0;
         }
-
+        
         .admin-table td {
-            padding: 1rem 1.5rem;
+            padding: 15px;
             vertical-align: middle;
             border-bottom: 1px solid #e2e8f0;
-            color: #2d3748;
         }
-
+        
         .admin-table tr:hover {
-            background-color: #f7fafc;
+            background-color: #f8fafc;
         }
-
+        
         /* Status Badge Styling */
         .status-badge {
             padding: 0.5rem 1rem;
@@ -326,110 +290,118 @@ $paymentsResult = $conn->query($sqlPayments);
             align-items: center;
             gap: 0.5rem;
         }
-
+        
         .status-completed {
             background-color: #dcf7e3;
             color: #166534;
         }
-
+        
         .status-pending {
             background-color: #fef3c7;
             color: #92400e;
         }
-
+        
         .status-failed {
             background-color: #fee2e2;
             color: #b91c1c;
         }
-
+        
         /* Button Styling */
         .admin-btn {
-            padding: 0.625rem 1.25rem;
-            border-radius: 8px;
+            padding: 8px 15px;
+            border-radius: 5px;
             font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
-            transition: all 0.2s ease;
+            gap: 5px;
+            transition: all 0.2s;
             border: none;
-            cursor: pointer;
         }
-
+        
         .admin-btn-primary {
             background-color: #4299e1;
-            color: white;
+            color: #fff;
         }
-
+        
+        .admin-btn-primary:hover {
+            background-color: #3182ce;
+            color: #fff;
+        }
+        
         .admin-btn-secondary {
             background-color: #e2e8f0;
             color: #4a5568;
         }
-
+        
+        .admin-btn-secondary:hover {
+            background-color: #cbd5e0;
+        }
+        
         .admin-btn-sm {
-            padding: 0.375rem 0.75rem;
+            padding: 5px 10px;
             font-size: 0.875rem;
         }
-
+        
         /* Modal Styling */
         .modal-content {
-            border-radius: 15px;
+            border-radius: 10px;
             border: none;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
-
+        
         .modal-header {
             border-bottom: 1px solid #e2e8f0;
             padding: 1.25rem 1.5rem;
         }
-
+        
         .modal-body {
             padding: 1.5rem;
         }
-
+        
         .modal-body dl.row {
             margin: 0;
             row-gap: 1rem;
         }
-
+        
         .modal-body dt {
             font-weight: 600;
             color: #4a5568;
         }
-
+        
         .modal-body dd {
             color: #2d3748;
             margin-bottom: 0.5rem;
         }
-
-        /* Responsive Design */
-        @media (max-width: 991px) {
-            .admin-wrapper {
-                grid-template-columns: 1fr;
+        
+        @media (max-width: 992px) {
+            .admin-sidebar {
+                left: -250px;
             }
-
+            
+            .admin-sidebar.show {
+                left: 0;
+            }
+            
             .admin-main {
                 margin-left: 0;
-                width: 100%;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .admin-stats-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .admin-table-header {
-                flex-direction: column;
-                gap: 1rem;
-            }
-
-            .admin-table-actions {
-                width: 100%;
-                justify-content: flex-start;
-                overflow-x: auto;
             }
         }
         
+        @media print {
+            .no-print {
+                display: none;
+            }
+            
+            .admin-sidebar, .admin-topbar {
+                display: none;
+            }
+            
+            .admin-main {
+                margin-left: 0;
+            }
+        }
     </style>
 </head>
 <body>
@@ -523,6 +495,13 @@ $paymentsResult = $conn->query($sqlPayments);
                         <span>Logout</span>
                     </a>
                 </div>
+                
+                <div class="sidebar-menu-item mt-2">
+                    <a href="../index.php" class="sidebar-menu-link">
+                        <i class="fas fa-home"></i>
+                        <span>Back to Home</span>
+                    </a>
+                </div>
             </nav>
         </aside>
 
@@ -546,11 +525,18 @@ $paymentsResult = $conn->query($sqlPayments);
             </div>
 
             <!-- Main Content -->
-            <div class="admin-content p-4">
+            <div class="admin-content">
                 <!-- Page Header -->
-                <div class="admin-content-header">
-                    <h1><i class="fas fa-money-bill-wave me-2"></i>Manage Payments</h1>
-                    <p class="text-muted">Monitor and manage all payment transactions</p>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h1 class="h3 mb-0"><i class="fas fa-money-bill-wave me-2"></i>Manage Payments</h1>
+                        <p class="text-muted">Monitor and manage all payment transactions</p>
+                    </div>
+                    <div>
+                        <button class="admin-btn admin-btn-primary" onclick="exportToExcel()">
+                            <i class="fas fa-file-excel me-2"></i>Export Payments
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Statistics Cards -->
@@ -609,7 +595,7 @@ $paymentsResult = $conn->query($sqlPayments);
                 </div>
 
                 <!-- Payments Table Card -->
-                <div class="admin-table-card mt-4">
+                <div class="admin-table-card">
                     <div class="admin-table-header">
                         <div class="admin-table-title">Payment Transactions</div>
                         <div class="admin-table-actions d-flex gap-2">
@@ -627,9 +613,6 @@ $paymentsResult = $conn->query($sqlPayments);
                                     <i class="fas fa-times"></i> Failed
                                 </a>
                             </div>
-                            <button class="admin-btn admin-btn-secondary" onclick="exportToExcel()">
-                                <i class="fas fa-file-excel me-1"></i> Export
-                            </button>
                             <button class="admin-btn admin-btn-secondary" onclick="window.print()">
                                 <i class="fas fa-print me-1"></i> Print
                             </button>

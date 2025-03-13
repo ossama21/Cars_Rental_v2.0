@@ -711,6 +711,13 @@ if ($carCategories && $carCategories->num_rows > 0) {
                         <span>Logout</span>
                     </a>
                 </div>
+                
+                <div class="sidebar-menu-item mt-2">
+                    <a href="../index.php" class="sidebar-menu-link">
+                        <i class="fas fa-home"></i>
+                        <span>Back to Home</span>
+                    </a>
+                </div>
             </nav>
         </aside>
         
