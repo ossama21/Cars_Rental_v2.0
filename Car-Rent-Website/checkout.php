@@ -24,38 +24,46 @@ if (isset($_GET['get_payment_methods'])) {
     // ... existing payment methods code ...
 }
 
-// Get car details with discount information
+// Get car details with discount information and images
 if (isset($_GET['car_id'])) {
     $stmt = $conn->prepare("
         SELECT c.*, 
             CASE 
                 WHEN d.discount_type = 'percentage' THEN c.price * (1 - d.discount_value/100)
                 WHEN d.discount_type = 'fixed' THEN c.price - d.discount_value
-                ELSE c.price 
+                ELSE c.price
             END as discounted_price,
-            CASE 
-                WHEN d.discount_type = 'percentage' THEN CONCAT(d.discount_value, '%')
-                WHEN d.discount_type = 'fixed' THEN CONCAT('$', d.discount_value)
-                ELSE NULL 
-            END as discount_display
-        FROM cars c 
+            d.discount_type,
+            d.discount_value
+        FROM cars c
         LEFT JOIN car_discounts d ON c.id = d.car_id 
-            AND CURRENT_TIMESTAMP BETWEEN d.start_date AND d.end_date 
-            AND d.end_date > CURRENT_TIMESTAMP 
+            AND CURRENT_DATE BETWEEN d.start_date AND d.end_date
         WHERE c.id = ?");
     
-    $car_id = intval($_GET['car_id']);
-    $stmt->bind_param("i", $car_id);
+    $stmt->bind_param("i", $_GET['car_id']);
     $stmt->execute();
-    $result = $stmt->get_result();
-    $car = $result->fetch_assoc();
-    $stmt->close();
-
-    if (!$car) {
-        die("Car not found");
+    $car = $stmt->get_result()->fetch_assoc();
+    
+    // Get car images
+    $stmt = $conn->prepare("
+        SELECT image_path, is_primary 
+        FROM car_images 
+        WHERE car_id = ? 
+        ORDER BY is_primary DESC, id ASC");
+    $stmt->bind_param("i", $_GET['car_id']);
+    $stmt->execute();
+    $images = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    
+    // If no images in car_images table, use the legacy image field
+    if (empty($images) && !empty($car['image'])) {
+        $images = [['image_path' => $car['image'], 'is_primary' => 1]];
     }
-
-    // Override price with URL parameter if it exists (from discounted price)
+    
+    // If no images at all, use a placeholder
+    if (empty($images)) {
+        $images = [['image_path' => 'images/placeholder.png', 'is_primary' => 1]];
+    }
+    
     if (isset($_GET['price'])) {
         $car['price'] = floatval($_GET['price']);
     }
@@ -373,6 +381,7 @@ $conn->close();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/png" href="./images/image.png">
     <link rel="stylesheet" href="./css/modern.css">
+    <link rel="stylesheet" href="./css/checkout.css">
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -516,8 +525,22 @@ $conn->close();
             display: block;
             width: 25px;
             height: 2px;
-            background: white;
+            background: #2c3e50; /* Changed from white to a darker color */
             transition: var(--transition);
+        }
+
+        .menu-toggle.active span:nth-child(1) {
+            transform: rotate(45deg) translate(6px, 6px);
+            background: #2c3e50; /* Ensure visible color when active */
+        }
+
+        .menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .menu-toggle.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(6px, -6px);
+            background: #2c3e50; /* Ensure visible color when active */
         }
 
         body {
@@ -633,62 +656,57 @@ $conn->close();
         .payment-methods {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
-            margin: 2rem 0;
+            gap: 1rem;
+            margin: 1.5rem 0;
         }
 
         .payment-method {
             border: 2px solid #e2e8f0;
             border-radius: var(--border-radius);
-            padding: 1.5rem;
+            padding: 1rem;
             text-align: center;
             cursor: pointer;
             transition: var(--transition);
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 1rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .payment-method::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: var(--secondary-color);
-            opacity: 0;
-            transition: var(--transition);
-        }
-
-        .payment-method:hover::before,
-        .payment-method.active::before {
-            opacity: 1;
+            gap: 0.5rem;
+            min-width: 120px;
+            max-width: 100%;
         }
 
         .payment-method img {
-            height: 40px;
+            height: 30px;
             width: auto;
             object-fit: contain;
-            transition: var(--transition);
         }
 
-        .payment-method:hover {
-            border-color: var(--secondary-color);
-            transform: translateY(-2px);
+        /* Responsive styles for payment methods */
+        @media (max-width: 768px) {
+            .payment-methods {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
-        .payment-method.active {
-            border-color: var(--secondary-color);
-            background: rgba(52, 152, 219, 0.05);
-        }
-
-        .payment-method:hover img,
-        .payment-method.active img {
-            transform: scale(1.1);
+        @media (max-width: 480px) {
+            .payment-methods {
+                grid-template-columns: 1fr;
+                max-width: 250px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            
+            .payment-method {
+                padding: 0.75rem;
+            }
+            
+            .payment-method img {
+                height: 25px;
+            }
+            
+            .payment-method span {
+                font-size: 0.9rem;
+            }
         }
 
         .payment-form {
@@ -824,7 +842,17 @@ $conn->close();
             }
 
             .payment-methods {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(3, 1fr);
+                gap: 0.75rem;
+            }
+            
+            .payment-method {
+                padding: 0.75rem;
+                min-width: 100px;
+            }
+            
+            .payment-method img {
+                height: 25px;
             }
         }
 
@@ -835,6 +863,26 @@ $conn->close();
 
             .checkout-section {
                 padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .payment-methods {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 0.5rem;
+            }
+            
+            .payment-method {
+                padding: 0.5rem;
+                min-width: 80px;
+            }
+            
+            .payment-method img {
+                height: 20px;
+            }
+            
+            .payment-method span {
+                font-size: 0.875rem;
             }
         }
 
@@ -1268,27 +1316,21 @@ $conn->close();
                                     <div class="form-row">
                                         <div class="form-group">
                                             <label for="card-number">Card Number</label>
-                                            <input type="text" id="card-number" class="form-control" placeholder="1234 5678 9012 3456">
+                                            <input type="text" id="card-number" class="form-control" placeholder="1234 5678 9012 3456" required>
                                         </div>
                                         <div class="form-group">
                                             <label for="card-name">Cardholder Name</label>
-                                            <input type="text" id="card-name" class="form-control">
+                                            <input type="text" id="card-name" class="form-control" required>
                                         </div>
                                     </div>
                                     <div class="form-row">
                                         <div class="form-group">
                                             <label for="card-expiry">Expiry Date</label>
-                                            <input type="month" id="card-expiry" class="form-control">
+                                            <input type="month" id="card-expiry" class="form-control" required>
                                         </div>
                                         <div class="form-group">
                                             <label for="card-cvv">CVV</label>
-                                            <input type="text" id="card-cvv" class="form-control" placeholder="123" maxlength="3">
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-3">
-                                        <div class="form-check">
-                                            <input type="checkbox" class="form-check-input" id="save-card" name="save_payment_info">
-                                            <label class="form-check-label" for="save-card">Save card information for future checkouts</label>
+                                            <input type="text" id="card-cvv" class="form-control" placeholder="123" maxlength="3" required>
                                         </div>
                                     </div>
                                 </div>
@@ -1301,13 +1343,7 @@ $conn->close();
                                     </div>
                                     <div class="form-group">
                                         <label for="paypal-email">PayPal Email</label>
-                                        <input type="email" id="paypal-email" class="form-control" placeholder="your@email.com">
-                                    </div>
-                                    <div class="form-group mt-3">
-                                        <div class="form-check">
-                                            <input type="checkbox" class="form-check-input" id="save-paypal" name="save_payment_info">
-                                            <label class="form-check-label" for="save-paypal">Save PayPal information for future checkouts</label>
-                                        </div>
+                                        <input type="email" id="paypal-email" class="form-control" placeholder="your@email.com" required>
                                     </div>
                                 </div>
 
@@ -1320,17 +1356,11 @@ $conn->close();
                                     <div class="form-row">
                                         <div class="form-group">
                                             <label for="bank-account">Account Number</label>
-                                            <input type="text" id="bank-account" class="form-control" placeholder="Account Number">
+                                            <input type="text" id="bank-account" class="form-control" placeholder="Account Number" required>
                                         </div>
                                         <div class="form-group">
                                             <label for="bank-routing">Routing Number</label>
-                                            <input type="text" id="bank-routing" class="form-control" placeholder="Routing Number">
-                                        </div>
-                                    </div>
-                                    <div class="form-group mt-3">
-                                        <div class="form-check">
-                                            <input type="checkbox" class="form-check-input" id="save-bank" name="save_payment_info">
-                                            <label class="form-check-label" for="save-bank">Save bank information for future checkouts</label>
+                                            <input type="text" id="bank-routing" class="form-control" placeholder="Routing Number" required>
                                         </div>
                                     </div>
                                 </div>
@@ -1353,29 +1383,100 @@ $conn->close();
             <div class="checkout-section order-summary">
                 <h2>Order Summary</h2>
                 
-                <div class="car-info">
-                    <img id="car-image" src="<?php echo $car ? htmlspecialchars($car['image']) : ''; ?>" alt="Selected Car" class="car-image">
-                    <div class="car-details">
-                        <h3 id="car-name"><?php echo $car ? htmlspecialchars($car['name']) : 'Loading...'; ?></h3>
-                        <div class="features-grid">
-                            <div class="feature-item">
-                                <i class="fas fa-car"></i>
-                                <span id="car-brand"><?php echo $car ? htmlspecialchars($car['brand']) : 'Brand'; ?></span>
-                            </div>
-                            <div class="feature-item">
-                                <i class="fas fa-cog"></i>
-                                <span id="car-transmission"><?php echo $car ? htmlspecialchars($car['transmission']) : 'Transmission'; ?></span>
-                            </div>
-                            <div class="feature-item">
-                                <i class="fas fa-calendar"></i>
-                                <span id="car-model"><?php echo $car ? htmlspecialchars($car['model']) : 'Model'; ?></span>
-                            </div>
-                            <div class="feature-item">
-                                <i class="fas fa-chair"></i>
-                                <span id="car-interior"><?php echo $car ? htmlspecialchars($car['interior']) : 'Interior'; ?></span>
-                            </div>
+                <!-- Improved Car Gallery Section (Without Zoom) -->
+                <div class="car-gallery">
+                    <div class="main-image-container">
+                        <img id="main-car-image" src="<?php echo $car ? htmlspecialchars($images[0]['image_path']) : ''; ?>" alt="Selected Car" class="main-car-image">
+                    </div>
+                    
+                    <div class="thumbnail-gallery">
+                        <?php if (!empty($images)): ?>
+                            <?php foreach ($images as $index => $image): ?>
+                                <div class="thumbnail-item <?php echo $index === 0 ? 'active' : ''; ?>" data-image="<?php echo htmlspecialchars($image['image_path']); ?>">
+                                    <img src="<?php echo htmlspecialchars($image['image_path']); ?>" alt="Car image <?php echo $index + 1; ?>">
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                
+                <div class="car-details-expanded">
+                    <h3 id="car-name"><?php echo $car ? htmlspecialchars($car['name']) : 'Loading...'; ?></h3>
+                    <div class="car-price-tag">
+                        <span id="car-price">$<?php echo $car ? number_format($car['price'], 2) : '0.00'; ?></span> per day
+                    </div>
+                    
+                    <div class="car-specs">
+                        <div class="spec-item">
+                            <i class="fas fa-car"></i>
+                            <span><strong>Brand:</strong> <span id="car-brand"><?php echo $car ? htmlspecialchars($car['brand']) : 'Brand'; ?></span></span>
+                        </div>
+                        <div class="spec-item">
+                            <i class="fas fa-cog"></i>
+                            <span><strong>Transmission:</strong> <span id="car-transmission"><?php echo $car ? htmlspecialchars($car['transmission']) : 'Transmission'; ?></span></span>
+                        </div>
+                        <div class="spec-item">
+                            <i class="fas fa-calendar"></i>
+                            <span><strong>Model Year:</strong> <span id="car-model"><?php echo $car ? htmlspecialchars($car['model']) : 'Model'; ?></span></span>
+                        </div>
+                        <div class="spec-item">
+                            <i class="fas fa-chair"></i>
+                            <span><strong>Interior:</strong> <span id="car-interior"><?php echo $car ? htmlspecialchars($car['interior']) : 'Interior'; ?></span></span>
+                        </div>
+                        <?php if (!empty($car['fuel_type'])): ?>
+                        <div class="spec-item">
+                            <i class="fas fa-gas-pump"></i>
+                            <span><strong>Fuel Type:</strong> <span id="car-fuel"><?php echo htmlspecialchars($car['fuel_type']); ?></span></span>
+                        </div>
+                        <?php endif; ?>
+                        <?php if (!empty($car['engine_type'])): ?>
+                        <div class="spec-item">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span><strong>Engine:</strong> <span id="car-engine"><?php echo htmlspecialchars($car['engine_type']); ?></span></span>
+                        </div>
+                        <?php endif; ?>
+                        <?php if (!empty($car['seating_capacity'])): ?>
+                        <div class="spec-item">
+                            <i class="fas fa-users"></i>
+                            <span><strong>Seats:</strong> <span id="car-seats"><?php echo htmlspecialchars($car['seating_capacity']); ?></span></span>
+                        </div>
+                        <?php endif; ?>
+                        <?php if (!empty($car['color'])): ?>
+                        <div class="spec-item">
+                            <i class="fas fa-palette"></i>
+                            <span><strong>Color:</strong> <span id="car-color"><?php echo htmlspecialchars($car['color']); ?></span></span>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                    
+                    <?php if (!empty($car['features'])): ?>
+                    <div class="car-features">
+                        <h4>Features</h4>
+                        <div class="features-list">
+                            <?php 
+                            $features = explode(',', $car['features']);
+                            foreach ($features as $feature): 
+                                $feature = trim($feature);
+                                if (!empty($feature)):
+                                    // Handle feature content display with or without brackets
+                                    $featureText = $feature;
+                                    if (substr($featureText, 0, 1) !== '[') {
+                                        $featureText = '[' . $featureText;
+                                    }
+                                    if (substr($featureText, -1) !== ']') {
+                                        $featureText = $featureText . ']';
+                                    }
+                            ?>
+                                <div class="feature-badge">
+                                    <i class="fas fa-check-circle"></i> <?php echo htmlspecialchars($featureText); ?>
+                                </div>
+                            <?php 
+                                endif;
+                            endforeach; 
+                            ?>
                         </div>
                     </div>
+                    <?php endif; ?>
                 </div>
 
                 <!-- Add preorder badge and fee if it's a preorder -->
@@ -1445,6 +1546,31 @@ $conn->close();
             // Update hidden input
             document.getElementById('selected-payment-method').value = method;
         }
+        
+        // Image Gallery Functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Image gallery thumbnail switching
+            const thumbnails = document.querySelectorAll('.thumbnail-item');
+            const mainImage = document.getElementById('main-car-image');
+            
+            thumbnails.forEach(function(thumbnail) {
+                thumbnail.addEventListener('click', function() {
+                    // Remove active class from all thumbnails
+                    thumbnails.forEach(t => t.classList.remove('active'));
+                    
+                    // Add active class to clicked thumbnail
+                    this.classList.add('active');
+                    
+                    // Update main image source with smooth transition
+                    mainImage.style.opacity = '0';
+                    setTimeout(() => {
+                        const imagePath = this.getAttribute('data-image');
+                        mainImage.src = imagePath;
+                        mainImage.style.opacity = '1';
+                    }, 200);
+                });
+            });
+        });
     </script>
     <script src="./js/checkout.js"></script>
     

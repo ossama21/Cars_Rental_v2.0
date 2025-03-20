@@ -6,6 +6,13 @@ include '../data/auth.php';
 // Use the auth function to check admin access
 checkAdminAccess();
 
+// Create tables if they don't exist
+$sqlFile = file_get_contents('car_images.sql');
+$conn->multi_query($sqlFile);
+while ($conn->more_results()) {
+    $conn->next_result();
+}
+
 $email = $_SESSION['email'];
 // Get admin info for display
 $sql = "SELECT role, firstName, lastName FROM users WHERE email=?";
@@ -28,12 +35,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $transmission = $_POST['transmission'];
     $interior = $_POST['interior'];
     $brand = $_POST['brand'];
-    
-    // Handle image upload
-    $targetDir = "../images/";
-    $fileName = basename($_FILES["carImage"]["name"]);
-    $targetFilePath = $targetDir . $fileName;
-    $fileType = pathinfo($targetFilePath, PATHINFO_EXTENSION);
+    $engine_type = $_POST['engine_type'];
+    $fuel_type = $_POST['fuel_type'];
+    $seating_capacity = $_POST['seating_capacity'];
+    $mileage = $_POST['mileage'];
+    $features = $_POST['features'];
+    $year = $_POST['year'];
+    $color = $_POST['color'];
+    $registration_number = $_POST['registration_number'];
+    $vin = $_POST['vin'];
+    $quantity = $_POST['quantity'];
     
     // Initialize error message array
     $errors = [];
@@ -41,78 +52,79 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Validate required fields
     if (empty($name)) $errors[] = "Car name is required";
     if (empty($price) || !is_numeric($price)) $errors[] = "Valid price is required";
-    if (empty($model)) $errors[] = "Model year is required";
+    if (empty($year)) $errors[] = "Year is required";
     if (empty($brand)) $errors[] = "Brand is required";
+    if ($quantity < 1) $errors[] = "Quantity must be at least 1";
     
-    // If no errors, proceed with image upload and database insertion
+    // If no errors, proceed with database insertion and image uploads
     if (empty($errors)) {
-        $uploadOk = 1;
-        $imageFileType = strtolower(pathinfo($targetFilePath, PATHINFO_EXTENSION));
-        
-        // Check if image file is an actual image
-        if(isset($_FILES["carImage"]) && $_FILES["carImage"]["tmp_name"] != "") {
-            $check = getimagesize($_FILES["carImage"]["tmp_name"]);
-            if($check !== false) {
-                // Allow certain file formats
-                if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg") {
-                    $errors[] = "Sorry, only JPG, JPEG, PNG files are allowed.";
-                    $uploadOk = 0;
-                }
-                
-                // Check file size (limit to 5MB)
-                if ($_FILES["carImage"]["size"] > 5000000) {
-                    $errors[] = "Sorry, your file is too large. Max 5MB allowed.";
-                    $uploadOk = 0;
-                }
-                
-                // If everything is ok, try to upload file
-                if ($uploadOk) {
-                    if (move_uploaded_file($_FILES["carImage"]["tmp_name"], $targetFilePath)) {
-                        $relativePath = "images/" . $fileName;
-                        
-                        // Insert into database
-                        $sqlInsert = "INSERT INTO cars (name, price, description, model, transmission, interior, brand, image) 
-                                      VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-                        $insertStmt = $conn->prepare($sqlInsert);
-                        $insertStmt->bind_param("sdssssss", $name, $price, $description, $model, $transmission, $interior, $brand, $relativePath);
-                        
-                        if ($insertStmt->execute()) {
-                            // Redirect to the manage cars page with success message
-                            header("Location: manage_cars.php?success=Car added successfully");
-                            exit;
-                        } else {
-                            $errors[] = "Error: " . $insertStmt->error;
-                        }
-                    } else {
-                        $errors[] = "Sorry, there was an error uploading your file.";
-                    }
-                }
-            } else {
-                $errors[] = "File is not an image.";
-                $uploadOk = 0;
-            }
-        } else {
-            // No image uploaded, use default image path or placeholder
-            $relativePath = "images/placeholder.png";
-            
-            // Insert into database with default/placeholder image
-            $sqlInsert = "INSERT INTO cars (name, price, description, model, transmission, interior, brand, image) 
-                          VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        $conn->begin_transaction();
+        try {
+            // Insert car details first
+            $sqlInsert = "INSERT INTO cars (name, price, description, model, transmission, interior, brand, engine_type, 
+                         fuel_type, seating_capacity, mileage, features, year, color, registration_number, vin, quantity) 
+                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $insertStmt = $conn->prepare($sqlInsert);
-            $insertStmt->bind_param("sdssssss", $name, $price, $description, $model, $transmission, $interior, $brand, $relativePath);
+            $insertStmt->bind_param("sdsssssssississsi", 
+                $name, $price, $description, $model, $transmission, $interior, $brand, $engine_type,
+                $fuel_type, $seating_capacity, $mileage, $features, $year, $color, $registration_number, $vin, $quantity
+            );
             
             if ($insertStmt->execute()) {
-                // Redirect to the manage cars page with success message
-                header("Location: manage_cars.php?success=Car added successfully");
+                $car_id = $conn->insert_id;
+                
+                // Create directory for car images if it doesn't exist
+                $carImageDir = "../images/cars/" . $car_id;
+                if (!file_exists($carImageDir)) {
+                    mkdir($carImageDir, 0777, true);
+                }
+                
+                // Handle multiple image uploads
+                $uploadedImages = 0;
+                $maxImages = 4; // Maximum number of images per car
+                
+                foreach ($_FILES['car_images']['tmp_name'] as $key => $tmp_name) {
+                    if ($uploadedImages >= $maxImages) break;
+                    
+                    if (!empty($tmp_name) && is_uploaded_file($tmp_name)) {
+                        $fileName = $_FILES['car_images']['name'][$key];
+                        $fileType = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+                        
+                        // Allow certain file formats
+                        if ($fileType == "jpg" || $fileType == "jpeg" || $fileType == "png") {
+                            // Generate unique filename
+                            $newFileName = uniqid() . '.' . $fileType;
+                            $targetPath = $carImageDir . '/' . $newFileName;
+                            
+                            if (move_uploaded_file($tmp_name, $targetPath)) {
+                                // Insert image record
+                                $relativePath = "images/cars/" . $car_id . '/' . $newFileName;
+                                $isPrimary = ($uploadedImages == 0) ? 1 : 0; // First image is primary
+                                
+                                $sqlImage = "INSERT INTO car_images (car_id, image_path, is_primary) VALUES (?, ?, ?)";
+                                $stmtImage = $conn->prepare($sqlImage);
+                                $stmtImage->bind_param("isi", $car_id, $relativePath, $isPrimary);
+                                $stmtImage->execute();
+                                
+                                $uploadedImages++;
+                            }
+                        }
+                    }
+                }
+                
+                $conn->commit();
+                $_SESSION['success'] = "Car added successfully with " . $uploadedImages . " images.";
+                header("Location: manage_cars.php");
                 exit;
-            } else {
-                $errors[] = "Error: " . $insertStmt->error;
             }
+        } catch (Exception $e) {
+            $conn->rollback();
+            $errors[] = "Error: " . $e->getMessage();
         }
     }
 }
 
-// Get brands for dropdown (for autocomplete suggestions)
+// Get brands for dropdown
 $sqlBrands = "SELECT DISTINCT brand FROM cars ORDER BY brand";
 $brandsResult = $conn->query($sqlBrands);
 $brands = [];
@@ -354,6 +366,96 @@ while ($brandRow = $brandsResult->fetch_assoc()) {
                 margin-left: 0;
             }
         }
+        
+        .image-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .image-preview-item {
+            position: relative;
+            aspect-ratio: 4/3;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .image-preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .image-preview-item .remove-image {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(255,255,255,0.9);
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #e53e3e;
+        }
+        
+        .drag-drop-zone {
+            border: 2px dashed #cbd5e0;
+            border-radius: 5px;
+            padding: 20px;
+            text-align: center;
+            background-color: #f8fafc;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .drag-drop-zone:hover {
+            border-color: #3182ce;
+            background-color: #ebf8ff;
+        }
+        
+        .drag-drop-zone.dragover {
+            border-color: #3182ce;
+            background-color: #ebf8ff;
+        }
+
+        .features-input-container {
+            position: relative;
+        }
+
+        .feature-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .feature-tag {
+            display: inline-flex;
+            align-items: center;
+            background-color: #e2f0fd;
+            color: #0c63e4;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .remove-feature {
+            cursor: pointer;
+            margin-left: 6px;
+            color: #0c63e4;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .remove-feature:hover {
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
@@ -479,115 +581,156 @@ while ($brandRow = $brandsResult->fetch_assoc()) {
                 <!-- Add Car Form -->
                 <div class="form-card">
                     <div class="form-header">
-                        <h5 class="mb-0">Car Details</h5>
+                        <h5 class="mb-0">Add New Car</h5>
                     </div>
                     <div class="form-body">
                         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" enctype="multipart/form-data">
+                            <!-- Images Section -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <label class="form-label">Car Images (Up to 4 images)</label>
+                                    <div class="drag-drop-zone" id="dragDropZone">
+                                        <i class="fas fa-cloud-upload-alt fa-2x mb-2"></i>
+                                        <p class="mb-0">Drag and drop images here or click to select files</p>
+                                        <small class="text-muted">Supports: JPG, JPEG, PNG (Max 5MB each)</small>
+                                    </div>
+                                    <input type="file" id="car_images" name="car_images[]" multiple accept="image/*" class="d-none">
+                                    <div class="image-preview-grid" id="imagePreviewGrid"></div>
+                                </div>
+                            </div>
+
+                            <!-- Basic Information -->
                             <div class="row">
-                                <!-- Left Column -->
-                                <div class="col-md-4 mb-4 mb-md-0">
-                                    <div class="field-group">
-                                        <label class="form-label d-block">Car Image</label>
-                                        <div class="image-preview-container" id="imagePreviewContainer">
-                                            <img src="#" alt="Preview" class="image-preview" id="imagePreview" style="display: none;">
-                                            <div class="upload-placeholder" id="uploadPlaceholder">
-                                                <i class="fas fa-cloud-upload-alt"></i>
-                                                <p>Click or drop image here</p>
-                                            </div>
-                                        </div>
-                                        <input type="file" class="form-control mt-3" id="carImage" name="carImage" accept="image/*">
-                                        <div class="form-hint">Recommended: 800×600 px, max 5MB. JPG, PNG formats only.</div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Car Name *</label>
+                                        <input type="text" class="form-control" name="name" required>
                                     </div>
                                 </div>
-                                
-                                <!-- Right Column -->
-                                <div class="col-md-8">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="field-group">
-                                                <label for="name" class="form-label">Car Name <span class="required-asterisk">*</span></label>
-                                                <input type="text" class="form-control" id="name" name="name" placeholder="e.g. BMW X5 xDrive" required>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="field-group">
-                                                <label for="brand" class="form-label">Brand <span class="required-asterisk">*</span></label>
-                                                <input type="text" class="form-control" id="brand" name="brand" list="brandList" placeholder="e.g. BMW" required>
-                                                <datalist id="brandList">
-                                                    <?php foreach ($brands as $brand): ?>
-                                                        <option value="<?php echo htmlspecialchars($brand); ?>">
-                                                    <?php endforeach; ?>
-                                                </datalist>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="field-group">
-                                                <label for="model" class="form-label">Model <span class="required-asterisk">*</span></label>
-                                                <input type="text" class="form-control" id="model" name="model" placeholder="e.g. 2023" required>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="field-group">
-                                                <label for="price" class="form-label">Price per Day <span class="required-asterisk">*</span></label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text">$</span>
-                                                    <input type="number" class="form-control" id="price" name="price" min="0" step="0.01" placeholder="0.00" required>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="field-group">
-                                                <label for="quantity" class="form-label">Quantity Available <span class="required-asterisk">*</span></label>
-                                                <input type="number" class="form-control" id="quantity" name="quantity" min="1" value="1" required>
-                                                <div class="form-text">Number of cars of this model available for rent</div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="field-group">
-                                                <label for="transmission" class="form-label">Transmission</label>
-                                                <select class="form-select" id="transmission" name="transmission">
-                                                    <option value="Automatic">Automatic</option>
-                                                    <option value="Manual">Manual</option>
-                                                    <option value="Semi-Automatic">Semi-Automatic</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="field-group">
-                                                <label for="interior" class="form-label">Interior</label>
-                                                <select class="form-select" id="interior" name="interior">
-                                                    <option value="Fabric">Fabric</option>
-                                                    <option value="Leather">Leather</option>
-                                                    <option value="Sport">Sport</option>
-                                                    <option value="Premium">Premium</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="field-group">
-                                        <label for="description" class="form-label">Description</label>
-                                        <textarea class="form-control" id="description" name="description" rows="5" 
-                                                  placeholder="Enter car description, features, etc."></textarea>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Brand *</label>
+                                        <input type="text" class="form-control" name="brand" list="brandList" required>
+                                        <datalist id="brandList">
+                                            <?php foreach ($brands as $brand): ?>
+                                                <option value="<?php echo htmlspecialchars($brand); ?>">
+                                            <?php endforeach; ?>
+                                        </datalist>
                                     </div>
                                 </div>
                             </div>
-                            
-                            <hr class="my-4">
-                            
-                            <div class="d-flex justify-content-end">
-                                <a href="manage_cars.php" class="btn btn-light me-2">Cancel</a>
-                                <button type="submit" class="admin-btn admin-btn-primary admin-btn-lg px-5">
-                                    <i class="fas fa-plus-circle me-2"></i>Add Car
+
+                            <!-- Vehicle Details -->
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label class="form-label">Year *</label>
+                                        <input type="number" class="form-control" name="year" min="1900" max="<?php echo date('Y') + 1; ?>" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label class="form-label">Price per Day *</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">$</span>
+                                            <input type="number" class="form-control" name="price" min="0" step="0.01" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label class="form-label">Quantity Available *</label>
+                                        <input type="number" class="form-control" name="quantity" min="1" value="1" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Technical Specifications -->
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label class="form-label">Engine Type</label>
+                                        <input type="text" class="form-control" name="engine_type" placeholder="e.g. 2.0L Turbo">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label class="form-label">Transmission</label>
+                                        <select class="form-select" name="transmission">
+                                            <option value="Automatic">Automatic</option>
+                                            <option value="Manual">Manual</option>
+                                            <option value="Semi-Automatic">Semi-Automatic</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label class="form-label">Fuel Type</label>
+                                        <select class="form-select" name="fuel_type">
+                                            <option value="Petrol">Petrol</option>
+                                            <option value="Diesel">Diesel</option>
+                                            <option value="Electric">Electric</option>
+                                            <option value="Hybrid">Hybrid</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Additional Details -->
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label class="form-label">Seating Capacity</label>
+                                        <input type="number" class="form-control" name="seating_capacity" min="1" max="50">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label class="form-label">Mileage</label>
+                                        <input type="text" class="form-control" name="mileage" placeholder="e.g. 15 km/l">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label class="form-label">Color</label>
+                                        <input type="text" class="form-control" name="color">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Registration Details -->
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Registration Number</label>
+                                        <input type="text" class="form-control" name="registration_number">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">VIN</label>
+                                        <input type="text" class="form-control" name="vin" placeholder="Vehicle Identification Number">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Features and Description -->
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="mb-3">
+                                        <label class="form-label">Features</label>
+                                        <div class="features-input-container">
+                                            <input type="text" id="features" name="features" class="form-control" placeholder="Add features and press Enter">
+                                            <small class="form-text text-muted">Type a feature and press Enter to add it. Each feature will be automatically formatted with brackets.</small>
+                                        </div>
+                                        <div class="feature-tags" id="feature-tags-container"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="text-end mt-4">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i>Save Car
                                 </button>
                             </div>
                         </form>
@@ -614,72 +757,169 @@ while ($brandRow = $brandsResult->fetch_assoc()) {
             }
         });
         
-        // Image preview functionality
-        const imageInput = document.getElementById('carImage');
-        const imagePreview = document.getElementById('imagePreview');
-        const uploadPlaceholder = document.getElementById('uploadPlaceholder');
-        
-        imageInput.addEventListener('change', function() {
-            const file = this.files[0];
-            if (file) {
-                const reader = new FileReader();
-                
-                reader.addEventListener('load', function() {
-                    imagePreview.src = reader.result;
-                    imagePreview.style.display = 'block';
-                    uploadPlaceholder.style.display = 'none';
-                });
-                
-                reader.readAsDataURL(file);
-            }
-        });
-        
-        // Make the image container clickable to trigger file input
-        const imageContainer = document.getElementById('imagePreviewContainer');
-        imageContainer.addEventListener('click', function() {
-            imageInput.click();
-        });
-        
-        // Drag and drop functionality for image upload
+        // Drag and drop functionality for multiple images
+        const dragDropZone = document.getElementById('dragDropZone');
+        const fileInput = document.getElementById('car_images');
+        const imagePreviewGrid = document.getElementById('imagePreviewGrid');
+        let selectedFiles = [];
+
+        dragDropZone.addEventListener('click', () => fileInput.click());
+
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            imageContainer.addEventListener(eventName, preventDefaults, false);
+            dragDropZone.addEventListener(eventName, preventDefaults, false);
         });
-        
+
         function preventDefaults(e) {
             e.preventDefault();
             e.stopPropagation();
         }
-        
+
         ['dragenter', 'dragover'].forEach(eventName => {
-            imageContainer.addEventListener(eventName, highlight, false);
+            dragDropZone.addEventListener(eventName, highlight, false);
         });
-        
+
         ['dragleave', 'drop'].forEach(eventName => {
-            imageContainer.addEventListener(eventName, unhighlight, false);
+            dragDropZone.addEventListener(eventName, unhighlight, false);
         });
-        
-        function highlight() {
-            imageContainer.style.borderColor = '#3182ce';
-            imageContainer.style.backgroundColor = '#ebf8ff';
+
+        function highlight(e) {
+            dragDropZone.classList.add('dragover');
         }
-        
-        function unhighlight() {
-            imageContainer.style.borderColor = '#cbd5e0';
-            imageContainer.style.backgroundColor = '#f8fafc';
+
+        function unhighlight(e) {
+            dragDropZone.classList.remove('dragover');
         }
-        
-        imageContainer.addEventListener('drop', handleDrop, false);
-        
+
+        dragDropZone.addEventListener('drop', handleDrop, false);
+
         function handleDrop(e) {
             const dt = e.dataTransfer;
             const files = dt.files;
-            
-            if (files.length) {
-                imageInput.files = files;
-                const event = new Event('change');
-                imageInput.dispatchEvent(event);
-            }
+            handleFiles(files);
         }
+
+        fileInput.addEventListener('change', function() {
+            handleFiles(this.files);
+        });
+
+        function handleFiles(files) {
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+            const maxFiles = 4;
+            const maxSize = 5 * 1024 * 1024; // 5MB
+
+            // Convert FileList to Array and filter
+            const newFiles = Array.from(files).filter(file => {
+                if (!allowedTypes.includes(file.type)) {
+                    alert(`File "${file.name}" is not a supported image format`);
+                    return false;
+                }
+                if (file.size > maxSize) {
+                    alert(`File "${file.name}" is too large. Maximum size is 5MB`);
+                    return false;
+                }
+                return true;
+            });
+
+            // Check total number of files
+            if (selectedFiles.length + newFiles.length > maxFiles) {
+                alert(`You can only upload up to ${maxFiles} images`);
+                return;
+            }
+
+            // Add new files to selected files array
+            selectedFiles = [...selectedFiles, ...newFiles];
+            updateImagePreviews();
+        }
+
+        function updateImagePreviews() {
+            imagePreviewGrid.innerHTML = '';
+            selectedFiles.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const previewItem = document.createElement('div');
+                    previewItem.className = 'image-preview-item';
+                    previewItem.innerHTML = `
+                        <img src="${e.target.result}" alt="Preview">
+                        <button type="button" class="remove-image" onclick="removeImage(${index})">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `;
+                    imagePreviewGrid.appendChild(previewItem);
+                }
+                reader.readAsDataURL(file);
+            });
+
+            // Update file input
+            const dataTransfer = new DataTransfer();
+            selectedFiles.forEach(file => {
+                dataTransfer.items.add(file);
+            });
+            fileInput.files = dataTransfer.files;
+        }
+
+        function removeImage(index) {
+            selectedFiles.splice(index, 1);
+            updateImagePreviews();
+        }
+
+        // Feature tags handling
+        document.addEventListener('DOMContentLoaded', function() {
+            const featuresInput = document.getElementById('features');
+            const featureTagsContainer = document.getElementById('feature-tags-container');
+            
+            // Function to update the hidden input with all feature tags
+            function updateFeaturesInput() {
+                const featureTags = document.querySelectorAll('.feature-tag');
+                const featuresArray = Array.from(featureTags).map(tag => {
+                    return tag.textContent.trim().replace('×', '').trim();
+                });
+                featuresInput.value = featuresArray.join(', ');
+            }
+            
+            // Handle Enter key press
+            featuresInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const featureInput = this.value.trim();
+                    if (featureInput) {
+                        addFeatureTag(featureInput);
+                        this.value = ''; // Clear input after adding
+                    }
+                }
+            });
+            
+            function addFeatureTag(featureText) {
+                // Format with brackets if not already present
+                if (!featureText.startsWith('[')) {
+                    featureText = '[' + featureText;
+                }
+                if (!featureText.endsWith(']')) {
+                    featureText = featureText + ']';
+                }
+                
+                const featureTag = document.createElement('span');
+                featureTag.className = 'feature-tag';
+                featureTag.innerHTML = featureText + ' <i class="fas fa-times remove-feature"></i>';
+                featureTagsContainer.appendChild(featureTag);
+                
+                // Add event listener to the remove button
+                const removeBtn = featureTag.querySelector('.remove-feature');
+                removeBtn.addEventListener('click', function() {
+                    featureTag.remove();
+                    updateFeaturesInput();
+                });
+                
+                updateFeaturesInput();
+            }
+            
+            // Remove feature tags when clicking the "x" button
+            document.querySelectorAll('.remove-feature').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    this.parentElement.remove();
+                    updateFeaturesInput();
+                });
+            });
+        });
     </script>
 </body>
 </html>

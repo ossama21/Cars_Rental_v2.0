@@ -78,15 +78,16 @@
         $(thisAlert).removeClass('alert-validate');
     }
     
-    // Mobile Menu Toggle
+    // Mobile Menu Toggle - Improved implementation
     document.addEventListener('DOMContentLoaded', () => {
       const menuToggle = document.querySelector('.menu-toggle');
       const navMenu = document.querySelector('.nav-menu');
-      const navButtons = document.querySelector('.nav-buttons');
       const body = document.body;
 
       if (menuToggle && navMenu) {
-        menuToggle.addEventListener('click', () => {
+        // Fix for the burger menu click event
+        menuToggle.addEventListener('click', (e) => {
+          e.stopPropagation(); // Prevent event from bubbling up
           menuToggle.classList.toggle('active');
           navMenu.classList.toggle('active');
           body.classList.toggle('menu-open');
@@ -94,7 +95,9 @@
 
         // Close menu when clicking outside
         document.addEventListener('click', (e) => {
-          if (!menuToggle.contains(e.target) && !navMenu.contains(e.target)) {
+          if (menuToggle.classList.contains('active') && 
+              !menuToggle.contains(e.target) && 
+              !navMenu.contains(e.target)) {
             menuToggle.classList.remove('active');
             navMenu.classList.remove('active');
             body.classList.remove('menu-open');
@@ -112,6 +115,39 @@
             navbar.classList.remove('scrolled');
           }
         });
+      }
+      
+      // Add touch support for mobile devices
+      if (menuToggle && 'ontouchstart' in window) {
+        menuToggle.addEventListener('touchstart', (e) => {
+          e.stopPropagation();
+        });
+      }
+      
+      // Profile Dropdown functionality
+      const profileToggle = document.querySelector('.profile-toggle');
+      const profileMenu = document.querySelector('.profile-menu');
+      
+      if (profileToggle && profileMenu) {
+        profileToggle.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          profileMenu.classList.toggle('active');
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+          if (!profileToggle.contains(e.target) && !profileMenu.contains(e.target)) {
+            profileMenu.classList.remove('active');
+          }
+        });
+        
+        // Support for touch devices
+        if ('ontouchstart' in window) {
+          profileToggle.addEventListener('touchstart', (e) => {
+            e.stopPropagation();
+          });
+        }
       }
     });
 

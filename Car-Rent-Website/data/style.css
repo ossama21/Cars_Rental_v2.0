@@ -344,3 +344,21 @@ body {
         padding: 30px 20px;
     }
 }
+
+/* Mobile Responsive Styles */
+@media (max-width: 991.98px) {
+    .form-container {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 90%;
+        max-width: 500px;
+        z-index: 1000;
+    }
+
+    /* Hide desktop buttons when form is shown */
+    body.form-active .nav-buttons {
+        display: none !important;
+    }
+}

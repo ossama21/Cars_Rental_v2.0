@@ -25,6 +25,8 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
     <link rel="stylesheet" href="./css/about.css">
     <link rel="stylesheet" href="./css/modern.css">
     <link rel="stylesheet" href="./css/index1.css">
+    <!-- Mobile-specific CSS -->
+    <link rel="stylesheet" href="./css/mobile.css">
 
     <style>
       /* Loading overlay styles */
@@ -79,7 +81,8 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
             </div>
           </div>
 
-          <div class="nav-buttons">
+          <!-- Authentication buttons/profile dropdown -->
+          <div class="nav-buttons desktop-auth">
             <?php if (isset($_SESSION['firstName'])): ?>
               <div class="profile-dropdown">
                 <button class="profile-toggle">
@@ -104,19 +107,51 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
                 </div>
               </div>
             <?php else: ?>
-              <a href="data/index.php" class="nav-btn login-btn">Login</a>
-              <a href="data/index.php" class="nav-btn signup-btn">Sign Up</a>
+              <!-- The only instance of login/signup buttons -->
+              <div class="auth-buttons">
+                <a href="data/index.php" class="nav-btn login-btn">Login</a>
+                <a href="data/index.php" class="nav-btn signup-btn">Sign Up</a>
+              </div>
             <?php endif; ?>
           </div>
 
-          <button class="menu-toggle" aria-label="Toggle navigation">
-            <span></span>
-            <span></span>
-            <span></span>
-          </button>
+          <!-- Repositioned menu toggle button -->
+          <div class="mobile-menu-wrapper">
+            <button class="menu-toggle" aria-label="Toggle navigation">
+              <span></span>
+              <span></span>
+              <span></span>
+            </button>
+          </div>
         </div>
       </nav>
     </header>
+
+    <!-- Mobile Nav Menu -->
+    <div class="mobile-nav">
+      <ul class="mobile-nav-list">
+        <li class="mobile-nav-item">
+          <a href="index.php" class="mobile-nav-link">Home</a>
+        </li>
+        <li class="mobile-nav-item">
+          <a href="about.php" class="mobile-nav-link active">About</a>
+        </li>
+        <li class="mobile-nav-item">
+          <a href="book.php" class="mobile-nav-link">Cars</a>
+        </li>
+        <li class="mobile-nav-item">
+          <a href="#contact-section" class="mobile-nav-link">Contact</a>
+        </li>
+      </ul>
+      
+      <?php if (!isset($_SESSION['firstName'])): ?>
+      <!-- Mobile auth buttons (only shown in mobile menu) -->
+      <div class="mobile-auth">
+        <a href="data/index.php" class="nav-btn login-btn">Login</a>
+        <a href="data/index.php" class="nav-btn signup-btn">Sign Up</a>
+      </div>
+      <?php endif; ?>
+    </div>
 
     <!-- Hero Banner -->
     <section class="hero-banner">
@@ -620,7 +655,7 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
               <p class="mb-0">&copy;2024 <span>CARS</span>RENT - All Rights Reserved.</p>
             </div>
             <div class="col-md-6 text-md-end">
-              <p class="mb-0">Made by: Mohammed Ali & Oussama</p>
+              <p class="mb-0">Made by: HATTAN OUSSAMA</p>
             </div>
           </div>
         </div>
@@ -638,6 +673,9 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <!-- AOS Animation Library -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="js/main.js"></script>
+    <!-- Mobile-specific JS -->
+    <script src="js/mobile.js"></script>
     <script>
       // Initialize AOS
       AOS.init({
@@ -645,6 +683,31 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
         easing: 'ease-in-out',
         once: true,
         mirror: false
+      });
+      
+      // Mobile menu toggle
+      document.addEventListener('DOMContentLoaded', function() {
+        const menuToggle = document.querySelector('.menu-toggle');
+        const mobileNav = document.querySelector('.mobile-nav');
+        const body = document.body;
+        
+        if (menuToggle && mobileNav) {
+          menuToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            menuToggle.classList.toggle('active');
+            mobileNav.classList.toggle('active');
+            body.classList.toggle('menu-open');
+          });
+          
+          // Close menu when clicking outside
+          document.addEventListener('click', function(e) {
+            if (!menuToggle.contains(e.target) && !mobileNav.contains(e.target)) {
+              menuToggle.classList.remove('active');
+              mobileNav.classList.remove('active');
+              body.classList.remove('menu-open');
+            }
+          });
+        }
       });
     </script>
   </body>

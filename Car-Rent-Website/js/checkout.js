@@ -255,6 +255,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Update the hidden input
             document.getElementById('selected-payment-method').value = methodName;
+
+            document.querySelector('.payment-methods').classList.remove('invalid-section');
         });
     });
 
@@ -263,8 +265,22 @@ document.addEventListener('DOMContentLoaded', function() {
     if (form) {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
-            
-            // Validate required fields
+
+            // First check if payment method is selected
+            const selectedMethod = document.querySelector('.payment-method.active');
+            if (!selectedMethod) {
+                showAlert('Please select a payment method', 'error');
+                // Scroll to payment methods section
+                document.querySelector('.payment-methods').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                // Add visual indication that payment method selection is required
+                document.querySelector('.payment-methods').classList.add('invalid-section');
+                setTimeout(() => {
+                    document.querySelector('.payment-methods').classList.remove('invalid-section');
+                }, 3000);
+                return false;
+            }
+
+            // Then validate required fields
             let isValid = true;
             this.querySelectorAll('[required]').forEach(field => {
                 if (!field.value.trim()) {
@@ -279,11 +295,34 @@ document.addEventListener('DOMContentLoaded', function() {
                 return false;
             }
 
-            // Check if payment method is selected
-            const selectedMethod = document.querySelector('.payment-method.active');
-            if (!selectedMethod) {
-                showAlert('Please select a payment method', 'error');
-                return false;
+            const paymentMethod = selectedMethod.getAttribute('data-method');
+            switch(paymentMethod) {
+                case 'credit-card':
+                    const cardNumber = document.getElementById('card-number')?.value;
+                    const cardName = document.getElementById('card-name')?.value;
+                    const cardExpiry = document.getElementById('card-expiry')?.value;
+                    const cardCvv = document.getElementById('card-cvv')?.value;
+                    
+                    if (!cardNumber || !cardName || !cardExpiry || !cardCvv) {
+                        showAlert('Please fill in all credit card details', 'error');
+                        return false;
+                    }
+                    break;
+                case 'paypal':
+                    const paypalEmail = document.getElementById('paypal-email')?.value;
+                    if (!paypalEmail) {
+                        showAlert('Please enter your PayPal email', 'error');
+                        return false;
+                    }
+                    break;
+                case 'bank':
+                    const accountNumber = document.getElementById('bank-account')?.value;
+                    const routingNumber = document.getElementById('bank-routing')?.value;
+                    if (!accountNumber || !routingNumber) {
+                        showAlert('Please fill in all bank transfer details', 'error');
+                        return false;
+                    }
+                    break;
             }
 
             const submitButton = form.querySelector('button[type="submit"]');
@@ -303,11 +342,11 @@ document.addEventListener('DOMContentLoaded', function() {
             formData.append('end_date', document.getElementById('endDate').value);
 
             // Add payment details
-            let paymentData = {};
-            const method = selectedMethod.getAttribute('data-method');
-            switch(method) {
+            let paymentDetails = {};
+            const selectedPaymentMethod = selectedMethod.getAttribute('data-method');
+            switch(selectedPaymentMethod) {
                 case 'credit-card':
-                    paymentData = {
+                    paymentDetails = {
                         cardNumber: document.getElementById('card-number').value,
                         cardName: document.getElementById('card-name').value,
                         cardExpiry: document.getElementById('card-expiry').value,
@@ -315,18 +354,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     };
                     break;
                 case 'paypal':
-                    paymentData = {
+                    paymentDetails = {
                         email: document.getElementById('paypal-email').value
                     };
                     break;
                 case 'bank':
-                    paymentData = {
+                    paymentDetails = {
                         accountNumber: document.getElementById('bank-account').value,
                         routingNumber: document.getElementById('bank-routing').value
                     };
                     break;
             }
-            formData.append('payment_data', JSON.stringify(paymentData));
+            formData.append('payment_data', JSON.stringify(paymentDetails));
 
             // Send request
             fetch('checkout.php', {

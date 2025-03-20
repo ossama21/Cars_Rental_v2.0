@@ -26,7 +26,7 @@ while($row = $brandResult->fetch_assoc()) {
     $brands[] = $row['brand'];
 }
 
-// Build the base query with discount information
+// Build the base query with discount information and primary image
 $sql = "SELECT c.*, 
         (SELECT COUNT(*) 
          FROM services s 
@@ -48,11 +48,13 @@ $sql = "SELECT c.*,
             WHEN d.discount_type = 'percentage' THEN c.price * (1 - d.discount_value/100)
             WHEN d.discount_type = 'fixed' THEN c.price - d.discount_value
             ELSE c.price 
-        END as discounted_price
+        END as discounted_price,
+        ci.image_path as primary_image
         FROM cars c 
         LEFT JOIN car_discounts d ON c.id = d.car_id 
             AND CURRENT_TIMESTAMP BETWEEN d.start_date AND d.end_date 
             AND d.end_date > CURRENT_TIMESTAMP
+        LEFT JOIN car_images ci ON c.id = ci.car_id AND ci.is_primary = 1
         WHERE 1=1";
 
 // Add search conditions
@@ -113,6 +115,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <link rel="stylesheet" href="./css/book.css">
     <link rel="stylesheet" href="./css/modern.css">
+    <!-- Mobile-specific CSS -->
+    <link rel="stylesheet" href="./css/mobile.css">
     
     <style>
         :root {
@@ -174,9 +178,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .main-content {
-            padding-top: 100px;
+            padding-top: 70px;
             min-height: calc(100vh - 80px);
             background: linear-gradient(135deg, var(--background-light) 0%, #ffffff 100%);
+        }
+
+        .title-wrapper {
+            text-align: center;
+            padding: 0 0 20px;
+        }
+
+        .main-title {
+            font-size: 32px;
+            font-weight: bold;
+            color: #3498db;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .filters-section {
@@ -188,6 +206,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             position: sticky;
             top: 90px;
             z-index: 100;
+            margin-top: 20px; /* Added to reduce space between title and filters */
         }
 
         .search-box {
@@ -603,6 +622,255 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             color: #dc3545;
             font-weight: bold;
         }
+
+        .title-wrap {
+            padding: 2rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .car-icon-badge {
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--secondary-color) 0%, #2980b9 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.1;
+        }
+
+        .car-icon-badge i {
+            font-size: 3rem;
+            color: white;
+        }
+
+        .subtitle {
+            color: var(--secondary-color);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .subtitle:after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--secondary-color);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .title-wrap:hover .subtitle:after {
+            transform: scaleX(1);
+        }
+
+        .page-title h1 {
+            color: var(--text-dark);
+            margin: 1rem 0;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+        }
+
+        .lead.text-muted {
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .available-cars-title {
+            font-size: 2.8rem; /* Slightly reduced from 4rem */
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: #3498db;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+            position: relative;
+            display: inline-block;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .section-subtitle {
+            font-size: 1.1rem;
+            color: #7f8c8d;
+            margin-bottom: 20px; /* Reduced from 30px */
+        }
+
+        .title-separator {
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, #3498db 0%, #2c3e50 100%);
+            margin: 10px auto 15px; /* Reduced margins */
+            border-radius: 2px;
+        }
+
+        .title-container {
+            text-align: center;
+            margin: 20px 0 40px; /* Reduced from 60px 0 70px */
+            position: relative;
+            padding: 20px 0; /* Reduced from 30px */
+        }
+
+        .title-accent {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            background: #3498db;
+            opacity: 0.1;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+        }
+
+        .available-cars-title {
+            font-size: 2.8rem; /* Slightly reduced from 4rem */
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: #2c3e50;
+            text-transform: uppercase;
+            margin: 0 0 10px; /* Reduced from 15px */
+            display: inline-block;
+            position: relative;
+            text-shadow: 2px 2px 0 rgba(52, 152, 219, 0.3);
+            background-image: linear-gradient(135deg, #2c3e50, #3498db);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+
+        .title-separator {
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, #3498db, #2c3e50);
+            margin: 15px auto 25px;
+            border-radius: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .title-separator:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.5);
+            animation: shine 2s infinite;
+        }
+
+        @keyframes shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .section-subtitle {
+            font-size: 1.25rem;
+            color: #7f8c8d;
+            margin: 0 auto 30px;
+            max-width: 600px;
+            font-weight: 400;
+        }
+
+        .title-icon-left, 
+        .title-icon-right {
+            position: absolute;
+            font-size: 3rem;
+            color: #3498db;
+            opacity: 0.2;
+            top: 50%;
+            transform: translateY(-50%);
+            transition: all 0.5s ease;
+        }
+
+        .title-icon-left {
+            left: 15%;
+        }
+
+        .title-icon-right {
+            right: 15%;
+        }
+
+        .title-container:hover .title-icon-left {
+            transform: translateY(-50%) translateX(-15px);
+            opacity: 0.4;
+        }
+
+        .title-container:hover .title-icon-right {
+            transform: translateY(-50%) translateX(15px);
+            opacity: 0.4;
+        }
+
+        .title-separator-shine {
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 150%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                rgba(255,255,255,0) 0%, 
+                rgba(255,255,255,0.8) 50%, 
+                rgba(255,255,255,0) 100%);
+            animation: shine-effect 3s infinite;
+        }
+
+        @keyframes shine-effect {
+            0% { left: -150%; }
+            100% { left: 150%; }
+        }
+
+        .simple-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+            text-transform: uppercase;
+            text-align: center;
+            padding: 20px 0;
+            margin: 0 0 20px 0;
+            letter-spacing: 2px;
+        }
+
+        .page-header {
+            text-align: center;
+            margin: 20px 0 45px;
+            padding: 15px 0;
+        }
+
+        .page-header h1 {
+            font-size: 38px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin: 0 0 8px;
+        }
+
+        .page-header p {
+            font-size: 17px;
+            color: #7f8c8d;
+            margin: 0;
+        }
     </style>
 </head>
 
@@ -633,7 +901,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
           </div>
 
-          <div class="nav-buttons">
+          <!-- Authentication buttons/profile dropdown -->
+          <div class="nav-buttons desktop-auth">
             <?php if (isset($_SESSION['firstName'])): ?>
               <div class="profile-dropdown">
                 <button class="profile-toggle">
@@ -658,8 +927,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
               </div>
             <?php else: ?>
-              <a href="data/index.php" class="nav-btn login-btn">Login</a>
-              <a href="data/index.php" class="nav-btn signup-btn">Sign Up</a>
+              <!-- The only instance of login/signup buttons -->
+              <div class="auth-buttons">
+                <a href="data/index.php" class="nav-btn login-btn">Login</a>
+                <a href="data/index.php" class="nav-btn signup-btn">Sign Up</a>
+              </div>
             <?php endif; ?>
           </div>
 
@@ -672,28 +944,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </nav>
     </header>
 
+    <!-- Mobile Nav Menu -->
+    <div class="mobile-nav">
+      <ul class="mobile-nav-list">
+        <li class="mobile-nav-item">
+          <a href="index.php" class="mobile-nav-link">Home</a>
+        </li>
+        <li class="mobile-nav-item">
+          <a href="about.php" class="mobile-nav-link">About</a>
+        </li>
+        <li class="mobile-nav-item">
+          <a href="book.php" class="mobile-nav-link active">Cars</a>
+        </li>
+        <li class="mobile-nav-item">
+          <a href="#contact" class="mobile-nav-link">Contact</a>
+        </li>
+      </ul>
+      
+      <?php if (!isset($_SESSION['firstName'])): ?>
+      <!-- Mobile auth buttons (only shown in mobile menu) -->
+      <div class="mobile-auth">
+        <a href="data/index.php" class="nav-btn login-btn">Login</a>
+        <a href="data/index.php" class="nav-btn signup-btn">Sign Up</a>
+      </div>
+      <?php endif; ?>
+    </div>
+
     <!-- Main Content -->
     <div class="main-content">
         <div class="container">
-            <div class="page-title text-center mb-5" data-aos="fade-up">
-                <span class="subtitle text-primary mb-2 d-block">Available Cars</span>
-                <h1 class="display-4 fw-bold mb-3">Discover Your Perfect Drive</h1>
-                <div class="title-separator mx-auto my-3"></div>
-                <p class="lead text-muted">Explore our extensive collection of premium vehicles tailored to your needs</p>
-                <?php if (!empty($type)): ?>
-                    <div class="search-tag mt-3">
-                        <span class="badge bg-primary">
-                            <i class="fas fa-car me-1"></i> 
-                            <?php echo ucfirst(htmlspecialchars($type)); ?> Cars
-                        </span>
-                        <?php if (!empty($pickup_date) && !empty($return_date)): ?>
-                            <span class="badge bg-secondary ms-2">
-                                <i class="fas fa-calendar me-1"></i>
-                                <?php echo date('M d', strtotime($pickup_date)); ?> - <?php echo date('M d', strtotime($return_date)); ?>
-                            </span>
-                        <?php endif; ?>
-                    </div>
-                <?php endif; ?>
+            <div class="page-header">
+                <h1>Available Cars</h1>
+                <p>Choose from our selection of premium vehicles</p>
             </div>
 
             <!-- Filters Section -->
@@ -735,7 +1017,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php foreach ($cars as $car): ?>
                 <div class="car-card" data-brand="<?php echo htmlspecialchars($car['brand']); ?>">
                     <div class="car-image">
-                        <img src="<?php echo htmlspecialchars($car['image']); ?>" alt="<?php echo htmlspecialchars($car['name']); ?>">
+                        <?php if(!empty($car['primary_image']) && file_exists($car['primary_image'])): ?>
+                            <img src="<?php echo htmlspecialchars($car['primary_image']); ?>" alt="<?php echo htmlspecialchars($car['name']); ?>">
+                        <?php else: ?>
+                            <div class="car-image-placeholder">
+                                <i class="fas fa-car"></i>
+                            </div>
+                        <?php endif; ?>
                         <?php if ($car['active_rentals'] >= $car['quantity']): ?>
                             <div class="car-status rented">
                                 <i class="fas fa-clock"></i> Rented
@@ -879,8 +1167,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               <h5>Contact Info</h5>
               <ul class="contact-info">
                 <li><i class="fas fa-map-marker-alt"></i> Morocco CasaBlanca, City</li>
-                <li><i class="fas fa-phone"></i> +212 0678963254</li>
-                <li><i class="fas fa-envelope"></i> support@carsrent.com</li>
+                <li><i class="fas fa-phone"></i> +212 630352250</li>
+                <li><i class="fas fa-envelope"></i> ossamahattan@gmail.com</li>
               </ul>
             </ul>
             </div>
@@ -904,7 +1192,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               <p class="mb-0">&copy;<span id="currentYear"></span> <span>CARS</span>RENT - All Rights Reserved.</p>
             </div>
             <div class="col-md-6 text-md-end">
-              <p class="mb-0">Made by: Mohammed Ali & Oussama</p>
+              <p class="mb-0">Made by: HATTAN OUSSAMA</p>
             </div>
           </div>
         </div>
@@ -914,6 +1202,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <!-- Mobile-specific JS -->
+    <script src="js/mobile.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Add navbar scroll behavior

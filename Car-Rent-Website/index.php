@@ -33,6 +33,8 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
     <link rel="stylesheet" href="./css/index2.css">
     <link rel="stylesheet" href="./css/index1.css">
     <link rel="stylesheet" href="./css/modern.css">
+    <!-- Mobile-specific CSS (loaded conditionally) -->
+    <link rel="stylesheet" href="./css/mobile.css">
 
     <title>CARrent</title>
     <style>
@@ -109,7 +111,8 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
             </div>
           </div>
 
-          <div class="nav-buttons">
+          <!-- Authentication buttons/profile dropdown -->
+          <div class="nav-buttons desktop-auth">
             <?php if (isset($_SESSION['firstName'])): ?>
               <div class="profile-dropdown">
                 <button class="profile-toggle">
@@ -134,8 +137,11 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
                 </div>
               </div>
             <?php else: ?>
-              <a href="data/index.php" class="nav-btn login-btn">Login</a>
-              <a href="data/index.php" class="nav-btn signup-btn">Sign Up</a>
+              <!-- The only instance of login/signup buttons -->
+              <div class="auth-buttons">
+                <a href="data/index.php" class="nav-btn login-btn">Login</a>
+                <a href="data/index.php" class="nav-btn signup-btn">Sign Up</a>
+              </div>
             <?php endif; ?>
           </div>
 
@@ -147,6 +153,32 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
         </div>
       </nav>
     </header>
+
+    <!-- Mobile Nav Menu (displayed when menu toggle is clicked) -->
+    <div class="mobile-nav">
+      <ul class="mobile-nav-list">
+        <li class="mobile-nav-item">
+          <a href="index.php" class="mobile-nav-link active">Home</a>
+        </li>
+        <li class="mobile-nav-item">
+          <a href="about.php" class="mobile-nav-link">About</a>
+        </li>
+        <li class="mobile-nav-item">
+          <a href="book.php" class="mobile-nav-link">Cars</a>
+        </li>
+        <li class="mobile-nav-item">
+          <a href="#contact" class="mobile-nav-link">Contact</a>
+        </li>
+      </ul>
+      
+      <?php if (!isset($_SESSION['firstName'])): ?>
+      <!-- Mobile auth buttons (only shown in mobile menu) -->
+      <div class="mobile-auth">
+        <a href="data/index.php" class="nav-btn login-btn">Login</a>
+        <a href="data/index.php" class="nav-btn signup-btn">Sign Up</a>
+      </div>
+      <?php endif; ?>
+    </div>
 
     <!-- Hero Section with Carousel -->
     <section class="hero-section">
@@ -699,9 +731,9 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
             <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
               <h5>Contact Info</h5>
               <ul class="contact-info">
-                <li><i class="fas fa-map-marker-alt"></i> 123 Street, City, Country</li>
-                <li><i class="fas fa-phone"></i> +1 234 5678 900</li>
-                <li><i class="fas fa-envelope"></i> info@carsrent.com</li>
+                <li><i class="fas fa-map-marker-alt"></i> 99 Ahadaf Street, Meknes, Morocco</li>
+                <li><i class="fas fa-phone"></i> +212 630352250</li>
+                <li><i class="fas fa-envelope"></i> ossamahattan@gmail.com</li>
               </ul>
             </div>
             
@@ -724,12 +756,15 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
               <p class="mb-0">&copy;2024 <span>CARS</span>RENT - All Rights Reserved.</p>
             </div>
             <div class="col-md-6 text-md-end">
-              <p class="mb-0">Made by: Mohammed Ali & Oussama</p>
+              <p class="mb-0">Made by: HATTAN OUSSAMA</p>
             </div>
           </div>
         </div>
       </div>
     </footer>
+
+    <!-- Chatbot Widget -->
+    <?php include 'includes/chatbot-widget.php'; ?>
 
     <!-- Optional JavaScript -->
     <!-- jQuery -->
@@ -749,6 +784,9 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
     <!-- Swiper JS -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
     <!-- Custom JS -->
+    <script src="js/main.js"></script>
+    <!-- Mobile-specific JS -->
+    <script src="js/mobile.js"></script>
     <script>
       window.addEventListener('load', function() {
         const loadingOverlay = document.getElementById('loading-overlay');
@@ -829,14 +867,47 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
         }
       });
       
+      // Mobile menu toggle
+      document.addEventListener('DOMContentLoaded', function() {
+        const menuToggle = document.querySelector('.menu-toggle');
+        const mobileNav = document.querySelector('.mobile-nav'); // Changed to target the correct element
+        const body = document.body;
+        
+        if (menuToggle && mobileNav) {
+          menuToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            menuToggle.classList.toggle('active');
+            mobileNav.classList.toggle('active'); // Now targeting the mobile-nav element
+            body.classList.toggle('menu-open');
+          });
+          
+          // Close menu when clicking outside
+          document.addEventListener('click', function(e) {
+            if (!menuToggle.contains(e.target) && !mobileNav.contains(e.target)) {
+              menuToggle.classList.remove('active');
+              mobileNav.classList.remove('active');
+              body.classList.remove('menu-open');
+            }
+          });
+          
+          // Add touch support for mobile devices
+          if ('ontouchstart' in window) {
+            menuToggle.addEventListener('touchstart', function(e) {
+              e.stopPropagation();
+            });
+          }
+        }
+      });
+      
       // Profile dropdown toggle
       document.addEventListener('DOMContentLoaded', function() {
         const profileToggle = document.querySelector('.profile-toggle');
         const profileMenu = document.querySelector('.profile-menu');
         
-        if (profileToggle) {
+        if (profileToggle && profileMenu) {
           profileToggle.addEventListener('click', function(e) {
             e.preventDefault();
+            e.stopPropagation();
             profileMenu.classList.toggle('active');
           });
           
@@ -846,6 +917,13 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
               profileMenu.classList.remove('active');
             }
           });
+          
+          // Support for touch devices
+          if ('ontouchstart' in window) {
+            profileToggle.addEventListener('touchstart', function(e) {
+              e.stopPropagation();
+            });
+          }
         }
       });
       
@@ -867,6 +945,15 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
               top: offsetPosition,
               behavior: 'smooth'
             });
+            
+            // Close mobile menu if open
+            const menuToggle = document.querySelector('.menu-toggle');
+            const navMenu = document.querySelector('.nav-menu');
+            if (menuToggle && navMenu) {
+              menuToggle.classList.remove('active');
+              navMenu.classList.remove('active');
+              document.body.classList.remove('menu-open');
+            }
           }
         });
       });

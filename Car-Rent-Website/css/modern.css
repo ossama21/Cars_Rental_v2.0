@@ -34,6 +34,13 @@ body.loading-active {
     overflow: hidden;
 }
 
+body.menu-open {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+}
+
 h1, h2, h3, h4, h5, h6 {
   font-weight: 600;
 }
@@ -85,12 +92,6 @@ h1, h2, h3, h4, h5, h6 {
   background: transparent;
 }
 
-.navbar.scrolled {
-  background: var(--white);
-  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-  padding: 0.8rem 2rem;
-}
-
 .navbar-container {
   display: flex;
   justify-content: space-between;
@@ -98,6 +99,47 @@ h1, h2, h3, h4, h5, h6 {
   width: 100%;
   max-width: 1400px;
   margin: 0 auto;
+  padding: 0 15px;
+  position: relative;
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.mobile-menu-wrapper {
+  display: none;
+}
+
+@media (max-width: 991.98px) {
+  .navbar {
+    padding: 0;
+  }
+
+  .navbar-container {
+    padding: 1rem;
+  }
+
+  .mobile-menu-wrapper {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    position: relative;
+    z-index: 1050;
+  }
+
+  .menu-toggle {
+    position: relative;
+    margin-left: 15px;
+  }
+}
+
+.navbar.scrolled {
+  background: var(--white);
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+  padding: 0.8rem 2rem;
 }
 
 .navbar-left {
@@ -174,6 +216,22 @@ h1, h2, h3, h4, h5, h6 {
   margin-right: 1rem;
 }
 
+/* Hide nav-buttons that are inside nav-menu by default */
+.nav-menu .nav-buttons {
+  display: none !important;
+}
+
+/* Desktop-specific styles */
+@media (min-width: 992px) {
+  .nav-menu .nav-buttons {
+    display: none !important; /* Ensure mobile nav buttons are hidden on desktop */
+  }
+  
+  .navbar .nav-buttons {
+    display: flex !important; /* Always show desktop nav buttons */
+  }
+}
+
 .nav-btn {
   padding: 0.6rem 1.2rem;
   border-radius: 8px;
@@ -214,21 +272,24 @@ h1, h2, h3, h4, h5, h6 {
   display: none;
   background: none;
   border: none;
-  padding: 0;
-  width: 30px;
-  height: 24px;
+  padding: 10px;
+  width: 44px;
+  height: 44px;
   position: relative;
   cursor: pointer;
   z-index: 1050;
+  /* Make sure it's clickable on mobile */
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .menu-toggle span {
   display: block;
-  width: 100%;
+  width: 24px; /* Slightly smaller for better appearance */
   height: 2px;
-  background: var(--white);
+  background: #2c3e50; /* Changed from var(--white) to a darker color */
   position: absolute;
-  left: 0;
+  left: 10px;
   transition: all 0.3s ease;
 }
 
@@ -236,23 +297,55 @@ h1, h2, h3, h4, h5, h6 {
   background: var(--text-color);
 }
 
+/* Ensure visibility in both light and dark states */
+.navbar:not(.scrolled) .menu-toggle {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.navbar:not(.scrolled) .menu-toggle span {
+  background: #ffffff;
+}
+
+.navbar:not(.scrolled) .menu-toggle:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.navbar.scrolled .menu-toggle {
+  background: rgba(52, 152, 219, 0.15);
+}
+
+.navbar.scrolled .menu-toggle span {
+  background: #2c3e50;
+}
+
+.navbar.scrolled .menu-toggle:hover {
+  background: rgba(52, 152, 219, 0.25);
+}
+
+.menu-toggle:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.navbar.scrolled .menu-toggle:hover {
+  background-color: rgba(44, 62, 80, 0.2);
+}
+
 .menu-toggle span:first-child {
-  top: 0;
+  top: 14px;
 }
 
 .menu-toggle span:nth-child(2) {
-  top: 50%;
-  transform: translateY(-50%);
+  top: 22px;
 }
 
 .menu-toggle span:last-child {
-  bottom: 0;
+  top: 30px;
 }
 
 .menu-toggle.active span:first-child {
   transform: rotate(45deg);
-  top: 50%;
-  margin-top: -1px;
+  top: 22px;
+  background: #2c3e50; /* Ensure the active state is also visible */
 }
 
 .menu-toggle.active span:nth-child(2) {
@@ -261,27 +354,22 @@ h1, h2, h3, h4, h5, h6 {
 
 .menu-toggle.active span:last-child {
   transform: rotate(-45deg);
-  bottom: 50%;
-  margin-bottom: -1px;
+  top: 22px;
+  background: #2c3e50; /* Ensure the active state is also visible */
 }
 
 @media (max-width: 991.98px) {
   .menu-toggle {
     display: block;
-  }
-}
-
-@media (max-width: 991.98px) {
-  .menu-toggle {
-    display: block;
-    margin-left: 1rem;
+    margin-left: auto;
+    position: relative;
   }
 
   .nav-menu {
     position: fixed;
     top: 0;
-    right: -100%;
-    width: 300px;
+    right: -280px; /* Initial state off-screen */
+    width: 280px;
     height: 100vh;
     background: var(--white);
     margin: 0;
@@ -291,6 +379,7 @@ h1, h2, h3, h4, h5, h6 {
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
     z-index: 1040;
+    overflow-y: auto;
   }
 
   .nav-menu.active {
@@ -301,6 +390,11 @@ h1, h2, h3, h4, h5, h6 {
     flex-direction: column;
     align-items: center;
     width: 100%;
+    gap: 0;
+  }
+
+  .nav-item {
+    width: 100%;
   }
 
   .nav-link {
@@ -309,6 +403,7 @@ h1, h2, h3, h4, h5, h6 {
     padding: 1rem;
     width: 100%;
     text-align: center;
+    display: block;
   }
 
   .nav-buttons {
@@ -316,6 +411,7 @@ h1, h2, h3, h4, h5, h6 {
     width: 100%;
     gap: 1rem;
     margin-top: 2rem;
+    margin-right: 0;
   }
 
   .nav-btn {
@@ -323,15 +419,54 @@ h1, h2, h3, h4, h5, h6 {
     text-align: center;
   }
 
-  .menu-toggle {
-    display: block;
-    margin-left: auto;
-    margin-right: 1rem;
-    z-index: 1050;
-  }
-
   body.menu-open {
     overflow: hidden;
+  }
+  
+  /* Fix for profile dropdown on mobile */
+  .profile-dropdown {
+    position: static;
+    margin-top: 1.5rem;
+    width: 100%;
+  }
+  
+  .profile-toggle {
+    width: 100%;
+    justify-content: center;
+    background-color: var(--gray-100);
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin: 0;
+  }
+  
+  .profile-menu {
+    position: relative;
+    width: 100%;
+    margin-top: 0.5rem;
+    box-shadow: none;
+    border: 1px solid var(--gray-200);
+  }
+  
+  .profile-menu.active {
+    position: relative;
+    width: 100%;
+  }
+  
+  .navbar-container {
+    justify-content: space-between;
+    position: relative; /* For absolute positioning of elements inside */
+  }
+  
+  .navbar > .nav-buttons {
+    display: none !important;
+  }
+  
+  .nav-menu.active .nav-buttons {
+    display: flex !important;
+    flex-direction: column;
+    width: 100%;
+    gap: 1rem;
+    margin-top: 2rem;
   }
 }
 
@@ -346,6 +481,54 @@ h1, h2, h3, h4, h5, h6 {
 
   .navbar-brand {
     font-size: 1.4rem;
+    margin-right: 0;
+    padding-left: 0;
+  }
+  
+  /* Better position for menu toggle */
+  .menu-toggle {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    margin: 0;
+  }
+  
+  /* Fix profile avatar size and visibility */
+  .profile-avatar {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
+    border-width: 1px;
+  }
+  
+  .profile-name {
+    display: none; /* Hide name on very small screens */
+  }
+  
+  .profile-toggle .fa-chevron-down {
+    display: none; /* Hide dropdown arrow on small screens */
+  }
+  
+  .nav-buttons {
+    margin-right: 40px; /* Make room for menu toggle */
+  }
+  
+  .profile-toggle {
+    padding: 0.4rem;
+    margin-right: 1rem;
+  }
+  
+  /* Adjust when both login buttons and menu toggle are present */
+  .nav-buttons .nav-btn {
+    padding: 0.4rem 1rem;
+    font-size: 0.9rem;
+  }
+  
+  /* Ensure nav elements don't overlap */
+  .navbar-container {
+    flex-wrap: nowrap;
   }
 }
 
@@ -1522,11 +1705,14 @@ footer h5::after {
 .profile-avatar {
   width: 40px;
   height: 40px;
+  min-width: 40px; /* Prevent shrinking */
+  min-height: 40px;
   overflow: hidden;
   border-radius: 50%;
   margin-right: 0.5rem;
   border: 2px solid var(--white);
   transition: all 0.3s ease;
+  flex-shrink: 0;
 }
 
 .profile-avatar img {
@@ -1539,6 +1725,7 @@ footer h5::after {
   margin: 0 0.5rem;
   font-weight: 500;
   transition: color 0.3s ease;
+  white-space: nowrap; /* Prevent name from wrapping */
 }
 
 .profile-menu {
@@ -1554,6 +1741,7 @@ footer h5::after {
   visibility: hidden;
   transform: translateY(10px);
   transition: all 0.3s ease;
+  z-index: 1050;
 }
 
 .profile-menu.active {
@@ -2153,7 +2341,7 @@ footer h5::after {
 
 .admin-table thead th {
   padding: 1rem;
-  border-bottom: 2px solid var(--admin-gray-light);
+  border-bottom: 2px solid var (--admin-gray-light);
   text-align: left;
   font-weight: 600;
   color: var(--admin-dark);
@@ -2492,5 +2680,90 @@ footer h5::after {
   100% {
     transform: translateY(-20vh) scale(0) rotate(360deg);
     opacity: 0;
+  }
+}
+
+/* Desktop/mobile auth styles */
+.desktop-auth {
+  display: flex;
+  margin-left: auto;
+  margin-right: 1rem;
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.mobile-nav {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 280px;
+  height: 100vh;
+  background-color: var(--white);
+  padding: 80px 20px 20px;
+  z-index: 1040;
+  transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+}
+
+.menu-toggle.active + .navbar-container + .mobile-nav {
+  right: 0;
+}
+
+.mobile-nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 2rem 0;
+}
+
+.mobile-nav-item {
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+.mobile-nav-link {
+  color: var(--text-color);
+  font-size: 1.1rem;
+  padding: 1rem;
+  width: 100%;
+  text-align: center;
+  display: block;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.mobile-nav-link:hover,
+.mobile-nav-link.active {
+  background-color: var(--gray-100);
+  border-radius: 8px;
+}
+
+.mobile-auth {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+.mobile-auth .nav-btn {
+  width: 100%;
+}
+
+/* Hide mobile nav by default */
+.mobile-nav {
+  display: none;
+}
+
+@media (max-width: 991.98px) {
+  .mobile-nav {
+    display: block;
+  }
+  
+  /* Hide desktop auth on mobile */
+  .desktop-auth {
+    display: none;
   }
 }

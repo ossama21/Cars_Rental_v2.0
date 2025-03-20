@@ -39,11 +39,13 @@ $sqlCars = "SELECT c.*,
         WHEN d.discount_type = 'percentage' THEN c.price * (1 - d.discount_value/100)
         WHEN d.discount_type = 'fixed' THEN c.price - d.discount_value
         ELSE c.price 
-    END as discounted_price
+    END as discounted_price,
+    ci.image_path as primary_image
 FROM cars c 
 LEFT JOIN car_discounts d ON c.id = d.car_id 
     AND CURRENT_TIMESTAMP BETWEEN d.start_date AND d.end_date 
     AND d.end_date > CURRENT_TIMESTAMP
+LEFT JOIN car_images ci ON c.id = ci.car_id AND ci.is_primary = 1
 WHERE 1=1";
 $params = [];
 $types = "";
@@ -782,8 +784,8 @@ if (!empty($status)) {
                                     <?php while($car = $carsResult->fetch_assoc()): ?>
                                         <tr>
                                             <td>
-                                                <?php if(!empty($car['image']) && file_exists('../' . $car['image'])): ?>
-                                                    <img src="../<?php echo htmlspecialchars($car['image']); ?>" alt="<?php echo htmlspecialchars($car['name']); ?>" style="width: 70px; height: 50px; object-fit: cover; border-radius: 5px;">
+                                                <?php if(!empty($car['primary_image']) && file_exists('../' . $car['primary_image'])): ?>
+                                                    <img src="../<?php echo htmlspecialchars($car['primary_image']); ?>" alt="<?php echo htmlspecialchars($car['name']); ?>" style="width: 70px; height: 50px; object-fit: cover; border-radius: 5px;">
                                                 <?php else: ?>
                                                     <div style="width: 70px; height: 50px; background-color: #e2e8f0; display: flex; align-items: center; justify-content: center; border-radius: 5px;">
                                                         <i class="fas fa-car text-secondary"></i>
@@ -852,8 +854,8 @@ if (!empty($status)) {
                                                     <div class="modal-body">
                                                         <div class="row">
                                                             <div class="col-md-5">
-                                                                <?php if(!empty($car['image']) && file_exists('../' . $car['image'])): ?>
-                                                                    <img src="../<?php echo htmlspecialchars($car['image']); ?>" alt="<?php echo htmlspecialchars($car['name']); ?>" class="img-fluid rounded" style="max-height: 300px; width: 100%; object-fit: cover;">
+                                                                <?php if(!empty($car['primary_image']) && file_exists('../' . $car['primary_image'])): ?>
+                                                                    <img src="../<?php echo htmlspecialchars($car['primary_image']); ?>" alt="<?php echo htmlspecialchars($car['name']); ?>" class="img-fluid rounded" style="max-height: 300px; width: 100%; object-fit: cover;">
                                                                 <?php else: ?>
                                                                     <div style="height: 300px; background-color: #e2e8f0; display: flex; align-items: center; justify-content: center; border-radius: 5px;">
                                                                         <i class="fas fa-car fa-3x text-secondary"></i>
@@ -1021,8 +1023,8 @@ if (!empty($status)) {
                                 <tr>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <?php if(!empty($rental['image']) && file_exists('../' . $rental['image'])): ?>
-                                                <img src="../<?php echo htmlspecialchars($rental['image']); ?>" 
+                                            <?php if(!empty($rental['primary_image']) && file_exists('../' . $rental['primary_image'])): ?>
+                                                <img src="../<?php echo htmlspecialchars($rental['primary_image']); ?>" 
                                                      alt="<?php echo htmlspecialchars($rental['name']); ?>" 
                                                      style="width: 40px; height: 30px; object-fit: cover; border-radius: 4px;">
                                             <?php else: ?>
@@ -1124,8 +1126,8 @@ if (!empty($status)) {
                                 <tr>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <?php if(!empty($reservation['image']) && file_exists('../' . $reservation['image'])): ?>
-                                                <img src="../<?php echo htmlspecialchars($reservation['image']); ?>" 
+                                            <?php if(!empty($reservation['primary_image']) && file_exists('../' . $reservation['primary_image'])): ?>
+                                                <img src="../<?php echo htmlspecialchars($reservation['primary_image']); ?>" 
                                                      alt="<?php echo htmlspecialchars($reservation['name']); ?>" 
                                                      style="width: 40px; height: 30px; object-fit: cover; border-radius: 4px;">
                                             <?php else: ?>
@@ -1397,8 +1399,8 @@ if (!empty($status)) {
                                                     </td>
                                                     <td>
                                                         <label for="car-<?php echo $car['id']; ?>">
-                                                            <?php if(!empty($car['image']) && file_exists('../' . $car['image'])): ?>
-                                                                <img src="../<?php echo htmlspecialchars($car['image']); ?>" 
+                                                            <?php if(!empty($car['primary_image']) && file_exists('../' . $car['primary_image'])): ?>
+                                                                <img src="../<?php echo htmlspecialchars($car['primary_image']); ?>" 
                                                                     alt="<?php echo htmlspecialchars($car['name']); ?>" 
                                                                     class="img-thumbnail"
                                                                     style="width: 50px; height: 40px; object-fit: cover; cursor: pointer;">
