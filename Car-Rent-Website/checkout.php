@@ -555,8 +555,9 @@ $conn->close();
             grid-template-columns: 1.5fr 1fr;
             gap: 2.5rem;
             max-width: 1300px;
-            margin: 2rem auto;
-            padding: 0 1.5rem;
+            margin: 6rem auto 2rem; /* Increased top margin to account for navbar */
+            padding: 0 2rem; /* Increased horizontal padding */
+            width: 100%; /* Ensure full width */
         }
 
         .checkout-section {
@@ -564,6 +565,60 @@ $conn->close();
             padding: 2.5rem;
             border-radius: var(--border-radius);
             box-shadow: var(--shadow);
+            width: 100%; /* Ensure full width */
+        }
+
+        .container {
+            max-width: 1400px; /* Slightly larger to accommodate the grid */
+            margin: 0 auto;
+            padding: 0;
+            width: 100%;
+        }
+
+        @media (max-width: 992px) {
+            .checkout-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+                padding: 0 1rem; /* Smaller padding on mobile */
+            }
+
+            .order-summary {
+                position: static;
+                margin-top: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .checkout-grid {
+                margin-top: 5rem; /* Slightly less top margin on mobile */
+            }
+        }
+
+        /* Ensure the car gallery images are properly sized */
+        .car-gallery {
+            width: 100%;
+            margin-bottom: 2rem;
+        }
+
+        .main-image-container {
+            width: 100%;
+            aspect-ratio: 16/9;
+            overflow: hidden;
+            border-radius: var(--border-radius);
+            margin-bottom: 1rem;
+        }
+
+        .main-car-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .thumbnail-gallery {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+            width: 100%;
         }
 
         .progress-step {
