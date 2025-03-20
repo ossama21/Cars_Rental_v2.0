@@ -126,28 +126,52 @@ $car = null;
 
 if ($car_id > 0) {
     if ($is_preorder) {
-        // For preorders, just get the car details
-        $stmt = $conn->prepare("SELECT * FROM cars WHERE id = ?");
+        // For preorders, just get the car details with discount info
+        $stmt = $conn->prepare("
+            SELECT c.*, 
+                CASE 
+                    WHEN d.discount_type = 'percentage' THEN c.price * (1 - d.discount_value/100)
+                    WHEN d.discount_type = 'fixed' THEN c.price - d.discount_value
+                    ELSE c.price
+                END as discounted_price,
+                d.discount_type,
+                d.discount_value
+            FROM cars c
+            LEFT JOIN car_discounts d ON c.id = d.car_id 
+                AND CURRENT_DATE BETWEEN d.start_date AND d.end_date
+            WHERE c.id = ?");
         $stmt->bind_param("i", $car_id);
     } else {
-        // For regular bookings, check availability
-        $stmt = $conn->prepare("SELECT c.*, (
-            SELECT COUNT(*) 
-            FROM services s 
-            WHERE s.car_id = c.id 
-            AND (
-                CURRENT_DATE BETWEEN DATE(s.start_date) AND DATE(s.end_date)
-                OR DATE(s.start_date) >= CURRENT_DATE
-            )
-        ) as active_rentals
-        FROM cars c WHERE c.id = ?");
+        // For regular bookings, check availability AND include discount info
+        $stmt = $conn->prepare("
+            SELECT c.*, 
+                CASE 
+                    WHEN d.discount_type = 'percentage' THEN c.price * (1 - d.discount_value/100)
+                    WHEN d.discount_type = 'fixed' THEN c.price - d.discount_value
+                    ELSE c.price
+                END as discounted_price,
+                d.discount_type,
+                d.discount_value,
+                (
+                    SELECT COUNT(*) 
+                    FROM services s 
+                    WHERE s.car_id = c.id 
+                    AND (
+                        CURRENT_DATE BETWEEN DATE(s.start_date) AND DATE(s.end_date)
+                        OR DATE(s.start_date) >= CURRENT_DATE
+                    )
+                ) as active_rentals
+            FROM cars c
+            LEFT JOIN car_discounts d ON c.id = d.car_id 
+                AND CURRENT_DATE BETWEEN d.start_date AND d.end_date
+            WHERE c.id = ?");
     }
     $stmt->bind_param("i", $car_id);
     $stmt->execute();
     $result = $stmt->get_result();
     if ($result->num_rows > 0) {
         $car = $result->fetch_assoc();
-        if (!$is_preorder && $car['active_rentals'] >= $car['quantity']) {
+        if (!$is_preorder && isset($car['active_rentals']) && $car['active_rentals'] >= $car['quantity']) {
             header("Location: book.php?error=car_unavailable");
             exit();
         }
@@ -1035,6 +1059,51 @@ $conn->close();
             overflow: hidden;
         }
 
+        /* Add discount styling */
+        .price-with-discount {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .discounted-price {
+            color: #e74c3c;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .original-price {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .discount-badge {
+            background: #e74c3c;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            animation: pulse 2s infinite;
+        }
+
+        .discount-row {
+            color: #2ecc71;
+            font-weight: 500;
+        }
+
+        .total-savings {
+            color: #2ecc71;
+            font-weight: 600;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
         .payment-method::after {
             content: '\f00c';
             font-family: 'Font Awesome 6 Free';
@@ -1458,7 +1527,21 @@ $conn->close();
                 <div class="car-details-expanded">
                     <h3 id="car-name"><?php echo $car ? htmlspecialchars($car['name']) : 'Loading...'; ?></h3>
                     <div class="car-price-tag">
-                        <span id="car-price">$<?php echo $car ? number_format($car['price'], 2) : '0.00'; ?></span> per day
+                        <?php if ($car && isset($car['discount_type']) && !empty($car['discount_value'])): ?>
+                            <div class="price-with-discount">
+                                <span id="discounted-price" class="discounted-price">$<?php echo number_format($car['discounted_price'], 2); ?></span> per day
+                                <div class="original-price">
+                                    <span class="text-muted"><s>$<?php echo number_format($car['price'], 2); ?></s></span>
+                                    <?php if ($car['discount_type'] == 'percentage'): ?>
+                                        <span class="discount-badge"><?php echo number_format($car['discount_value'], 0); ?>% OFF</span>
+                                    <?php else: ?>
+                                        <span class="discount-badge">$<?php echo number_format($car['discount_value'], 2); ?> OFF</span>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        <?php else: ?>
+                            <span id="car-price">$<?php echo $car ? number_format($car['price'], 2) : '0.00'; ?></span> per day
+                        <?php endif; ?>
                     </div>
                     
                     <div class="car-specs">
@@ -1534,7 +1617,6 @@ $conn->close();
                     <?php endif; ?>
                 </div>
 
-                <!-- Add preorder badge and fee if it's a preorder -->
                 <?php if ($is_preorder): ?>
                 <div class="alert alert-warning">
                     <i class="fas fa-clock"></i> 
@@ -1550,6 +1632,26 @@ $conn->close();
                         <span>Daily Rate</span>
                         <span id="car-price">$<?php echo $car ? number_format($car['price'], 2) : '0.00'; ?></span>
                     </div>
+                    <?php if ($car && isset($car['discount_type']) && !empty($car['discount_value'])): ?>
+                    <div class="summary-row discount-row">
+                        <span>
+                            <i class="fas fa-tag text-success me-1"></i>
+                            <?php if ($car['discount_type'] == 'percentage'): ?>
+                                Discount (<?php echo number_format($car['discount_value'], 0); ?>% off)
+                            <?php else: ?>
+                                Discount (Fixed amount)
+                            <?php endif; ?>
+                        </span>
+                        <span class="text-success" id="discount-amount">-$0.00</span>
+                    </div>
+                    <?php endif; ?>
+                    <div class="summary-row" id="coupon-row" style="display: none;">
+                        <span>
+                            <i class="fas fa-ticket-alt text-success me-1"></i>
+                            Coupon Discount
+                        </span>
+                        <span class="text-success" id="coupon-discount">-$0.00</span>
+                    </div>
                     <div class="summary-row">
                         <span>Rental Duration</span>
                         <span id="rental-duration">0 days</span>
@@ -1558,9 +1660,42 @@ $conn->close();
                         <span>Insurance Fee</span>
                         <span>$25.00</span>
                     </div>
+                    <?php if ($is_preorder): ?>
+                    <div class="summary-row preorder-fee">
+                        <span>Pre-order Fee</span>
+                        <span>$15.00</span>
+                    </div>
+                    <?php endif; ?>
+                    <?php if ($car && isset($car['discount_type']) && !empty($car['discount_value'])): ?>
+                    <div class="summary-row subtotal-row">
+                        <span>Original Price</span>
+                        <span id="original-price">$0.00</span>
+                    </div>
+                    <div class="summary-row total-savings">
+                        <span>Total Savings</span>
+                        <span class="text-success" id="total-savings">-$0.00</span>
+                    </div>
+                    <?php endif; ?>
                     <div class="summary-row total-row">
                         <span>Total Amount</span>
                         <span id="total-price">$0.00</span>
+                    </div>
+                </div>
+
+                <!-- Coupon code input section -->
+                <div class="coupon-section">
+                    <div class="form-group mb-2">
+                        <label for="coupon-code">Have a coupon code?</label>
+                        <div class="d-flex">
+                            <input type="text" id="coupon-code" class="form-control" placeholder="Enter coupon code">
+                            <button type="button" id="apply-coupon" class="btn btn-primary ms-2">Apply</button>
+                        </div>
+                    </div>
+                    <div class="alert alert-success" id="coupon-success" style="display: none;">
+                        <i class="fas fa-check-circle"></i> <span id="coupon-message"></span>
+                    </div>
+                    <div class="alert alert-danger" id="coupon-error" style="display: none;">
+                        <i class="fas fa-exclamation-circle"></i> <span id="error-message"></span>
                     </div>
                 </div>
 
@@ -1707,14 +1842,46 @@ $conn->close();
                 const startDate = document.getElementById('startDate').value;
                 const endDate = document.getElementById('endDate').value;
                 const carPrice = <?php echo $car ? $car['price'] : '0'; ?>;
+                const discountType = <?php echo isset($car['discount_type']) ? "'" . $car['discount_type'] . "'" : 'null'; ?>;
+                const discountValue = <?php echo isset($car['discount_value']) ? $car['discount_value'] : 0; ?>;
+                const discountedPrice = <?php echo isset($car['discounted_price']) ? $car['discounted_price'] : 0; ?>;
                 
                 if (startDate && endDate) {
                     const start = new Date(startDate);
                     const end = new Date(endDate);
                     const duration = Math.max(1, Math.ceil((end - start) / (1000 * 60 * 60 * 24)));
                     const insuranceFee = 25;
-                    const preorderFee = <?php echo $is_preorder ? '50' : '0'; ?>;
-                    const totalPrice = (duration * carPrice) + insuranceFee + preorderFee;
+                    const preorderFee = <?php echo $is_preorder ? '15' : '0'; ?>; // Changed from 50 to 15
+                    
+                    // Calculate discount if applicable
+                    let originalTotal = duration * carPrice;
+                    let discountAmount = 0;
+                    
+                    if (discountType) {
+                        if (discountType === 'percentage') {
+                            discountAmount = originalTotal * (discountValue / 100);
+                        } else if (discountType === 'fixed') {
+                            discountAmount = discountValue * duration; // Apply fixed discount per day
+                        }
+                        
+                        // Update discount display
+                        if (document.getElementById('discount-amount')) {
+                            document.getElementById('discount-amount').textContent = `-$${discountAmount.toFixed(2)}`;
+                        }
+                        
+                        // Update original price and savings display
+                        if (document.getElementById('original-price')) {
+                            document.getElementById('original-price').textContent = `$${originalTotal.toFixed(2)}`;
+                        }
+                        
+                        if (document.getElementById('total-savings')) {
+                            document.getElementById('total-savings').textContent = `-$${discountAmount.toFixed(2)}`;
+                        }
+                    }
+                    
+                    // Apply discount
+                    const discountedTotal = originalTotal - discountAmount;
+                    const totalPrice = discountedTotal + insuranceFee + preorderFee;
                     
                     document.getElementById('rental-duration').textContent = `${duration} days`;
                     document.getElementById('total-price').textContent = `$${totalPrice.toFixed(2)}`;
