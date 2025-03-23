@@ -852,8 +852,15 @@ $conn->close();
         .summary-row {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             padding: 0.75rem 0;
             color: var(--text-color);
+        }
+
+        .summary-row span {
+            display: flex;
+            align-items: center;
+            gap: 2px;
         }
 
         .total-row {
@@ -897,7 +904,7 @@ $conn->close();
         }
 
         .alert {
-            border-radius: var(--border-radius);
+            border-radius: var (--border-radius);
             padding: 1rem;
             margin-bottom: 1.5rem;
             display: flex;
@@ -1063,12 +1070,16 @@ $conn->close();
         .price-with-discount {
             display: flex;
             flex-direction: column;
+            font-variant-numeric: tabular-nums;
         }
 
         .discounted-price {
             color: #e74c3c;
             font-size: 1.3rem;
             font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 2px;
         }
 
         .original-price {
@@ -1076,6 +1087,12 @@ $conn->close();
             align-items: center;
             gap: 8px;
             margin-top: 4px;
+        }
+
+        .original-price s {
+            display: flex;
+            align-items: center;
+            gap: 2px;
         }
 
         .discount-badge {
@@ -1143,6 +1160,7 @@ $conn->close();
         .summary-row {
             position: relative;
             overflow: hidden;
+            font-variant-numeric: tabular-nums;
         }
 
         .summary-row span {
@@ -1270,6 +1288,142 @@ $conn->close();
             body::before {
                 height: 200px;
             }
+        }
+
+        .coupon-section .btn-primary {
+            min-width: 100px;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+        }
+
+        .coupon-section .form-control {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .coupon-section {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            border: 2px dashed #e2e8f0;
+        }
+
+        .coupon-section .form-group {
+            margin-bottom: 0;
+        }
+
+        .coupon-section label {
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        .coupon-section .form-control {
+            border-right: none;
+            height: 45px;
+        }
+
+        .coupon-section .btn-primary {
+            border: none;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .coupon-section .btn-primary:hover {
+            background: var(--primary-color);
+        }
+
+        .alert {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            margin: 0;
+            border: none;
+            border-radius: var(--border-radius);
+        }
+
+        .alert-success {
+            background: rgba(46, 204, 113, 0.1);
+            color: #2ecc71;
+        }
+
+        .alert-danger {
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+        }
+
+        .alert i {
+            font-size: 1.1rem;
+        }
+
+        /* Add these styles to fix the alignment */
+        .coupon-section .input-group {
+            display: flex;
+            align-items: stretch;
+        }
+
+        .coupon-section .form-control {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+            height: 45px;
+            line-height: 45px;
+            padding: 0 1rem;
+        }
+
+        .coupon-section .btn-primary {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+            height: 45px;
+            padding: 0 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: -1px;
+        }
+
+        .coupon-section .input-group:focus-within {
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+            border-radius: 0.375rem;
+        }
+
+        .coupon-section .form-control:focus {
+            border-right: none;
+            box-shadow: none;
+        }
+
+        .coupon-section .btn-primary:focus {
+            box-shadow: none;
+        }
+
+        /* Update coupon section styles */
+        .coupon-section .d-flex {
+            display: flex;
+            align-items: stretch;
+        }
+
+        .coupon-section .form-control {
+            flex: 1;
+            height: 45px;
+            line-height: 45px;
+            padding: 0 1rem;
+        }
+
+        .coupon-section .btn-primary {
+            height: 45px;
+            padding: 0 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+        }
+
+        .coupon-section .form-control:focus {
+            position: relative;
+            z-index: 2;
         }
     </style>
 </head>
@@ -1527,16 +1681,18 @@ $conn->close();
                 <div class="car-details-expanded">
                     <h3 id="car-name"><?php echo $car ? htmlspecialchars($car['name']) : 'Loading...'; ?></h3>
                     <div class="car-price-tag">
-                        <?php if ($car && isset($car['discount_type']) && !empty($car['discount_value'])): ?>
+                        <?php if (isset($car['discount_type'])): ?>
                             <div class="price-with-discount">
-                                <span id="discounted-price" class="discounted-price">$<?php echo number_format($car['discounted_price'], 2); ?></span> per day
+                                <span class="discounted-price">$<?php echo number_format($car['discounted_price'], 2); ?></span>
                                 <div class="original-price">
                                     <span class="text-muted"><s>$<?php echo number_format($car['price'], 2); ?></s></span>
-                                    <?php if ($car['discount_type'] == 'percentage'): ?>
-                                        <span class="discount-badge"><?php echo number_format($car['discount_value'], 0); ?>% OFF</span>
-                                    <?php else: ?>
-                                        <span class="discount-badge">$<?php echo number_format($car['discount_value'], 2); ?> OFF</span>
-                                    <?php endif; ?>
+                                    <span class="discount-badge" 
+                                          data-type="<?php echo htmlspecialchars($car['discount_type']); ?>"
+                                          data-value="<?php echo htmlspecialchars($car['discount_value']); ?>">
+                                        <?php echo $car['discount_type'] === 'percentage' ? 
+                                            number_format($car['discount_value'], 0) . '% OFF' : 
+                                            '$' . number_format($car['discount_value'], 2) . ' OFF'; ?>
+                                    </span>
                                 </div>
                             </div>
                         <?php else: ?>
@@ -1627,86 +1783,83 @@ $conn->close();
                 <?php endif; ?>
 
                 <div class="rental-summary">
-                    <h3>Price Details</h3>
                     <div class="summary-row">
                         <span>Daily Rate</span>
                         <span id="car-price">$<?php echo $car ? number_format($car['price'], 2) : '0.00'; ?></span>
                     </div>
-                    <?php if ($car && isset($car['discount_type']) && !empty($car['discount_value'])): ?>
+                    <?php if (isset($car['discount_type'])): ?>
                     <div class="summary-row discount-row">
                         <span>
                             <i class="fas fa-tag text-success me-1"></i>
-                            <?php if ($car['discount_type'] == 'percentage'): ?>
-                                Discount (<?php echo number_format($car['discount_value'], 0); ?>% off)
-                            <?php else: ?>
-                                Discount (Fixed amount)
-                            <?php endif; ?>
+                            Car Discount
                         </span>
-                        <span class="text-success" id="discount-amount">-$0.00</span>
+                        <span class="text-success" id="discount-amount"></span>
                     </div>
                     <?php endif; ?>
+
+                    <!-- Improved coupon input section -->
+                    <div class="coupon-section mt-4">
+                        <div class="form-group">
+                            <label for="coupon-code" class="mb-2">Have a coupon code?</label>
+                            <div class="input-group">
+                                <input type="text" id="coupon-code" class="form-control" placeholder="Enter coupon code" style="border-top-right-radius: 0; border-bottom-right-radius: 0; line-height: 43px;">
+                                <button type="button" id="apply-coupon" class="btn btn-primary" style="border-top-left-radius: 0; border-bottom-left-radius: 0; line-height: 43px;">Apply</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Coupon alerts -->
+                        <div class="alert alert-success mt-2" id="coupon-success" style="display: none;">
+                            <i class="fas fa-check-circle"></i> <span></span>
+                        </div>
+                        <div class="alert alert-danger mt-2" id="coupon-error" style="display: none;">
+                            <i class="fas fa-exclamation-circle"></i> <span></span>
+                        </div>
+                    </div>
+
                     <div class="summary-row" id="coupon-row" style="display: none;">
                         <span>
                             <i class="fas fa-ticket-alt text-success me-1"></i>
                             Coupon Discount
                         </span>
-                        <span class="text-success" id="coupon-discount">-$0.00</span>
+                        <span class="text-success" id="coupon-discount" data-type="" data-value="0">-$0.00</span>
                     </div>
+
                     <div class="summary-row">
                         <span>Rental Duration</span>
                         <span id="rental-duration">0 days</span>
                     </div>
+
                     <div class="summary-row">
                         <span>Insurance Fee</span>
                         <span>$25.00</span>
                     </div>
+
                     <?php if ($is_preorder): ?>
                     <div class="summary-row preorder-fee">
                         <span>Pre-order Fee</span>
                         <span>$15.00</span>
                     </div>
                     <?php endif; ?>
-                    <?php if ($car && isset($car['discount_type']) && !empty($car['discount_value'])): ?>
-                    <div class="summary-row subtotal-row">
+
+                    <div class="summary-row">
                         <span>Original Price</span>
                         <span id="original-price">$0.00</span>
                     </div>
+
                     <div class="summary-row total-savings">
                         <span>Total Savings</span>
-                        <span class="text-success" id="total-savings">-$0.00</span>
+                        <span id="total-savings">-$0.00</span>
                     </div>
-                    <?php endif; ?>
+
                     <div class="summary-row total-row">
                         <span>Total Amount</span>
                         <span id="total-price">$0.00</span>
                     </div>
                 </div>
 
-                <!-- Coupon code input section -->
-                <div class="coupon-section">
-                    <div class="form-group mb-2">
-                        <label for="coupon-code">Have a coupon code?</label>
-                        <div class="d-flex">
-                            <input type="text" id="coupon-code" class="form-control" placeholder="Enter coupon code">
-                            <button type="button" id="apply-coupon" class="btn btn-primary ms-2">Apply</button>
-                        </div>
-                    </div>
-                    <div class="alert alert-success" id="coupon-success" style="display: none;">
-                        <i class="fas fa-check-circle"></i> <span id="coupon-message"></span>
-                    </div>
-                    <div class="alert alert-danger" id="coupon-error" style="display: none;">
-                        <i class="fas fa-exclamation-circle"></i> <span id="error-message"></span>
-                    </div>
-                </div>
-
-                <div class="alert alert-info">
-                    <i class="fas fa-shield-alt"></i>
+                <div class="alert alert-info mt-4">
+                    <i class="fas fa-shield-alt me-2"></i>
                     Your booking is protected by our insurance policy
-                </div>
-
-                <div class="secure-badge">
-                    <i class="fas fa-lock"></i>
-                    All transactions are secure and encrypted
                 </div>
             </div>
         </div>
@@ -1844,46 +1997,48 @@ $conn->close();
                 const carPrice = <?php echo $car ? $car['price'] : '0'; ?>;
                 const discountType = <?php echo isset($car['discount_type']) ? "'" . $car['discount_type'] . "'" : 'null'; ?>;
                 const discountValue = <?php echo isset($car['discount_value']) ? $car['discount_value'] : 0; ?>;
-                const discountedPrice = <?php echo isset($car['discounted_price']) ? $car['discounted_price'] : 0; ?>;
                 
                 if (startDate && endDate) {
                     const start = new Date(startDate);
                     const end = new Date(endDate);
                     const duration = Math.max(1, Math.ceil((end - start) / (1000 * 60 * 60 * 24)));
                     const insuranceFee = 25;
-                    const preorderFee = <?php echo $is_preorder ? '15' : '0'; ?>; // Changed from 50 to 15
+                    const preorderFee = <?php echo $is_preorder ? '15' : '0'; ?>;
                     
-                    // Calculate discount if applicable
-                    let originalTotal = duration * carPrice;
-                    let discountAmount = 0;
-                    
+                    // Calculate daily discount first
+                    let dailyDiscountAmount = 0;
                     if (discountType) {
                         if (discountType === 'percentage') {
-                            discountAmount = originalTotal * (discountValue / 100);
+                            dailyDiscountAmount = carPrice * (discountValue / 100);
                         } else if (discountType === 'fixed') {
-                            discountAmount = discountValue * duration; // Apply fixed discount per day
-                        }
-                        
-                        // Update discount display
-                        if (document.getElementById('discount-amount')) {
-                            document.getElementById('discount-amount').textContent = `-$${discountAmount.toFixed(2)}`;
-                        }
-                        
-                        // Update original price and savings display
-                        if (document.getElementById('original-price')) {
-                            document.getElementById('original-price').textContent = `$${originalTotal.toFixed(2)}`;
-                        }
-                        
-                        if (document.getElementById('total-savings')) {
-                            document.getElementById('total-savings').textContent = `-$${discountAmount.toFixed(2)}`;
+                            dailyDiscountAmount = discountValue;
                         }
                     }
                     
-                    // Apply discount
-                    const discountedTotal = originalTotal - discountAmount;
+                    // Calculate totals
+                    const originalTotal = duration * carPrice;
+                    const totalDiscount = dailyDiscountAmount * duration;
+                    const discountedTotal = originalTotal - totalDiscount;
                     const totalPrice = discountedTotal + insuranceFee + preorderFee;
                     
+                    // Update display
                     document.getElementById('rental-duration').textContent = `${duration} days`;
+                    
+                    // Update discount display if applicable
+                    if (discountType && document.getElementById('discount-amount')) {
+                        document.getElementById('discount-amount').textContent = 
+                            `-$${dailyDiscountAmount.toFixed(2)}/day `;
+                    }
+                    
+                    // Update original price and total savings
+                    if (document.getElementById('original-price')) {
+                        document.getElementById('original-price').textContent = `$${originalTotal.toFixed(2)}`;
+                    }
+                    
+                    if (document.getElementById('total-savings')) {
+                        document.getElementById('total-savings').textContent = `-$${totalDiscount.toFixed(2)}`;
+                    }
+                    
                     document.getElementById('total-price').textContent = `$${totalPrice.toFixed(2)}`;
                 }
             }
@@ -1909,6 +2064,185 @@ $conn->close();
             // Initial call to update price if dates are pre-filled
             updatePriceCalculation();
         });
+
+        // Global variables for price calculations
+        let basePrice = <?php echo $car ? $car['price'] : 0; ?>;
+        let discountedPrice = <?php echo isset($car['discounted_price']) ? $car['discounted_price'] : 'basePrice'; ?>;
+        let couponDiscount = 0;
+        let couponType = '';
+        let couponValue = 0;
+        
+        // Function to format currency
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(amount);
+        }
+
+        // Function to calculate total with all discounts
+        function calculateTotal() {
+            const durationDays = parseInt(document.getElementById('rental-duration').textContent) || 0;
+            const baseTotal = durationDays * basePrice;
+            const insuranceFee = 25;
+            const preorderFee = <?php echo $is_preorder ? '15' : '0'; ?>;
+            
+            let total = durationDays * discountedPrice + insuranceFee + preorderFee;
+            
+            // Apply coupon discount
+            if (couponType === 'percentage') {
+                let couponAmount = total * (couponValue / 100);
+                total -= couponAmount;
+                couponDiscount = couponAmount;
+            } else if (couponType === 'fixed') {
+                total -= couponValue;
+                couponDiscount = couponValue;
+            }
+            
+            // Update UI
+            document.getElementById('original-price').textContent = formatCurrency(baseTotal + insuranceFee + preorderFee);
+            document.getElementById('total-price').textContent = formatCurrency(total);
+            
+            // Calculate and display total savings
+            const totalSavings = (baseTotal + insuranceFee + preorderFee) - total;
+            document.getElementById('total-savings').textContent = '-' + formatCurrency(totalSavings);
+            
+            // Show coupon discount in summary if applicable
+            const couponRow = document.getElementById('coupon-row');
+            if (couponDiscount > 0) {
+                couponRow.style.display = 'flex';
+                document.getElementById('coupon-discount').textContent = '-' + formatCurrency(couponDiscount);
+            } else {
+                couponRow.style.display = 'none';
+            }
+        }
+
+        // Coupon validation and application
+        document.getElementById('apply-coupon').addEventListener('click', function() {
+            const couponCode = document.getElementById('coupon-code').value;
+            
+            // Reset previous alerts
+            document.getElementById('coupon-success').style.display = 'none';
+            document.getElementById('coupon-error').style.display = 'none';
+            
+            if (!couponCode) {
+                document.getElementById('coupon-error').querySelector('span').textContent = 'Please enter a coupon code';
+                document.getElementById('coupon-error').style.display = 'block';
+                return;
+            }
+            
+            // Validate coupon via AJAX
+            $.ajax({
+                url: 'data/validate_coupon.php',
+                method: 'POST',
+                data: {
+                    code: couponCode,
+                    car_id: <?php echo $car ? $car['id'] : '0'; ?>
+                },
+                success: function(response) {
+                    if (response.valid) {
+                        couponType = response.type;
+                        couponValue = parseFloat(response.value);
+                        
+                        // Show success message
+                        const successMsg = response.type === 'percentage' 
+                            ? `${response.value}% discount applied!` 
+                            : `$${response.value} discount applied!`;
+                        document.getElementById('coupon-success').querySelector('span').textContent = successMsg;
+                        document.getElementById('coupon-success').style.display = 'block';
+                        
+                        // Update prices
+                        calculateTotal();
+                    } else {
+                        couponType = '';
+                        couponValue = 0;
+                        document.getElementById('coupon-error').querySelector('span').textContent = response.message || 'Invalid coupon code';
+                        document.getElementById('coupon-error').style.display = 'block';
+                        calculateTotal();
+                    }
+                },
+                error: function() {
+                    document.getElementById('coupon-error').querySelector('span').textContent = 'Error validating coupon';
+                    document.getElementById('coupon-error').style.display = 'block';
+                }
+            });
+        });
+
+        // Add styles for coupon section
+        const style = document.createElement('style');
+        style.textContent = `
+            .coupon-section {
+                background: #f8fafc;
+                padding: 1.5rem;
+                border-radius: 1rem;
+                border: 2px dashed #e2e8f0;
+            }
+
+            .coupon-section .form-group {
+                margin-bottom: 0;
+            }
+
+            .coupon-section label {
+                color: var(--text-color);
+                font-weight: 500;
+            }
+
+            .coupon-section .form-control {
+                border-right: none;
+                height: 45px;
+            }
+
+            .coupon-section .btn-primary {
+                border: none;
+                height: 45px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: 500;
+                transition: var(--transition);
+            }
+
+            .coupon-section .btn-primary:hover {
+                background: var(--primary-color);
+            }
+
+            /* Ensure clean connection between input and button */
+            .coupon-section .form-control:focus {
+                border-right: none;
+                box-shadow: none;
+            }
+
+            .coupon-section .btn-primary {
+                margin-left: -1px;
+            }
+
+            .alert {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                padding: 0.75rem 1rem;
+                margin: 0;
+                border: none;
+                border-radius: 0.75rem;
+            }
+
+            .alert-success {
+                background: rgba(46, 204, 113, 0.1);
+                color: #2ecc71;
+            }
+
+            .alert-danger {
+                background: rgba(231, 76, 60, 0.1);
+                color: #e74c3c;
+            }
+
+            .alert i {
+                font-size: 1.1rem;
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>

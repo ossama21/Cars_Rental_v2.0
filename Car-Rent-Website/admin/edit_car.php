@@ -98,8 +98,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Prepare features for database - ensure proper formatting
     if (!empty($features)) {
-        // Split features by comma and clean them
+        // Clean up the features array to prevent duplicates
         $featureArray = array_map('trim', explode(',', $features));
+        // Remove empty features and duplicates
+        $featureArray = array_filter(array_unique($featureArray));
         // Ensure each feature has brackets
         $featureArray = array_map(function($feature) {
             $feature = trim($feature, '[]');
@@ -317,7 +319,7 @@ while ($brandRow = $brandsResult->fetch_assoc()) {
         .remove-image {
             position: absolute;
             top: 8px;
-            right: 8px;
+            left: 8px;
             background: rgba(255, 59, 48, 0.9);
             color: white;
             border: none;
@@ -478,13 +480,96 @@ while ($brandRow = $brandsResult->fetch_assoc()) {
 
         .image-actions {
             position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
+            top: 8px;
+            right: 8px;
+            display: flex;
+            gap: 5px;
+            z-index: 10;
+        }
+
+        .image-preview-item:hover .image-actions {
+            opacity: 1;
+        }
+
+        .image-action-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+            opacity: 0;
+            position: absolute;
+            top: 8px;
+        }
+
+        .replace-image {
+            background: rgba(52, 152, 219, 0.9);
+            right: 8px;
+            transform: translateY(-10px);
+            opacity: 0;
+        }
+
+        .remove-image {
+            background: rgba(255, 59, 48, 0.9);
+            left: 8px;
+            transform: translateY(-10px);
+            opacity: 0;
+        }
+
+        .image-preview-item:hover .image-action-btn {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .image-action-btn:hover {
+            transform: scale(1.1) !important;
+        }
+
+        .replace-image:hover {
+            background: rgb(52, 152, 219);
+        }
+
+        .remove-image:hover {
+            background: rgb(255, 59, 48);
+        }
+
+        .primary-selector {
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            right: 8px;
             background: rgba(0, 0, 0, 0.7);
             padding: 8px;
+            border-radius: 4px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .image-preview-item:hover .primary-selector {
+            opacity: 1;
+        }
+
+        .form-check-label {
+            color: white;
+            font-size: 0.9rem;
+            margin-left: 4px;
+        }
+
+        .hidden-file-input {
+            display: none;
+        }
+
+        .image-actions {
+            position: absolute;
+            top: 8px;
+            right: 8px;
             display: flex;
-            justify-content: center;
+            gap: 5px;
             opacity: 0;
             transition: opacity 0.3s;
         }
@@ -493,10 +578,41 @@ while ($brandRow = $brandsResult->fetch_assoc()) {
             opacity: 1;
         }
 
-        .form-check-label {
+        .image-action-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
             color: white;
-            font-size: 0.9rem;
-            margin-left: 4px;
+        }
+
+        .replace-image {
+            background: rgba(52, 152, 219, 0.9);
+        }
+
+        .remove-image {
+            background: rgba(255, 59, 48, 0.9);
+        }
+
+        .image-action-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .replace-image:hover {
+            background: rgb(52, 152, 219);
+        }
+
+        .remove-image:hover {
+            background: rgb(255, 59, 48);
+        }
+
+        .hidden-file-input {
+            display: none;
         }
 
         .primary-image-selector {
@@ -701,10 +817,13 @@ while ($brandRow = $brandsResult->fetch_assoc()) {
                                 <?php foreach ($car['images'] as $image): ?>
                                 <div class="image-preview-item" data-image-id="<?php echo $image['id']; ?>">
                                     <img src="../<?php echo htmlspecialchars($image['image_path']); ?>" alt="Car Image">
-                                    <button type="button" class="remove-image" onclick="removeExistingImage(<?php echo $image['id']; ?>)">
-                                        <i class="fas fa-times"></i>
+                                    <button type="button" class="image-action-btn remove-image" onclick="removeExistingImage(<?php echo $image['id']; ?>)" title="Delete Image">
+                                        <i class="fas fa-trash"></i>
                                     </button>
-                                    <div class="image-actions">
+                                    <button type="button" class="image-action-btn replace-image" onclick="replaceImage(<?php echo $image['id']; ?>)" title="Replace Image">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </button>
+                                    <div class="primary-selector">
                                         <div class="form-check">
                                             <input class="form-check-input primary-image-selector" type="radio" 
                                                    name="primary_image" value="<?php echo $image['id']; ?>"
@@ -712,6 +831,7 @@ while ($brandRow = $brandsResult->fetch_assoc()) {
                                             <label class="form-check-label">Primary</label>
                                         </div>
                                     </div>
+                                    <input type="file" class="hidden-file-input" accept="image/*" onchange="handleReplace(this, <?php echo $image['id']; ?>)">
                                 </div>
                                 <?php endforeach; ?>
                             </div>
@@ -872,10 +992,14 @@ while ($brandRow = $brandsResult->fetch_assoc()) {
                                 </div>
                                 <div class="feature-tags" id="feature-tags-container">
                                     <?php 
+                                    // Clear empty features and duplicates right when displaying
                                     if (!empty($car['features'])) {
-                                        $features = array_map('trim', explode(',', $car['features']));
+                                        $features = array_unique(array_filter(array_map('trim', explode(',', $car['features']))));
                                         foreach ($features as $feature) {
                                             if (!empty($feature)) {
+                                                // Ensure proper bracket formatting
+                                                if (substr($feature, 0, 1) !== '[') $feature = '[' . $feature;
+                                                if (substr($feature, -1) !== ']') $feature = $feature . ']';
                                                 echo '<span class="feature-tag">' . htmlspecialchars($feature) . ' <i class="fas fa-times remove-feature"></i></span>';
                                             }
                                         }
@@ -1113,18 +1237,30 @@ while ($brandRow = $brandsResult->fetch_assoc()) {
             const featuresHidden = document.getElementById('features');
             const featureTagsContainer = document.getElementById('feature-tags-container');
             
+            // Initialize features from the hidden input
+            featuresHidden.value = featuresHidden.value.split(',')
+                .map(f => f.trim())
+                .filter(f => f)
+                .filter((f, i, arr) => arr.indexOf(f) === i) // Remove duplicates
+                .join(', ');
+            
             function addFeature(featureText) {
-                if (featureText && featureText.trim() !== '') {
-                    featureText = featureText.trim();
-                    // Add brackets if not present
-                    if (!featureText.startsWith('[')) featureText = '[' + featureText;
-                    if (!featureText.endsWith(']')) featureText = featureText + ']';
-                    
+                if (!featureText || featureText.trim() === '') return;
+                
+                featureText = featureText.trim();
+                // Add brackets if not present
+                if (!featureText.startsWith('[')) featureText = '[' + featureText;
+                if (!featureText.endsWith(']')) featureText = featureText + ']';
+                
+                // Check if feature already exists
+                const existingFeatures = Array.from(featureTagsContainer.querySelectorAll('.feature-tag'))
+                    .map(tag => tag.textContent.trim().replace(/×$/, '').trim());
+                
+                if (!existingFeatures.includes(featureText)) {
                     const featureTag = document.createElement('span');
                     featureTag.className = 'feature-tag';
                     featureTag.innerHTML = featureText + ' <i class="fas fa-times remove-feature"></i>';
                     featureTagsContainer.appendChild(featureTag);
-                    
                     featureInput.value = '';
                     updateFeaturesInput();
                 }
@@ -1134,6 +1270,9 @@ while ($brandRow = $brandsResult->fetch_assoc()) {
                 const featureTags = document.querySelectorAll('.feature-tag');
                 const featuresArray = Array.from(featureTags).map(tag => 
                     tag.textContent.trim().replace(/×$/, '').trim()
+                ).filter((value, index, self) => 
+                    // Remove duplicates
+                    self.indexOf(value) === index
                 );
                 featuresHidden.value = featuresArray.join(', ');
             }
@@ -1160,6 +1299,72 @@ while ($brandRow = $brandsResult->fetch_assoc()) {
                 }
             });
         });
+
+        function replaceImage(imageId) {
+            const imageContainer = document.querySelector(`[data-image-id="${imageId}"]`);
+            const fileInput = imageContainer.querySelector('.hidden-file-input');
+            fileInput.click();
+        }
+
+        function handleReplace(input, imageId) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+                const maxSize = 5 * 1024 * 1024; // 5MB
+
+                if (!allowedTypes.includes(file.type)) {
+                    alert('Please select a valid image file (JPG, JPEG, or PNG)');
+                    return;
+                }
+
+                if (file.size > maxSize) {
+                    alert('File is too large. Maximum size is 5MB');
+                    return;
+                }
+
+                const reader = new FileReader();
+                const imageContainer = document.querySelector(`[data-image-id="${imageId}"]`);
+                const img = imageContainer.querySelector('img');
+                const formData = new FormData();
+                
+                formData.append('new_image', file);
+                formData.append('image_id', imageId);
+
+                // Show loading state
+                img.style.opacity = '0.5';
+                imageContainer.querySelector('.replace-image').disabled = true;
+
+                // Send to server
+                fetch('replace_car_image.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update the image with new one
+                        reader.onload = function(e) {
+                            img.src = e.target.result;
+                            setTimeout(() => {
+                                img.style.opacity = '1';
+                            }, 100);
+                        }
+                        reader.readAsDataURL(file);
+                    } else {
+                        alert('Failed to replace image: ' + (data.message || 'Unknown error'));
+                        img.style.opacity = '1';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to replace image. Please try again.');
+                    img.style.opacity = '1';
+                })
+                .finally(() => {
+                    imageContainer.querySelector('.replace-image').disabled = false;
+                });
+            }
+        }
     </script>
 </body>
 </html>

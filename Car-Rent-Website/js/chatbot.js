@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Fetch car data from API
     async function fetchCarData() {
         try {
-            const response = await fetch('../data/chatbot_api.php?action=get_all_cars');
+            const response = await fetch('./data/chatbot_api.php?action=get_all_cars');
             const data = await response.json();
             
             if (data.status === 'success') {
@@ -268,7 +268,7 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             switch (intent) {
                 case 'carCount':
-                    const carsResponse = await fetch('../data/chatbot_api.php?action=get_all_cars');
+                    const carsResponse = await fetch('./data/chatbot_api.php?action=get_all_cars');
                     const carsData = await carsResponse.json();
                     
                     if (carsData.status === 'success' && carsData.data) {
@@ -293,7 +293,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 case 'specificCar':
                     const carName = extractCarName(message);
                     if (carName) {
-                        const searchResponse = await fetch(`../data/chatbot_api.php?action=search_cars&name=${encodeURIComponent(carName)}&brand=${encodeURIComponent(carName)}`);
+                        const searchResponse = await fetch(`./data/chatbot_api.php?action=search_cars&name=${encodeURIComponent(carName)}&brand=${encodeURIComponent(carName)}`);
                         const searchData = await searchResponse.json();
                         
                         if (searchData.status === 'success' && searchData.data && searchData.data.length > 0) {
@@ -310,7 +310,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     return null;
 
                 case 'carTypes':
-                    const typesResponse = await fetch('../data/chatbot_api.php?action=get_all_cars');
+                    const typesResponse = await fetch('./data/chatbot_api.php?action=get_all_cars');
                     const typesData = await typesResponse.json();
                     
                     if (typesData.status === 'success' && typesData.data) {
@@ -332,6 +332,24 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         response += "\nWould you like to know more about any specific type or see available cars?";
                         return response;
+                    }
+                    return null;
+
+                case 'carAvailability':
+                    const carMentioned = extractCarMention(message);
+                    if (carMentioned) {
+                        try {
+                            const carResponse = await fetch(`./data/chatbot_api.php?action=search_cars&name=${encodeURIComponent(carMentioned)}&brand=${encodeURIComponent(carMentioned)}`);
+                            const carData = await carResponse.json();
+                            
+                            if (carData.status === 'success' && carData.data.length > 0) {
+                                const car = carData.data[0];
+                                return `The ${car.brand} ${car.name} is generally available in our fleet. For specific dates, I recommend checking the booking page or contacting our customer service. The daily rate for this ${car.type} starts at $${car.price} per day.`;
+                            }
+                        } catch (error) {
+                            console.error("Error getting car availability:", error);
+                            return "I'm having trouble checking car availability information right now. You can see our available vehicles directly on our booking page or contact customer service for assistance.";
+                        }
                     }
                     return null;
 
@@ -538,7 +556,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (carMentioned) {
                         try {
                             // Search for the car in our database
-                            const carResponse = await fetch(`../data/chatbot_api.php?action=search_cars&name=${encodeURIComponent(carMentioned)}&brand=${encodeURIComponent(carMentioned)}`);
+                            const carResponse = await fetch(`./data/chatbot_api.php?action=search_cars&name=${encodeURIComponent(carMentioned)}&brand=${encodeURIComponent(carMentioned)}`);
                             const carData = await carResponse.json();
                             
                             if (carData.status === 'success' && carData.data.length > 0) {

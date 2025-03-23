@@ -623,7 +623,7 @@ h1, h2, h3, h4, h5, h6 {
   left: 0;
   right: 0;
   height: 100%;
-  background: url('../images/pattern.png') repeat;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
   opacity: 0.05;
   pointer-events: none;
 }
@@ -662,7 +662,7 @@ h1, h2, h3, h4, h5, h6 {
   height: 100%;
   object-fit: contain;
   transition: all 0.5s ease;
-  padding: 1rem;
+  /* padding: 0.2rem; */
 }
 
 .car-card:hover .car-image img {
@@ -1679,6 +1679,7 @@ footer h5::after {
   padding: 0.5rem;
   border-radius: 50px;
   transition: all 0.3s ease;
+  z-index: 1051;
 }
 
 /* Add styles for scrolled state */
@@ -1730,24 +1731,26 @@ footer h5::after {
 
 .profile-menu {
   position: absolute;
-  top: 100%;
+  top: calc(100% + 5px);
   right: 0;
   width: 220px;
   background-color: var(--white);
   border-radius: 8px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
-  margin-top: 0.5rem;
   opacity: 0;
   visibility: hidden;
   transform: translateY(10px);
   transition: all 0.3s ease;
   z-index: 1050;
+  overflow: hidden;
+  pointer-events: none;
 }
 
 .profile-menu.active {
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
+  pointer-events: auto;
 }
 
 .profile-menu-item {
@@ -1757,6 +1760,11 @@ footer h5::after {
   color: var(--text-color);
   text-decoration: none;
   transition: all 0.2s ease;
+  border-bottom: 1px solid var(--gray-100);
+}
+
+.profile-menu-item:last-child {
+  border-bottom: none;
 }
 
 .profile-menu-item i {
@@ -1768,16 +1776,6 @@ footer h5::after {
 .profile-menu-item:hover {
   background-color: var(--gray-100);
   color: var(--primary-color);
-}
-
-.profile-menu-item:first-child {
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
-}
-
-.profile-menu-item:last-child {
-  border-bottom-left-radius: 8px;
-  border-bottom-right-radius: 8px;
 }
 
 /* Admin Dashboard Styles */
@@ -2174,7 +2172,7 @@ footer h5::after {
 .activity-item {
   display: flex;
   padding-bottom: 1rem;
-  border-bottom: 1px solid var(--admin-gray-light);
+  border-bottom: 1px solid var (--admin-gray-light);
 }
 
 .activity-item:last-child {

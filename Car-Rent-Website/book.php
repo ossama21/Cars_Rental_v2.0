@@ -115,6 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <link rel="stylesheet" href="./css/book.css">
     <link rel="stylesheet" href="./css/modern.css">
+    <link rel="stylesheet" href="./css/dark-mode.css">
     <!-- Mobile-specific CSS -->
     <link rel="stylesheet" href="./css/mobile.css">
     
@@ -143,7 +144,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .navbar.scrolled {
-            background: white !important;
+            background: var(--primary-color) !important;
             box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
             padding: 0.8rem 2rem;
         }
@@ -156,7 +157,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         .navbar.scrolled .navbar-brand, 
         .navbar.scrolled .nav-link {
-            color: var(--text-dark) !important;
+            color: white !important;
         }
 
         .login-btn {
@@ -165,8 +166,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .navbar.scrolled .login-btn {
-            color: var(--text-dark) !important;
-            border-color: var(--text-dark) !important;
+            color: white !important;
+            border-color: white !important;
         }
 
         .navbar .menu-toggle span {
@@ -174,7 +175,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .navbar.scrolled .menu-toggle span {
-            background: var(--text-dark);
+            background: white;
         }
 
         .main-content {
@@ -237,8 +238,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         #car-listings {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
             padding: 1rem 0;
         }
 
@@ -246,12 +247,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             background: white;
             border-radius: var(--card-radius);
             overflow: hidden;
-            box-shadow: 0 10px 20px var(--shadow-color);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
             transition: all var(--transition-speed);
             height: 100%;
             display: flex;
             flex-direction: column;
             position: relative;
+            border: none;
+            transform: translateY(0);
         }
 
         .car-card:hover {
@@ -260,9 +263,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .car-image {
-            height: 200px;
+            height: 180px;
             position: relative;
             overflow: hidden;
+            border-radius: var(--card-radius) var(--card-radius) 0 0;
         }
 
         .car-image img {
@@ -297,10 +301,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .car-details {
-            padding: 1.5rem;
+            padding: 1.2rem;
             flex-grow: 1;
             display: flex;
             flex-direction: column;
+            background: white;
+            position: relative;
         }
 
         .car-brand {
@@ -310,42 +316,69 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .car-title {
-            font-size: 1.25rem;
-            font-weight: 600;
+            font-size: 1.2rem;
+            font-weight: 700;
             color: var(--text-dark);
+            margin-bottom: 0.8rem;
+            position: relative;
+            padding-bottom: 0.6rem;
+            line-height: 1.3;
+        }
+
+        .car-description {
+            font-size: 0.85rem;
+            color: var(--text-light);
             margin-bottom: 1rem;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .car-info {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-            margin-bottom: 1.5rem;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+            background: #f8f9fa;
+            padding: 0.8rem;
+            border-radius: 10px;
         }
 
         .info-item {
             display: flex;
             align-items: center;
-            color: var(--text-light);
-            font-size: 0.9rem;
+            color: var(--text-dark);
+            font-size: 0.8rem;
+            font-weight: 500;
         }
 
         .info-item i {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             margin-right: 8px;
-            color: var(--secondary-color);
-            font-size: 1rem;
+            background: var(--secondary-color);
+            color: white;
+            border-radius: 50%;
+            font-size: 0.75rem;
         }
 
         .car-price {
-            padding: 8px 12px;
-            border-radius: 8px;
-            margin: 8px 0;
+            padding: 0.8rem;
+            border-radius: 10px;
+            margin: 0.5rem 0 0.8rem;
             position: relative;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: rgba(52, 152, 219, 0.05);
+            background: rgba(52, 152, 219, 0.08);
             flex-wrap: wrap;
+            border-left: 3px solid var(--secondary-color);
         }
 
         .price-content {
@@ -358,22 +391,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .discounted-price {
             color: #e74c3c;
             font-size: 1.2rem;
-            font-weight: 700;
+            font-weight: 800;
             line-height: 1;
             display: flex;
-            align-items: baseline;
-            flex-wrap: wrap;
-            gap: 4px;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 3px;
         }
 
         .discount-badge {
-            background: #e74c3c;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
             color: white;
-            padding: 2px 6px;
-            font-size: 0.65rem;
-            font-weight: 600;
-            border-radius: 8px;
+            padding: 3px 8px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            border-radius: 30px;
             white-space: nowrap;
+            box-shadow: 0 2px 5px rgba(231, 76, 60, 0.3);
+            animation: pulse 2s infinite;
         }
 
         .original-price {
@@ -386,7 +421,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         .regular-price {
             font-size: 1.2rem;
-            font-weight: 700;
+            font-weight: 800;
             color: #2c3e50;
             display: flex;
             align-items: baseline;
@@ -394,17 +429,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .book-now-btn {
-            margin-top: 12px;
             width: 100%;
-            padding: 10px;
+            padding: 0.8rem;
             text-align: center;
-            background: var(--secondary-color);
+            background: linear-gradient(135deg, #3498db, #2980b9);
             color: white;
             border: none;
             border-radius: 8px;
-            font-weight: 600;
-            transition: all 0.3s ease;
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+            transition: all 0.4s ease;
             text-decoration: none;
+            display: inline-block;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
         }
 
         .book-now-btn:hover {
@@ -871,6 +911,489 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             color: #7f8c8d;
             margin: 0;
         }
+        /* Modern Card Design Styles - March 2025 Update */
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --background-light: #f8f9fa;
+            --text-dark: #2c3e50;
+            --text-light: #95a5a6;
+            --shadow-color: rgba(0,0,0,0.1);
+            --card-radius: 20px;
+            --transition-speed: 0.3s;
+        }
+
+        #car-listings {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            padding: 1rem 0;
+        }
+
+        .car-card {
+            background: white;
+            border-radius: var(--card-radius);
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            transition: all var(--transition-speed);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            border: none;
+            transform: translateY(0);
+        }
+
+        .car-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.18);
+        }
+
+        .car-image {
+            height: 180px;
+            position: relative;
+            overflow: hidden;
+            border-radius: var(--card-radius) var(--card-radius) 0 0;
+        }
+
+        .car-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.8s ease;
+        }
+
+        .car-card:hover .car-image img {
+            transform: scale(1.05);
+        }
+
+        /* Gradient overlay on image */
+        .car-image::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 40%;
+            background: linear-gradient(0deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
+            z-index: 1;
+        }
+
+        .car-brand {
+            position: absolute;
+            bottom: 15px;
+            left: 15px;
+            color: white;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            z-index: 2;
+            background: rgba(52, 152, 219, 0.8);
+            padding: 5px 15px;
+            border-radius: 30px;
+        }
+
+        .car-status {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            z-index: 2;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .car-status.available {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+        }
+
+        .car-status.rented {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        .car-details {
+            padding: 1.2rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            background: white;
+            position: relative;
+        }
+
+        .car-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.8rem;
+            position: relative;
+            padding-bottom: 0.6rem;
+            line-height: 1.3;
+        }
+
+        .car-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--secondary-color);
+            border-radius: 3px;
+        }
+
+        .car-description {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .car-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+            background: #f8f9fa;
+            padding: 0.8rem;
+            border-radius: 10px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            color: var(--text-dark);
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .info-item i {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 8px;
+            background: var(--secondary-color);
+            color: white;
+            border-radius: 50%;
+            font-size: 0.75rem;
+        }
+
+        .car-price {
+            padding: 0.8rem;
+            border-radius: 10px;
+            margin: 0.5rem 0 0.8rem;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(52, 152, 219, 0.08);
+            flex-wrap: wrap;
+            border-left: 3px solid var(--secondary-color);
+        }
+
+        .price-content {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .discounted-price {
+            color: #e74c3c;
+            font-size: 1.2rem;
+            font-weight: 800;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 3px;
+        }
+
+        .discounted-price small {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            font-weight: 600;
+        }
+
+        .discount-badge {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 3px 8px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            border-radius: 30px;
+            white-space: nowrap;
+            box-shadow: 0 2px 5px rgba(231, 76, 60, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        .original-price {
+            font-size: 0.7rem;
+            color: #95a5a6;
+            text-decoration: line-through;
+            line-height: 1;
+            margin-top: 2px;
+        }
+
+        .regular-price {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #2c3e50;
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+        }
+
+        .discount-countdown {
+            margin-top: 8px;
+            font-size: 0.85rem;
+            background: rgba(44, 62, 80, 0.08);
+            padding: 6px 10px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .discount-countdown.urgent .countdown-text {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .discount-countdown i {
+            color: #e67e22;
+        }
+
+        .book-now-btn {
+            width: 100%;
+            padding: 0.8rem;
+            text-align: center;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+            transition: all 0.4s ease;
+            text-decoration: none;
+            display: inline-block;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+        }
+
+        .book-now-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: all 0.4s ease;
+        }
+
+        .book-now-btn:hover {
+            background: linear-gradient(135deg, #2980b9, #2c3e50);
+            transform: translateY(-3px);
+            text-decoration: none;
+            color: white;
+            box-shadow: 0 7px 20px rgba(52, 152, 219, 0.5);
+        }
+
+        .book-now-btn:hover::before {
+            left: 100%;
+        }
+
+        /* Preorder section styling */
+        .preorder-section {
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.1), rgba(41, 128, 185, 0.15));
+            padding: 1.2rem;
+            border-radius: 15px;
+            margin: 0.5rem 0 1.2rem;
+            border: 1px dashed rgba(52, 152, 219, 0.3);
+            text-align: center;
+        }
+
+        .next-available {
+            color: #2980b9;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .next-available i {
+            color: #3498db;
+        }
+
+        .preorder-btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            display: inline-block;
+            text-align: center;
+            width: 100%;
+            transition: all 0.4s ease;
+            text-decoration: none;
+            margin-bottom: 0.7rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .preorder-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: all 0.4s ease;
+        }
+
+        .preorder-btn:hover {
+            background: linear-gradient(135deg, #2980b9, #2c3e50);
+            transform: translateY(-3px);
+            text-decoration: none;
+            color: white;
+            box-shadow: 0 7px 20px rgba(52, 152, 219, 0.4);
+        }
+
+        .preorder-btn:hover::before {
+            left: 100%;
+        }
+
+        .preorder-fee {
+            display: block;
+            color: #e67e22;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-top: 0.5rem;
+        }
+
+        .availability-badge {
+            text-align: center;
+            padding: 0.7rem;
+            margin: 0.8rem 0;
+            border-radius: 10px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .availability-badge.unavailable {
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+        }
+
+        .availability-badge i {
+            font-size: 1.1rem;
+        }
+
+        /* Shine effect for buttons */
+        @keyframes shine {
+            0% { background-position: -100% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* No cars found styling */
+        .no-cars-found {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .no-cars-found i {
+            font-size: 4rem;
+            color: #95a5a6;
+            margin-bottom: 1.5rem;
+        }
+
+        .no-cars-found h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        .no-cars-found p {
+            font-size: 1.1rem;
+            color: #7f8c8d;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 991.98px) {
+            #car-listings {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 767.98px) {
+            #car-listings {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                gap: 2rem;
+            }
+            
+            .car-title {
+                font-size: 1.3rem;
+            }
+            
+            .car-details {
+                padding: 1.5rem;
+            }
+            
+            .car-info {
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            #car-listings {
+                grid-template-columns: 1fr;
+            }
+            
+            .car-image {
+                height: 200px;
+            }
+        }
     </style>
 </head>
 
@@ -903,6 +1426,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
           <!-- Authentication buttons/profile dropdown -->
           <div class="nav-buttons desktop-auth">
+            <!-- Dark Mode Toggle -->
+            <div class="theme-switch-wrapper">
+              <span class="theme-switch-label"><i class="fas fa-sun"></i></span>
+              <label class="theme-switch">
+                <input type="checkbox" id="themeSwitch">
+                <span class="slider round">
+                  <i class="fas fa-sun sun-icon icon"></i>
+                  <i class="fas fa-moon moon-icon icon"></i>
+                </span>
+              </label>
+            </div>
+            
             <?php if (isset($_SESSION['firstName'])): ?>
               <div class="profile-dropdown">
                 <button class="profile-toggle">
@@ -1053,8 +1588,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <?php endif; ?>
                     </div>
                     <div class="car-details">
-                        <div class="car-brand"><?php echo htmlspecialchars($car['brand']); ?></div>
+                        <!-- <div class="car-brand"><?php echo htmlspecialchars($car['brand']); ?></div> -->
                         <h3 class="car-title"><?php echo htmlspecialchars($car['name']); ?></h3>
+                        
+                        <!-- Add car description -->
+                        <div class="car-description">
+                            <?php echo htmlspecialchars($car['description']); ?>
+                        </div>
+                        
                         <div class="car-info">
                             <div class="info-item">
                                 <i class="fas fa-calendar-alt"></i>
@@ -1206,6 +1747,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script src="js/mobile.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Dark mode toggle functionality
+            const themeSwitch = document.getElementById('themeSwitch');
+            
+            // Check for saved theme preference or use device preference
+            const currentTheme = localStorage.getItem('theme') || 
+                                (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            
+            // Apply the saved theme on page load
+            if (currentTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                themeSwitch.checked = true;
+            }
+            
+            // Handle theme switch toggle
+            themeSwitch.addEventListener('change', function() {
+                if (this.checked) {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    document.documentElement.removeAttribute('data-theme');
+                    localStorage.setItem('theme', 'light');
+                }
+            });
+
             // Add navbar scroll behavior
             function checkScroll() {
                 const navbar = document.querySelector('.navbar');

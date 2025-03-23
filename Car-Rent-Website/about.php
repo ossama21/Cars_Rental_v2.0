@@ -25,6 +25,8 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
     <link rel="stylesheet" href="./css/about.css">
     <link rel="stylesheet" href="./css/modern.css">
     <link rel="stylesheet" href="./css/index1.css">
+    <!-- Dark Mode CSS -->
+    <link rel="stylesheet" href="./css/dark-mode.css">
     <!-- Mobile-specific CSS -->
     <link rel="stylesheet" href="./css/mobile.css">
 
@@ -79,6 +81,18 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
                 </li>
               </ul>
             </div>
+          </div>
+
+          <!-- Dark Mode Toggle -->
+          <div class="theme-switch-wrapper">
+            <span class="theme-switch-label"><i class="fas fa-sun"></i></span>
+            <label class="theme-switch">
+              <input type="checkbox" id="theme-toggle">
+              <span class="slider round">
+                <span class="icon sun-icon"><i class="fas fa-sun"></i></span>
+                <span class="icon moon-icon"><i class="fas fa-moon"></i></span>
+              </span>
+            </label>
           </div>
 
           <!-- Authentication buttons/profile dropdown -->
@@ -676,6 +690,8 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
     <script src="js/main.js"></script>
     <!-- Mobile-specific JS -->
     <script src="js/mobile.js"></script>
+    <!-- Dark Mode JS -->
+    <script src="js/theme.js"></script>
     <script>
       // Initialize AOS
       AOS.init({

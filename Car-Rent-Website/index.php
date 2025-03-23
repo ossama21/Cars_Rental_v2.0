@@ -2,6 +2,18 @@
 session_start();
 $firstName = isset($_SESSION['firstName']) ? $_SESSION['firstName'] : '';
 $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
+
+// Database connection
+$host="localhost";
+$user="root";
+$pass="";
+$db="car_rent";
+
+$conn = new mysqli($host, $user, $pass, $db);
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
 ?>
 <!doctype html>
 <html lang="en">
@@ -33,6 +45,8 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
     <link rel="stylesheet" href="./css/index2.css">
     <link rel="stylesheet" href="./css/index1.css">
     <link rel="stylesheet" href="./css/modern.css">
+    <!-- Dark Mode CSS -->
+    <link rel="stylesheet" href="./css/dark-mode.css">
     <!-- Mobile-specific CSS (loaded conditionally) -->
     <link rel="stylesheet" href="./css/mobile.css">
 
@@ -111,11 +125,23 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
             </div>
           </div>
 
+          <!-- Dark Mode Toggle -->
+          <div class="theme-switch-wrapper">
+            <span class="theme-switch-label"><i class="fas fa-sun"></i></span>
+            <label class="theme-switch">
+              <input type="checkbox" id="theme-toggle">
+              <span class="slider round">
+                <span class="icon sun-icon"><i class="fas fa-sun"></i></span>
+                <span class="icon moon-icon"><i class="fas fa-moon"></i></span>
+              </span>
+            </label>
+          </div>
+
           <!-- Authentication buttons/profile dropdown -->
           <div class="nav-buttons desktop-auth">
             <?php if (isset($_SESSION['firstName'])): ?>
               <div class="profile-dropdown">
-                <button class="profile-toggle">
+                <button type="button" class="profile-toggle">
                   <div class="profile-avatar">
                     <img src="./images/profile-pic.png" alt="Profile">
                   </div>
@@ -123,21 +149,20 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
                   <i class="fas fa-chevron-down"></i>
                 </button>
                 <div class="profile-menu">
-                  <a href="data/homepage.php" class="profile-menu-item">
-                    <i class="fas fa-user"></i> My Account
+                  <a href="./data/homepage.php" class="profile-menu-item">
+                    <i class="fas fa-user"></i>My Account
                   </a>
                   <?php if ($isAdmin): ?>
-                  <a href="admin/admin.php" class="profile-menu-item">
-                    <i class="fas fa-cog"></i> Admin Dashboard
+                  <a href="./admin/admin.php" class="profile-menu-item">
+                    <i class="fas fa-cog"></i>Admin Dashboard
                   </a>
                   <?php endif; ?>
-                  <a href="data/logout.php" class="profile-menu-item">
-                    <i class="fas fa-sign-out-alt"></i> Logout
+                  <a href="./data/logout.php" class="profile-menu-item">
+                    <i class="fas fa-sign-out-alt"></i>Logout
                   </a>
                 </div>
               </div>
             <?php else: ?>
-              <!-- The only instance of login/signup buttons -->
               <div class="auth-buttons">
                 <a href="data/index.php" class="nav-btn login-btn">Login</a>
                 <a href="data/index.php" class="nav-btn signup-btn">Sign Up</a>
@@ -267,23 +292,66 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
         
         <div class="swiper car-slider">
           <div class="swiper-wrapper">
+            <?php
+            // Get featured cars from database
+            $sql = "SELECT c.*, 
+                    CASE 
+                        WHEN d.discount_type = 'percentage' THEN c.price * (1 - d.discount_value/100)
+                        WHEN d.discount_type = 'fixed' THEN c.price - d.discount_value
+                        ELSE c.price 
+                    END as discounted_price,
+                    d.discount_type,
+                    d.discount_value,
+                    ci.image_path as primary_image,
+                    CONCAT('images/cars/index_cars/', c.id, '.jpg') as index_image
+                    FROM cars c 
+                    LEFT JOIN car_discounts d ON c.id = d.car_id 
+                        AND CURRENT_TIMESTAMP BETWEEN d.start_date AND d.end_date 
+                    LEFT JOIN car_images ci ON c.id = ci.car_id AND ci.is_primary = 1
+                    ORDER BY RAND() 
+                    LIMIT 4";
+            
+            $result = $conn->query($sql);
+            
+            if ($result->num_rows > 0) {
+                while($car = $result->fetch_assoc()) {
+                    // Check for index-specific image first
+                    if (file_exists($car['index_image'])) {
+                        $imagePath = $car['index_image'];
+                    } 
+                    // Fall back to primary image if exists
+                    else if (!empty($car['primary_image'])) {
+                        $imagePath = $car['primary_image'];
+                    }
+                    // Fall back to legacy image if exists
+                    else if (!empty($car['image'])) {
+                        $imagePath = $car['image'];
+                    }
+                    // Finally fall back to placeholder
+                    else {
+                        $imagePath = 'images/car-placeholder.png';
+                    }
+                    $price = isset($car['discounted_price']) ? $car['discounted_price'] : $car['price'];
+            ?>
             <div class="swiper-slide">
               <div class="car-card" data-aos="fade-up">
                 <div class="car-image">
-                  <img src="./images/img1.png" alt="Luxury Sedan">
-                  <div class="car-tag">Best Seller</div>
+                  <img src="<?php echo htmlspecialchars($imagePath); ?>" alt="<?php echo htmlspecialchars($car['name']); ?>">
+                  <?php if(isset($car['discount_value'])): ?>
+                    <div class="car-tag">Special Offer</div>
+                  <?php endif; ?>
                 </div>
                 <div class="car-info">
-                  <h3>Mercedes Benz</h3>
+                  <h3><?php echo htmlspecialchars($car['name']); ?></h3>
                   <div class="car-specs">
-                    <span><i class="fas fa-cog"></i> Automatic</span>
-                    <span><i class="fas fa-gas-pump"></i> Petrol</span>
-                    <span><i class="fas fa-user"></i> 5 Seats</span>
+                    <span><i class="fas fa-cog"></i> <?php echo htmlspecialchars($car['transmission']); ?></span>
+                    <span><i class="fas fa-gas-pump"></i> <?php echo htmlspecialchars($car['fuel_type'] ?? 'Petrol'); ?></span>
+                    <span><i class="fas fa-user"></i> <?php echo htmlspecialchars($car['seating_capacity'] ?? '5'); ?> Seats</span>
                   </div>
                   <div class="car-price">
-                    <h4>$89 <span>/ day</span></h4>
+                    <h4>$<?php echo number_format($price, 2); ?> <span>/ day</span></h4>
                     <?php if (isset($_SESSION['firstName'])): ?>
-                      <a href="checkout.php?car_id=1" class="btn btn-sm btn-primary">Rent Now</a>
+                      <a href="checkout.php?car_id=<?php echo $car['id']; ?>" class="btn btn-sm btn-primary">Rent Now</a>
                     <?php else: ?>
                       <a href="data/index.php" class="btn btn-sm btn-primary">Login to Rent</a>
                     <?php endif; ?>
@@ -291,79 +359,10 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
                 </div>
               </div>
             </div>
-            
-            <div class="swiper-slide">
-              <div class="car-card" data-aos="fade-up" data-aos-delay="100">
-                <div class="car-image">
-                  <img src="./images/img2.png" alt="SUV">
-                </div>
-                <div class="car-info">
-                  <h3>Audi Q5</h3>
-                  <div class="car-specs">
-                    <span><i class="fas fa-cog"></i> Automatic</span>
-                    <span><i class="fas fa-gas-pump"></i> Petrol</span>
-                    <span><i class="fas fa-user"></i> 5 Seats</span>
-                  </div>
-                  <div class="car-price">
-                    <h4>$75 <span>/ day</span></h4>
-                    <?php if (isset($_SESSION['firstName'])): ?>
-                      <a href="checkout.php?car_id=2" class="btn btn-sm btn-primary">Rent Now</a>
-                    <?php else: ?>
-                      <a href="data/index.php" class="btn btn-sm btn-primary">Login to Rent</a>
-                    <?php endif; ?>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div class="swiper-slide">
-              <div class="car-card" data-aos="fade-up" data-aos-delay="200">
-                <div class="car-image">
-                  <img src="./images/img3.png" alt="Sports Car">
-                  <div class="car-tag">Premium</div>
-                </div>
-                <div class="car-info">
-                  <h3>BMW Series 3</h3>
-                  <div class="car-specs">
-                    <span><i class="fas fa-cog"></i> Automatic</span>
-                    <span><i class="fas fa-gas-pump"></i> Petrol</span>
-                    <span><i class="fas fa-user"></i> 5 Seats</span>
-                  </div>
-                  <div class="car-price">
-                    <h4>$95 <span>/ day</span></h4>
-                    <?php if (isset($_SESSION['firstName'])): ?>
-                      <a href="checkout.php?car_id=3" class="btn btn-sm btn-primary">Rent Now</a>
-                    <?php else: ?>
-                      <a href="data/index.php" class="btn btn-sm btn-primary">Login to Rent</a>
-                    <?php endif; ?>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div class="swiper-slide">
-              <div class="car-card" data-aos="fade-up" data-aos-delay="300">
-                <div class="car-image">
-                  <img src="./images/img4.png" alt="Economy Car">
-                </div>
-                <div class="car-info">
-                  <h3>Toyota Camry</h3>
-                  <div class="car-specs">
-                    <span><i class="fas fa-cog"></i> Automatic</span>
-                    <span><i class="fas fa-gas-pump"></i> Hybrid</span>
-                    <span><i class="fas fa-user"></i> 5 Seats</span>
-                  </div>
-                  <div class="car-price">
-                    <h4>$65 <span>/ day</span></h4>
-                    <?php if (isset($_SESSION['firstName'])): ?>
-                      <a href="checkout.php?car_id=4" class="btn btn-sm btn-primary">Rent Now</a>
-                    <?php else: ?>
-                      <a href="data/index.php" class="btn btn-sm btn-primary">Login to Rent</a>
-                    <?php endif; ?>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <?php
+                }
+            }
+            ?>
           </div>
           <div class="swiper-pagination"></div>
           <div class="swiper-button-next"></div>
@@ -787,6 +786,8 @@ $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
     <script src="js/main.js"></script>
     <!-- Mobile-specific JS -->
     <script src="js/mobile.js"></script>
+    <!-- Dark Mode JS -->
+    <script src="js/theme.js"></script>
     <script>
       window.addEventListener('load', function() {
         const loadingOverlay = document.getElementById('loading-overlay');

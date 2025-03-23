@@ -1,0 +1,583 @@
+/* Dark Mode CSS */
+:root {
+  /* Light theme variables (default) */
+  --primary-color: #3182ce;
+  --text-color: #333;
+  --bg-color: #ffffff;
+  --secondary-bg: #f0f0f0;
+  --card-bg: #ffffff;
+  --border-color: rgba(0, 0, 0, 0.125);
+  --nav-bg: #ffffff;
+  --nav-text: #333;
+  --footer-bg: #3182ce;
+  --footer-text: #fff;
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --highlight-color: #f30c0c;
+  --feature-bg: #f9f9f9;
+  --testimonial-bg: #ffffff;
+  --input-bg: #f1f1f1;
+  --input-text: #333;
+}
+
+/* Dark theme variables */
+[data-theme="dark"] {
+  --primary-color: #4299e1;
+  --text-color: #e0e0e0;
+  --bg-color: #121212;
+  --secondary-bg: #121212;
+  --card-bg: #1e1e1e;
+  --border-color: rgba(255, 255, 255, 0.125);
+  --nav-bg: #121212;
+  --nav-text: #e0e0e0;
+  --footer-bg: #121212;
+  --footer-text: #e0e0e0;
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --highlight-color: #ff5252;
+  --feature-bg: #1e1e1e;
+  --testimonial-bg: #1e1e1e;
+  --input-bg: #1e1e1e;
+  --input-text: #e0e0e0;
+}
+
+/* Apply theme colors to elements */
+body {
+  background-color: var(--bg-color) !important;
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Override any transparent backgrounds */
+html[data-theme="dark"] body {
+  background-color: var(--bg-color) !important;
+}
+
+html[data-theme="dark"] section {
+  background-color: var(--bg-color);
+}
+
+.navbar {
+  background-color: var(--nav-bg) !important;
+  box-shadow: var(--shadow) !important;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.navbar .nav-link,
+.navbar-brand,
+.menu-toggle span {
+  color: var(--nav-text) !important;
+  transition: color 0.3s ease;
+}
+
+.navbar.scrolled {
+  background-color: var(--nav-bg) !important;
+}
+
+.search-container, 
+.car-card, 
+.testimonial, 
+.feature-wrapper, 
+.cta-container,
+.mobile-nav {
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  box-shadow: var(--shadow);
+  border-color: var(--border-color);
+  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature {
+  background-color: var(--feature-bg);
+}
+
+footer {
+  background-color: var(--footer-bg);
+  color: var(--footer-text);
+}
+
+.footer-bottom {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+input, select, textarea {
+  background-color: var(--input-bg) !important;
+  color: var(--input-text) !important;
+}
+
+/* Dark mode toggle styles */
+.theme-switch-wrapper {
+  display: flex;
+  align-items: center;
+  margin-right: 20px;
+}
+
+.theme-switch {
+  display: inline-block;
+  position: relative;
+  width: 50px;
+  height: 24px;
+  margin: 0 10px;
+}
+
+.theme-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 24px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: var(--primary-color);
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px var(--primary-color);
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+.slider .icon {
+  position: absolute;
+  top: 5px;
+  font-size: 14px;
+  transition: .4s;
+  color: white;
+}
+
+.slider .sun-icon {
+  left: 5px;
+  opacity: 1;
+}
+
+.slider .moon-icon {
+  right: 5px;
+  opacity: 0;
+}
+
+input:checked + .slider .sun-icon {
+  opacity: 0;
+}
+
+input:checked + .slider .moon-icon {
+  opacity: 1;
+}
+
+/* Additional styling for dark mode elements */
+[data-theme="dark"] .section-title,
+[data-theme="dark"] .section-subtitle,
+[data-theme="dark"] .feature-title,
+[data-theme="dark"] .testimonial-heading {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .about-div {
+  background-color: #1e1e1e;
+}
+
+[data-theme="dark"] .about-txt {
+  color: var(--text-color);
+}
+
+[data-theme="dark"] .search-section {
+  background-color: var(--secondary-bg);
+}
+
+[data-theme="dark"] .why-choose-us {
+  background-color: var(--bg-color);
+}
+
+[data-theme="dark"] .stats-section {
+  background-color: var(--secondary-bg);
+}
+
+[data-theme="dark"] .testimonials-section {
+  background-color: var(--bg-color);
+}
+
+[data-theme="dark"] .cta-section {
+  background-color: var(--secondary-bg);
+}
+
+/* Fix for bg-light sections in About page */
+[data-theme="dark"] .bg-light {
+  background-color: var(--bg-color) !important;
+}
+
+/* Fix for team section */
+[data-theme="dark"] .team-section {
+  background-color: var(--bg-color) !important;
+}
+
+/* Fix for FAQ section */
+[data-theme="dark"] .faq-section {
+  background-color: var(--bg-color) !important;
+}
+
+/* Fix for the FAQ cards */
+[data-theme="dark"] .card {
+  background-color: var(--card-bg);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .card-header {
+  background-color: var(--card-bg);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .card-body {
+  background-color: var(--card-bg);
+  color: var(--text-color);
+}
+
+[data-theme="dark"] .btn-link {
+  color: var(--primary-color);
+}
+
+[data-theme="dark"] .btn-link:hover,
+[data-theme="dark"] .btn-link:focus {
+  color: var(--text-color);
+}
+
+/* Fix team member cards */
+[data-theme="dark"] .team-member {
+  background-color: var(--card-bg);
+}
+
+[data-theme="dark"] .member-info {
+  background-color: var(--card-bg);
+  color: var(--text-color);
+}
+
+[data-theme="dark"] .member-info h4,
+[data-theme="dark"] .member-info span {
+  color: var(--text-color);
+}
+
+/* Fix for feature cards in about page */
+[data-theme="dark"] .feature-card {
+  background-color: var(--card-bg);
+  color: var(--text-color);
+}
+
+[data-theme="dark"] .feature-card h4 {
+  color: var(--text-color);
+}
+
+[data-theme="dark"] .feature-card p {
+  color: var(--text-color);
+}
+
+/* Fix for contact section */
+[data-theme="dark"] .contact-us {
+  background-color: var(--bg-color);
+}
+
+[data-theme="dark"] .contact-info {
+  background-color: var(--card-bg);
+  color: var(--text-color);
+}
+
+[data-theme="dark"] .contact-item {
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .contact-item h5 {
+  color: var(--text-color);
+}
+
+/* Mobile menu in dark mode */
+[data-theme="dark"] .mobile-nav-link {
+  color: var(--text-color);
+}
+
+/* Loading animation in dark mode */
+[data-theme="dark"] #loading-overlay {
+  background: linear-gradient(to bottom, rgba(26, 32, 44, 0.9), rgba(26, 32, 44, 0) 100%);
+}
+
+/* Featured Cars section in dark mode */
+[data-theme="dark"] .featured-cars {
+  background-color: var(--bg-color);
+}
+
+[data-theme="dark"] .section-description {
+  color: var(--text-color);
+}
+
+[data-theme="dark"] .swiper-button-next,
+[data-theme="dark"] .swiper-button-prev {
+  color: var(--primary-color);
+}
+
+[data-theme="dark"] .swiper-pagination-bullet {
+  background: var(--text-color);
+}
+
+[data-theme="dark"] .swiper-pagination-bullet-active {
+  background: var(--primary-color);
+}
+
+[data-theme="dark"] .featured-cars {
+  background: linear-gradient(to bottom, var(--bg-color) 0%, var(--secondary-bg) 100%) !important;
+}
+
+/* Fix for the timeline items in Our Journey section */
+[data-theme="dark"] .timeline-item .timeline-content {
+  background-color: var(--card-bg);
+  border-color: var(--primary-color);
+  border-width: 2px;
+  color: var(--text-color);
+}
+
+[data-theme="dark"] .timeline-item .timeline-content h4 {
+  color: var(--primary-color);
+}
+
+/* Fix for social media icons in footer */
+[data-theme="dark"] .social-icons a {
+  background-color: var(--card-bg);
+  color: var(--primary-color);
+}
+
+[data-theme="dark"] .social-icons a:hover {
+  background-color: var(--primary-color);
+  color: var(--bg-color);
+}
+
+/* Fix for team member social links */
+[data-theme="dark"] .member-info .social-links a {
+  background-color: var(--card-bg);
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+}
+
+[data-theme="dark"] .member-info .social-links a:hover {
+  background-color: var(--primary-color);
+  color: var(--bg-color);
+}
+
+/* Fix for the contact us section */
+[data-theme="dark"] .contact-form {
+  background-color: var(--card-bg);
+  padding: 2rem;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .contact-form label {
+  color: var(--text-color);
+}
+
+[data-theme="dark"] .contact-info {
+  padding: 2rem;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+}
+
+/* Fix for contact info items */
+[data-theme="dark"] .contact-item .icon {
+  background-color: var(--bg-color);
+  color: var(--primary-color);
+}
+
+/* Fix for map section */
+[data-theme="dark"] .map-section iframe {
+  filter: invert(0.9) hue-rotate(180deg);
+}
+
+/* Dark mode styles for the book.php page */
+[data-theme="dark"] .main-content {
+  background: linear-gradient(135deg, var(--bg-color) 0%, var(--secondary-bg) 100%);
+}
+
+[data-theme="dark"] .page-header h1 {
+  color: var(--text-color);
+}
+
+[data-theme="dark"] .page-header p {
+  color: var(--text-light);
+}
+
+[data-theme="dark"] .filters-section {
+  background-color: var(--card-bg);
+  box-shadow: var(--shadow);
+}
+
+[data-theme="dark"] .search-box i {
+  color: var(--text-light);
+}
+
+[data-theme="dark"] #car-listings .car-card {
+  background-color: var(--card-bg);
+  box-shadow: var(--shadow);
+}
+
+[data-theme="dark"] .car-card {
+  background-color: var(--card-bg) !important;
+}
+
+[data-theme="dark"] .car-details {
+  background-color: var(--card-bg) !important;
+  color: var(--text-color);
+}
+
+[data-theme="dark"] .car-image-placeholder {
+  background-color: var(--secondary-bg);
+  color: var(--text-color);
+}
+
+[data-theme="dark"] .car-title {
+  color: var(--text-color);
+}
+
+[data-theme="dark"] .car-title::after {
+  background: var(--primary-color);
+}
+
+[data-theme="dark"] .car-description {
+  color: var(--text-light);
+}
+
+[data-theme="dark"] .car-info {
+  background-color: var(--secondary-bg) !important;
+}
+
+[data-theme="dark"] .info-item {
+  color: var(--text-color);
+}
+
+[data-theme="dark"] .car-price {
+  background-color: rgba(52, 152, 219, 0.05) !important;
+  border-left: 3px solid var(--primary-color);
+}
+
+[data-theme="dark"] .regular-price {
+  color: var(--text-color);
+}
+
+[data-theme="dark"] .original-price {
+  color: var(--text-light);
+}
+
+[data-theme="dark"] .discount-countdown {
+  background: rgba(44, 62, 80, 0.15);
+  color: var(--text-color);
+}
+
+[data-theme="dark"] .book-now-btn {
+  background: linear-gradient(135deg, var(--primary-color), #2980b9);
+  box-shadow: 0 4px 10px rgba(52, 152, 219, 0.2);
+}
+
+[data-theme="dark"] .book-now-btn:hover {
+  background: linear-gradient(135deg, #2980b9, var(--primary-color));
+  box-shadow: 0 7px 20px rgba(52, 152, 219, 0.3);
+}
+
+[data-theme="dark"] .preorder-section {
+  background: linear-gradient(135deg, rgba(52, 152, 219, 0.05), rgba(41, 128, 185, 0.1));
+  border: 1px dashed rgba(52, 152, 219, 0.2);
+}
+
+[data-theme="dark"] .next-available {
+  color: var(--primary-color);
+}
+
+[data-theme="dark"] .preorder-btn {
+  background: linear-gradient(135deg, var(--primary-color), #2980b9);
+  box-shadow: 0 5px 15px rgba(52, 152, 219, 0.2);
+}
+
+[data-theme="dark"] .preorder-btn:hover {
+  background: linear-gradient(135deg, #2980b9, var(--primary-color));
+  box-shadow: 0 7px 20px rgba(52, 152, 219, 0.3);
+}
+
+[data-theme="dark"] .no-cars-found {
+  background-color: var(--card-bg);
+  box-shadow: var(--shadow);
+}
+
+[data-theme="dark"] .no-cars-found i {
+  color: var(--text-light);
+}
+
+[data-theme="dark"] .no-cars-found h3 {
+  color: var(--text-color);
+}
+
+[data-theme="dark"] .no-cars-found p {
+  color: var(--text-light);
+}
+
+/* Dark mode for discount popover */
+[data-theme="dark"] .discount-popover {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.3);
+  color: var(--text-color);
+}
+
+[data-theme="dark"] .discount-popover::before {
+  border-color: transparent transparent var(--card-bg) transparent;
+}
+
+[data-theme="dark"] .discount-popover h5 {
+  color: var(--text-color);
+}
+
+[data-theme="dark"] .discount-popover p {
+  color: var(--text-color);
+}
+
+[data-theme="dark"] .discount-popover .text-success {
+  color: #2ecc71 !important;
+}
+
+[data-theme="dark"] .discount-popover .text-muted {
+  color: var(--text-light) !important;
+}
+
+/* Fix for map section */
+[data-theme="dark"] .map-section iframe {
+  filter: invert(0.9) hue-rotate(180deg);
+}
+
+[data-theme="dark"] .form-control {
+  background-color: var(--input-bg) !important;
+  border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] select.form-control option {
+  background-color: var(--card-bg);
+  color: var(--text-color);
+}

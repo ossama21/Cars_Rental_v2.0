@@ -140,124 +140,60 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Date handling and price calculation
     function updateRentalSummary() {
-        const startDate = new Date(document.getElementById('startDate')?.value || "");
-        const endDate = new Date(document.getElementById('endDate')?.value || "");
-        const isPreorder = document.querySelector('input[name="is_preorder"]').value === '1';
+        const startDate = document.getElementById('startDate')?.value;
+        const endDate = document.getElementById('endDate')?.value;
         
-        console.log("Update summary called - Start date:", startDate, "End date:", endDate, "Car price:", carPrice);
-
-        if (startDate && endDate && !isNaN(startDate.getTime()) && !isNaN(endDate.getTime()) && carPrice > 0) {
-            // Calculate difference in milliseconds and convert to days
-            const differenceInTime = endDate.getTime() - startDate.getTime();
-            const differenceInDays = Math.ceil(differenceInTime / (1000 * 3600 * 24));
+        if (startDate && endDate) {
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            const duration = Math.max(1, Math.ceil((end - start) / (1000 * 60 * 60 * 24)));
+            const insuranceFee = 25;
+            const preorderFee = document.querySelector('input[name="is_preorder"]')?.value === '1' ? 15 : 0;
             
-            // Ensure minimum rental duration is 1 day
-            const duration = Math.max(1, differenceInDays);
-            
-            if (duration <= 0) {
-                showAlert('Return date must be after pick-up date', 'error');
-                return;
-            }
-
-            // Validate minimum duration for preorders
-            if (isPreorder && duration < 3) {
-                showAlert('Pre-orders require a minimum rental duration of 3 days', 'error');
-                document.getElementById('endDate').classList.add('invalid');
-                return;
-            }
-            
-            console.log("Duration calculated:", duration, "days");
-
-            // Calculate base price (without discount)
-            const basePrice = duration * carPrice;
-            
-            // Calculate discount if available
-            let discountAmount = 0;
-            if (discountType) {
+            // Calculate car discount
+            let dailyDiscountAmount = 0;
+            if (discountType && discountValue) {
                 if (discountType === 'percentage') {
-                    discountAmount = basePrice * (discountValue / 100);
-                } else {
-                    discountAmount = discountValue * duration; // Fixed discount per day
-                }
-                
-                // Update discount amount display
-                const discountElement = document.getElementById('discount-amount');
-                if (discountElement) {
-                    discountElement.textContent = `-$${discountAmount.toFixed(2)}`;
-                    discountElement.setAttribute('data-value', discountAmount.toFixed(2));
+                    dailyDiscountAmount = carPrice * (discountValue / 100);
+                } else if (discountType === 'fixed') {
+                    dailyDiscountAmount = discountValue;
                 }
             }
+            
+            // Calculate totals
+            const originalTotal = duration * carPrice;
+            const carDiscount = dailyDiscountAmount * duration;
+            const subtotalAfterCarDiscount = originalTotal - carDiscount;
 
             // Calculate coupon discount if any
             let couponDiscount = 0;
             const couponRow = document.getElementById('coupon-row');
             if (couponRow && couponRow.style.display !== 'none') {
                 const couponDiscountElement = document.getElementById('coupon-discount');
-                if (couponDiscountElement) {
-                    const couponValue = parseFloat(couponDiscountElement.getAttribute('data-value') || '0');
-                    couponDiscount = (basePrice - discountAmount) * (couponValue / 100);
-                    couponDiscountElement.textContent = `-$${couponDiscount.toFixed(2)}`;
-                }
-            }
-            
-            const insuranceFee = 25; // Fixed insurance fee
-            const preorderFee = isPreorder ? 15 : 0; // Preorder fee
+                const couponType = couponDiscountElement.getAttribute('data-type');
+                const couponValue = parseFloat(couponDiscountElement.getAttribute('data-value') || '0');
 
-            // Calculate total after discounts
-            const discountedTotal = basePrice - discountAmount - couponDiscount;
-            const totalPrice = discountedTotal + insuranceFee + preorderFee;
+                if (couponType === 'percentage') {
+                    couponDiscount = subtotalAfterCarDiscount * (couponValue / 100);
+                } else {
+                    couponDiscount = couponValue;
+                }
+
+                // Update coupon discount display
+                couponDiscountElement.textContent = `-$${couponDiscount.toFixed(2)}`;
+            }
+
+            const totalDiscount = carDiscount + couponDiscount;
+            const finalTotal = subtotalAfterCarDiscount - couponDiscount + insuranceFee + preorderFee;
             
-            // Update UI
+            // Update display
             document.getElementById('rental-duration').textContent = `${duration} days`;
-            
-            // Update original price and total savings if discount exists
-            if (discountType) {
-                const originalPriceElement = document.getElementById('original-price');
-                const totalSavingsElement = document.getElementById('total-savings');
-                
-                if (originalPriceElement && totalSavingsElement) {
-                    originalPriceElement.textContent = `$${basePrice.toFixed(2)}`;
-                    const totalSavings = discountAmount + couponDiscount;
-                    totalSavingsElement.textContent = `-$${totalSavings.toFixed(2)}`;
-                }
-            }
-            
-            // Update total price
-            document.getElementById('total-price').textContent = `$${totalPrice.toFixed(2)}`;
-
-            // Ensure preorder fee is displayed if applicable
-            if (isPreorder) {
-                let preorderRow = document.querySelector('.summary-row.preorder-fee');
-                if (!preorderRow) {
-                    preorderRow = document.createElement('div');
-                    preorderRow.className = 'summary-row preorder-fee';
-                    preorderRow.innerHTML = '<span>Pre-order Fee</span><span>$15.00</span>';
-                    
-                    // Insert before total row
-                    const totalRow = document.querySelector('.total-row');
-                    if (totalRow) {
-                        totalRow.parentNode.insertBefore(preorderRow, totalRow);
-                    }
-                }
-            }
-            
-            console.log("Price calculations: Base:", basePrice, "Discount:", discountAmount, "Coupon:", couponDiscount, "Total:", totalPrice);
-        } else {
-            console.log("Invalid dates or car price for calculation");
-            // Set default values when calculation isn't possible
-            document.getElementById('rental-duration').textContent = '0 days';
-            document.getElementById('total-price').textContent = '$0.00';
-            
-            if (document.getElementById('original-price')) {
-                document.getElementById('original-price').textContent = '$0.00';
-            }
-            
-            if (document.getElementById('total-savings')) {
-                document.getElementById('total-savings').textContent = '-$0.00';
-            }
+            document.getElementById('original-price').textContent = `$${originalTotal.toFixed(2)}`;
+            document.getElementById('total-savings').textContent = `-$${totalDiscount.toFixed(2)}`;
+            document.getElementById('total-price').textContent = `$${finalTotal.toFixed(2)}`;
             
             if (document.getElementById('discount-amount')) {
-                document.getElementById('discount-amount').textContent = '-$0.00';
+                document.getElementById('discount-amount').textContent = `-$${dailyDiscountAmount.toFixed(2)}/day`;
             }
         }
     }
@@ -746,10 +682,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     const couponRow = document.getElementById('coupon-row');
                     couponRow.style.display = 'flex';
                     
-                    // Set coupon discount value
+                    // Set coupon discount value and type
                     const couponDiscountElement = document.getElementById('coupon-discount');
-                    const couponDiscount = data.coupon.discount || 0;
-                    couponDiscountElement.setAttribute('data-value', couponDiscount);
+                    couponDiscountElement.setAttribute('data-type', data.coupon.discount_type);
+                    couponDiscountElement.setAttribute('data-value', data.coupon.discount_value);
                     
                     // Update summary calculations
                     updateRentalSummary();

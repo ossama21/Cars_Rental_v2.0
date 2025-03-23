@@ -16,7 +16,12 @@ if (empty($code)) {
 
 try {
     // Check if coupon exists and is valid
-    $stmt = $conn->prepare("SELECT * FROM coupons WHERE code = ? AND status = 'active' AND expiry_date > CURRENT_TIMESTAMP");
+    $stmt = $conn->prepare("SELECT * FROM coupons 
+        WHERE code = ? 
+        AND status = 'active' 
+        AND CURRENT_DATE BETWEEN start_date AND expiry_date
+        AND (usage_limit IS NULL OR times_used < usage_limit)");
+    
     $stmt->bind_param("s", $code);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -28,7 +33,7 @@ try {
 
     $coupon = $result->fetch_assoc();
 
-    // Validate minimum rental days if specified
+    // Validate minimum rental days
     if ($coupon['min_rental_days'] > 0 && $rental_days < $coupon['min_rental_days']) {
         echo json_encode([
             'success' => false, 
@@ -37,17 +42,25 @@ try {
         exit;
     }
 
+    // Increment usage count
+    $stmt = $conn->prepare("UPDATE coupons SET times_used = times_used + 1 WHERE code = ?");
+    $stmt->bind_param("s", $code);
+    $stmt->execute();
+
     // Return coupon details for frontend processing
     echo json_encode([
         'success' => true,
         'message' => 'Coupon applied successfully',
         'coupon' => [
             'code' => $coupon['code'],
-            'discount' => floatval($coupon['discount_percentage']),
-            'min_rental_days' => $coupon['min_rental_days']
+            'discount_type' => $coupon['type'],
+            'discount_value' => floatval($coupon['value'])
         ]
     ]);
 
 } catch (Exception $e) {
     echo json_encode(['success' => false, 'error' => 'Error validating coupon']);
 }
+
+$conn->close();
+?>

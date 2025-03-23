@@ -1681,6 +1681,60 @@ if (!empty($status)) {
             const cancelCouponBtn = document.getElementById('cancelCouponBtn');
             const generateCodeBtn = document.getElementById('generateCode');
 
+            // Delete coupon functionality
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('delete-coupon-btn') || e.target.closest('.delete-coupon-btn')) {
+                    const btn = e.target.classList.contains('delete-coupon-btn') ? e.target : e.target.closest('.delete-coupon-btn');
+                    const couponId = btn.dataset.couponId;
+                    
+                    if (confirm('Are you sure you want to delete this coupon?')) {
+                        fetch('delete_coupon.php?id=' + couponId)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    const row = btn.closest('tr');
+                                    row.remove();
+                                    alert('Coupon deleted successfully!');
+                                } else {
+                                    alert(data.error || 'Failed to delete coupon');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                alert('Failed to delete coupon');
+                            });
+                    }
+                }
+            });
+
+            // Form submission for new coupon
+            document.getElementById('newCouponForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                
+                fetch('save_coupon.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Coupon saved successfully!');
+                        this.reset();
+                        couponForm.style.display = 'none';
+                        addNewCouponBtn.style.display = 'block';
+                        // Refresh coupon list
+                        location.reload();
+                    } else {
+                        alert(data.error || 'Failed to save coupon');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to save coupon');
+                });
+            });
+
             // Toggle coupon form
             addNewCouponBtn.addEventListener('click', function() {
                 couponForm.style.display = 'block';
@@ -1696,7 +1750,7 @@ if (!empty($status)) {
             // Generate random coupon code
             generateCodeBtn.addEventListener('click', function() {
                 const code = 'RENT' + Math.random().toString(36).substring(2, 8).toUpperCase();
-                document.querySelector('input[name="coupon_code"]').value = code;
+                document.querySelector('input[name="code"]').value = code;
             });
 
             // Update discount symbol based on discount type
@@ -1759,25 +1813,63 @@ if (!empty($status)) {
                                             <th>Code</th>
                                             <th>Discount</th>
                                             <th>Valid Until</th>
-                                            <th>Usage Limit                                            <th>Status</th>
+                                            <th>Usage</th>
+                                            <th>Min. Days</th>
+                                            <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody id="couponsList">
-                                        <!-- Sample coupon row - Replace with dynamic data -->
+                                        <?php
+                                        $coupons_query = "SELECT * FROM coupons ORDER BY created_at DESC";
+                                        $coupons_result = $conn->query($coupons_query);
+                                        
+                                        if ($coupons_result && $coupons_result->num_rows > 0):
+                                            while ($coupon = $coupons_result->fetch_assoc()):
+                                        ?>
                                         <tr>
-                                            <td><span class="badge bg-light text-dark">SUMMER2023</span></td>
-                                            <td>20% OFF</td>
-                                            <td>Aug 31, 2023</td>
-                                            <td>100/500</td>
-                                            <td><span class="badge bg-success">Active</span></td>
+                                            <td><span class="badge bg-light text-dark"><?php echo htmlspecialchars($coupon['code']); ?></span></td>
+                                            <td>
+                                                <?php if ($coupon['type'] === 'percentage'): ?>
+                                                    <?php echo number_format($coupon['value'], 0); ?>% OFF
+                                                <?php else: ?>
+                                                    $<?php echo number_format($coupon['value'], 2); ?> OFF
+                                                <?php endif; ?>
+                                            </td>
+                                            <td><?php echo date('M d, Y', strtotime($coupon['expiry_date'])); ?></td>
+                                            <td>
+                                                <?php if ($coupon['usage_limit']): ?>
+                                                    <?php echo $coupon['times_used']; ?>/<?php echo $coupon['usage_limit']; ?>
+                                                <?php else: ?>
+                                                    <?php echo $coupon['times_used']; ?> uses
+                                                <?php endif; ?>
+                                            </td>
+                                            <td><?php echo $coupon['min_rental_days']; ?> days</td>
+                                            <td>
+                                                <?php if ($coupon['status'] === 'active'): ?>
+                                                    <span class="badge bg-success">Active</span>
+                                                <?php else: ?>
+                                                    <span class="badge bg-secondary">Inactive</span>
+                                                <?php endif; ?>
+                                            </td>
                                             <td>
                                                 <div class="btn-group btn-group-sm">
-                                                    <button class="btn btn-outline-primary"><i class="fas fa-edit"></i></button>
-                                                    <button class="btn btn-outline-danger"><i class="fas fa-trash"></i></button>
+                                                    <button class="btn btn-outline-danger delete-coupon-btn" data-coupon-id="<?php echo $coupon['id']; ?>">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
                                                 </div>
                                             </td>
                                         </tr>
+                                        <?php 
+                                            endwhile;
+                                        else:
+                                        ?>
+                                        <tr>
+                                            <td colspan="7" class="text-center py-3">
+                                                <div class="text-muted">No coupons found</div>
+                                            </td>
+                                        </tr>
+                                        <?php endif; ?>
                                     </tbody>
                                 </table>
                             </div>
@@ -1796,7 +1888,7 @@ if (!empty($status)) {
                                         <div class="mb-3">
                                             <label class="form-label fw-bold">Coupon Code</label>
                                             <div class="input-group">
-                                                <input type="text" name="coupon_code" class="form-control" required>
+                                                <input type="text" name="code" class="form-control" required>
                                                 <button type="button" class="btn btn-outline-secondary" id="generateCode">
                                                     Generate
                                                 </button>
@@ -1824,19 +1916,26 @@ if (!empty($status)) {
                                     <div class="col-md-6">
                                         <div class="mb-3">
                                             <label class="form-label fw-bold">Usage Limit</label>
-                                            <input type="number" name="usage_limit" class="form-control" min="1" required>
+                                            <input type="number" name="usage_limit" class="form-control" min="1">
+                                            <div class="form-text">Leave empty for unlimited uses</div>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
                                             <label class="form-label fw-bold">Start Date</label>
-                                            <input type="date" name="start_date" class="form-control" required>
+                                            <input type="date" name="start_date" class="form-control" required value="<?php echo date('Y-m-d'); ?>" min="<?php echo date('Y-m-d'); ?>">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
                                             <label class="form-label fw-bold">End Date</label>
-                                            <input type="date" name="end_date" class="form-control" required>
+                                            <input type="date" name="end_date" class="form-control" required min="<?php echo date('Y-m-d'); ?>">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Minimum Rental Days</label>
+                                            <input type="number" name="min_rental_days" class="form-control" min="1" value="1">
                                         </div>
                                     </div>
                                     <div class="col-12">
@@ -2042,6 +2141,60 @@ if (!empty($status)) {
             const cancelCouponBtn = document.getElementById('cancelCouponBtn');
             const generateCodeBtn = document.getElementById('generateCode');
 
+            // Delete coupon functionality
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('delete-coupon-btn') || e.target.closest('.delete-coupon-btn')) {
+                    const btn = e.target.classList.contains('delete-coupon-btn') ? e.target : e.target.closest('.delete-coupon-btn');
+                    const couponId = btn.dataset.couponId;
+                    
+                    if (confirm('Are you sure you want to delete this coupon?')) {
+                        fetch('delete_coupon.php?id=' + couponId)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    const row = btn.closest('tr');
+                                    row.remove();
+                                    alert('Coupon deleted successfully!');
+                                } else {
+                                    alert(data.error || 'Failed to delete coupon');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                alert('Failed to delete coupon');
+                            });
+                    }
+                }
+            });
+
+            // Form submission for new coupon
+            document.getElementById('newCouponForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                
+                fetch('save_coupon.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Coupon saved successfully!');
+                        this.reset();
+                        couponForm.style.display = 'none';
+                        addNewCouponBtn.style.display = 'block';
+                        // Refresh coupon list
+                        location.reload();
+                    } else {
+                        alert(data.error || 'Failed to save coupon');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to save coupon');
+                });
+            });
+
             // Toggle coupon form
             addNewCouponBtn.addEventListener('click', function() {
                 couponForm.style.display = 'block';
@@ -2057,7 +2210,7 @@ if (!empty($status)) {
             // Generate random coupon code
             generateCodeBtn.addEventListener('click', function() {
                 const code = 'RENT' + Math.random().toString(36).substring(2, 8).toUpperCase();
-                document.querySelector('input[name="coupon_code"]').value = code;
+                document.querySelector('input[name="code"]').value = code;
             });
 
             // Update discount symbol based on discount type

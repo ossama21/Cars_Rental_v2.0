@@ -125,30 +125,7 @@
       }
       
       // Profile Dropdown functionality
-      const profileToggle = document.querySelector('.profile-toggle');
-      const profileMenu = document.querySelector('.profile-menu');
-      
-      if (profileToggle && profileMenu) {
-        profileToggle.addEventListener('click', (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          profileMenu.classList.toggle('active');
-        });
-        
-        // Close dropdown when clicking outside
-        document.addEventListener('click', (e) => {
-          if (!profileToggle.contains(e.target) && !profileMenu.contains(e.target)) {
-            profileMenu.classList.remove('active');
-          }
-        });
-        
-        // Support for touch devices
-        if ('ontouchstart' in window) {
-          profileToggle.addEventListener('touchstart', (e) => {
-            e.stopPropagation();
-          });
-        }
-      }
+      initializeProfileDropdown();
     });
 
     // Smooth scroll for anchor links
@@ -173,6 +150,66 @@
           }
         }
       });
+    });
+
+    // Profile Dropdown functionality
+    const initializeProfileDropdown = () => {
+      const profileToggle = document.querySelector('.profile-toggle');
+      const profileMenu = document.querySelector('.profile-menu');
+      
+      if (profileToggle && profileMenu) {
+        profileToggle.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          profileMenu.classList.toggle('active');
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+          if (!profileToggle.contains(e.target) && !profileMenu.contains(e.target)) {
+            profileMenu.classList.remove('active');
+          }
+        });
+        
+        // Add touch support
+        if ('ontouchstart' in window) {
+          profileToggle.addEventListener('touchstart', (e) => {
+            e.stopPropagation();
+          });
+        }
+      }
+    };
+
+    // Profile Dropdown functionality with console logging
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('DOM loaded, initializing profile dropdown');
+      const profileToggle = document.querySelector('.profile-toggle');
+      const profileMenu = document.querySelector('.profile-menu');
+      
+      if (profileToggle && profileMenu) {
+        console.log('Profile elements found');
+        
+        profileToggle.addEventListener('click', function(e) {
+          console.log('Profile toggle clicked');
+          e.preventDefault();
+          e.stopPropagation();
+          profileMenu.classList.toggle('active');
+          console.log('Menu active:', profileMenu.classList.contains('active'));
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+          if (!profileToggle.contains(e.target) && !profileMenu.contains(e.target)) {
+            profileMenu.classList.remove('active');
+            console.log('Clicking outside, closing menu');
+          }
+        });
+      } else {
+        console.log('Profile elements not found:', {
+          toggle: !!profileToggle,
+          menu: !!profileMenu
+        });
+      }
     });
 
 })(jQuery);
