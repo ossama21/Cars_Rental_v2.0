@@ -1,0 +1,255 @@
+.language-switch-wrapper {
+    display: flex;
+    align-items: center;
+    margin-right: 15px;
+  }
+  
+  .language-switch {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .language-switch-button {
+    display: flex;
+    align-items: center;
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+  }
+  
+  .language-switch-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .language-switch-button i {
+    margin-left: 5px;
+  }
+  
+  .language-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 150px;
+    background-color: var(--bg-color);
+    border-radius: 8px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    padding: 8px 0;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+    z-index: 1000;
+  }
+  
+  .language-menu.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+  
+  .language-menu-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 15px;
+    color: var(--text-color);
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    font-size: 0.9rem;
+  }
+  
+  .language-menu-item:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+  
+  .language-menu-item img {
+    width: 20px;
+    height: 14px;
+    margin-right: 10px;
+    border-radius: 2px;
+  }
+  
+  /* Dark mode adjustments */
+  .dark-mode .language-menu {
+    background-color: var(--bg-color);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+  }
+  
+  .dark-mode .language-menu-item:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+  
+  /* Mobile adjustments */
+  @media (max-width: 768px) {
+    .language-switch-wrapper {
+      margin-right: 10px;
+    }
+    
+    .mobile-language-switch {
+      margin: 10px 15px;
+    }
+    
+    .mobile-language-switch .language-switch-button {
+      width: 100%;
+      justify-content: flex-start;
+      padding: 8px 15px;
+    }
+    
+    .mobile-language-switch .language-menu {
+      width: 100%;
+      position: static;
+      box-shadow: none;
+      margin-top: 5px;
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+  }
+
+.language-selector {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    margin-right: 15px;
+}
+
+.language-selector .current-lang {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 4px;
+    color: var(--text-color);
+    transition: all 0.3s ease;
+}
+
+.language-selector .current-lang:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.language-selector .current-lang i {
+    margin-left: 5px;
+    font-size: 12px;
+    transition: transform 0.3s ease;
+}
+
+.language-selector.active .current-lang i {
+    transform: rotate(180deg);
+}
+
+.language-selector .language-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    min-width: 120px;
+    background-color: var(--card-bg);
+    border-radius: 6px;
+    padding: 5px 0;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.language-selector.active .language-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(5px);
+}
+
+.language-selector .language-option {
+    padding: 8px 15px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    color: var(--text-color);
+    text-decoration: none;
+}
+
+.language-selector .language-option:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.language-selector .language-option .flag {
+    width: 20px;
+    height: 15px;
+    margin-right: 8px;
+}
+
+/* Country-specific flag styling */
+.flag-icon-uk {
+  color: #ffffff; /* UK blue */
+}
+
+.flag-icon-france {
+  color: #ffffff; /* France blue */
+}
+
+.flag-icon-morocco {
+  color: #ffffff; /* Morocco red */
+}
+
+/* Added spacing between flag icon and text */
+.language-option .flag-icon,
+.current-lang .flag-icon {
+  margin-right: 8px;
+  font-size: 1.1em;
+}
+
+html[dir="rtl"] .language-option .flag-icon,
+html[dir="rtl"] .current-lang .flag-icon {
+  margin-right: 0;
+  margin-left: 8px;
+}
+
+/* RTL support for Arabic language */
+html[dir="rtl"] body {
+    text-align: right;
+}
+
+html[dir="rtl"] .nav-list {
+    padding-right: 0;
+}
+
+html[dir="rtl"] .language-selector .current-lang i {
+    margin-left: 0;
+    margin-right: 5px;
+}
+
+html[dir="rtl"] .language-selector .language-option .flag {
+    margin-right: 0;
+    margin-left: 8px;
+}
+
+html[dir="rtl"] .language-selector .language-dropdown {
+    right: auto;
+    left: 0;
+}
+
+/* For Arabic language text alignment */
+html[dir="rtl"] .carousel-caption,
+html[dir="rtl"] .section-title,
+html[dir="rtl"] .section-description,
+html[dir="rtl"] .feature-content,
+html[dir="rtl"] .testimonial-content,
+html[dir="rtl"] .cta-content,
+html[dir="rtl"] .footer-content,
+html[dir="rtl"] .footer-bottom {
+    text-align: right;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+    .language-selector {
+        margin-right: 10px;
+    }
+    
+    .language-selector .current-lang {
+        padding: 3px 8px;
+    }
+}

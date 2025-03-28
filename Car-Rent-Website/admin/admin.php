@@ -3,6 +3,16 @@ session_start();
 include '../data/connect.php';
 include '../data/auth.php';
 
+// Language selection handling
+$availableLangs = ['en', 'fr', 'ar'];
+$lang_code = isset($_SESSION['lang']) && in_array($_SESSION['lang'], $availableLangs) ? $_SESSION['lang'] : 'en';
+
+// Set html direction for Arabic
+$dir = $lang_code === 'ar' ? 'rtl' : 'ltr';
+
+// Include the selected language file
+include_once "../languages/{$lang_code}.php";
+
 checkAdminAccess();
 
 $email = $_SESSION['email'];
@@ -103,7 +113,7 @@ if ($carCategories && $carCategories->num_rows > 0) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<?php echo $lang_code; ?>" dir="<?php echo $dir; ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -123,6 +133,7 @@ if ($carCategories && $carCategories->num_rows > 0) {
 
     <!-- Custom Styles -->
     <link rel="stylesheet" href="../css/modern.css">
+    <link rel="stylesheet" href="../css/language-selector.css">
     
     <!-- Inline Admin Styles (as backup if external CSS fails) -->
     <style>
@@ -729,13 +740,40 @@ if ($carCategories && $carCategories->num_rows > 0) {
                     <i class="fas fa-bars"></i>
                 </button>
                 
-                <div class="admin-user">
-                    <div class="admin-user-info">
-                        <div class="admin-user-name"><?php echo htmlspecialchars($displayName); ?></div>
-                        <div class="admin-user-role"><?php echo htmlspecialchars($user['role']); ?></div>
+                <div class="d-flex align-items-center">
+                    <!-- Language Selector -->
+                    <div class="language-selector me-3">
+                        <a href="#" class="current-lang">
+                            <?php if($lang_code == 'en'): ?>
+                                <i class="fas fa-flag flag-icon-uk"></i> English
+                            <?php elseif($lang_code == 'fr'): ?>
+                                <i class="fas fa-flag flag-icon-france"></i> Français
+                            <?php elseif($lang_code == 'ar'): ?>
+                                <i class="fas fa-flag flag-icon-morocco"></i> العربية
+                            <?php endif; ?>
+                            <i class="fas fa-chevron-down"></i>
+                        </a>
+                        <div class="language-dropdown">
+                            <a href="../data/change-language.php?lang=en&redirect=<?php echo urlencode($_SERVER['PHP_SELF']); ?>" class="language-option <?php echo $lang_code == 'en' ? 'active' : ''; ?>">
+                                <i class="fas fa-flag flag-icon-uk"></i> English
+                            </a>
+                            <a href="../data/change-language.php?lang=fr&redirect=<?php echo urlencode($_SERVER['PHP_SELF']); ?>" class="language-option <?php echo $lang_code == 'fr' ? 'active' : ''; ?>">
+                                <i class="fas fa-flag flag-icon-france"></i> Français
+                            </a>
+                            <a href="../data/change-language.php?lang=ar&redirect=<?php echo urlencode($_SERVER['PHP_SELF']); ?>" class="language-option <?php echo $lang_code == 'ar' ? 'active' : ''; ?>">
+                                <i class="fas fa-flag flag-icon-morocco"></i> العربية
+                            </a>
+                        </div>
                     </div>
-                    <div class="admin-user-avatar">
-                        <img src="../images/profile-pic.png" alt="Admin">
+                    
+                    <div class="admin-user">
+                        <div class="admin-user-info">
+                            <div class="admin-user-name"><?php echo htmlspecialchars($displayName); ?></div>
+                            <div class="admin-user-role"><?php echo htmlspecialchars($user['role']); ?></div>
+                        </div>
+                        <div class="admin-user-avatar">
+                            <img src="../images/profile-pic.png" alt="Admin">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1031,6 +1069,25 @@ if ($carCategories && $carCategories->num_rows > 0) {
                 }
             });
         });
+        
+        // Language selector dropdown functionality
+        const languageSelector = document.querySelector('.language-selector');
+        const currentLang = document.querySelector('.current-lang');
+        
+        if (currentLang) {
+            currentLang.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                languageSelector.classList.toggle('active');
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!languageSelector.contains(e.target)) {
+                    languageSelector.classList.remove('active');
+                }
+            });
+        }
         
         // Revenue Chart
         const revenueCtx = document.getElementById('revenueChart').getContext('2d');

@@ -37,7 +37,8 @@ if (isset($_SESSION['id'])) {
             WHEN CURRENT_DATE < DATE(s.start_date) THEN 'upcoming'
             WHEN CURRENT_DATE BETWEEN DATE(s.start_date) AND DATE(s.end_date) THEN 'active'
             ELSE 'completed'
-        END as rental_status
+        END as rental_status,
+        s.status as booking_status
         FROM services s 
         JOIN cars c ON s.car_id = c.id 
         WHERE s.email = ? 
@@ -77,13 +78,26 @@ if (isset($_POST['cancel_order'])) {
             $stmt->bind_param("i", $orderId);
             if ($stmt->execute()) {
                 $cancellationMessage = '<div class="alert alert-success">Order cancelled successfully.</div>';
-                // Refresh order history
+                // Refresh order history with rental status
                 $stmt = $conn->prepare("
-                    SELECT s.*, c.name as car_name, c.brand, c.model, c.image 
+                    SELECT s.*, c.name as car_name, c.brand, c.model, c.image,
+                    CASE 
+                        WHEN s.status = 'preorder' THEN 'preorder'
+                        WHEN CURRENT_DATE < DATE(s.start_date) THEN 'upcoming'
+                        WHEN CURRENT_DATE BETWEEN DATE(s.start_date) AND DATE(s.end_date) THEN 'active'
+                        ELSE 'completed'
+                    END as rental_status
                     FROM services s 
                     JOIN cars c ON s.car_id = c.id 
                     WHERE s.email = ? 
-                    ORDER BY s.created_at DESC
+                    ORDER BY 
+                        CASE 
+                            WHEN s.status = 'preorder' THEN 1
+                            WHEN CURRENT_DATE < DATE(s.start_date) THEN 2
+                            WHEN CURRENT_DATE BETWEEN DATE(s.start_date) AND DATE(s.end_date) THEN 3
+                            ELSE 4
+                        END,
+                        s.start_date DESC
                 ");
                 $stmt->bind_param("s", $email);
                 $stmt->execute();

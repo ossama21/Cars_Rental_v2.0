@@ -620,6 +620,32 @@ while ($brandRow = $brandsResult->fetch_assoc()) {
                                 </div>
                             </div>
 
+                            <!-- Model and Interior -->
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Model *</label>
+                                        <input type="text" class="form-control" name="model" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Interior</label>
+                                        <input type="text" class="form-control" name="interior" placeholder="e.g. Leather, Fabric">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="mb-3">
+                                        <label class="form-label">Description *</label>
+                                        <textarea class="form-control" name="description" rows="4" required placeholder="Enter detailed description of the car"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- Vehicle Details -->
                             <div class="row">
                                 <div class="col-md-4">
@@ -866,14 +892,15 @@ while ($brandRow = $brandsResult->fetch_assoc()) {
         document.addEventListener('DOMContentLoaded', function() {
             const featuresInput = document.getElementById('features');
             const featureTagsContainer = document.getElementById('feature-tags-container');
+            let featuresArray = [];
             
             // Function to update the hidden input with all feature tags
             function updateFeaturesInput() {
                 const featureTags = document.querySelectorAll('.feature-tag');
-                const featuresArray = Array.from(featureTags).map(tag => {
+                featuresArray = Array.from(featureTags).map(tag => {
                     return tag.textContent.trim().replace('×', '').trim();
                 });
-                featuresInput.value = featuresArray.join(', ');
+                featuresInput.value = featuresArray.join(',');
             }
             
             // Handle Enter key press
@@ -918,6 +945,12 @@ while ($brandRow = $brandsResult->fetch_assoc()) {
                     this.parentElement.remove();
                     updateFeaturesInput();
                 });
+            });
+
+            // Add form submit event listener to ensure features are included
+            document.querySelector('form').addEventListener('submit', function(e) {
+                // Update features input one last time before submit
+                updateFeaturesInput();
             });
         });
     </script>

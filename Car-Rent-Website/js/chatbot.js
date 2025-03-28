@@ -20,12 +20,37 @@ document.addEventListener('DOMContentLoaded', function() {
     // Updated API endpoint with correct model name and version
     const API_URL = "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-pro:generateContent";
     
+    // Reset chatbot state to closed on page load
+    localStorage.setItem('chatbotOpen', 'false');
+    chatbotContainer.classList.remove('active');
+    
     // Connection retry settings
     const MAX_RETRIES = 2;
     let retryCount = 0;
     
     // Available cars in the system (will be populated from API)
     let availableCars = [];
+    
+    // Load training data from the server
+    let trainingData = [];
+    
+    // Function to load chatbot training data
+    async function loadTrainingData() {
+        try {
+            const response = await fetch('./data/chatbot_api.php?action=get_training_data');
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                trainingData = data.data;
+                console.log('Training data loaded:', trainingData.length, 'question-answer pairs');
+            } else {
+                console.error('Error loading training data:', data.message);
+            }
+        } catch (error) {
+            console.error('Error fetching training data:', error);
+            // We'll continue even if training data fails to load
+        }
+    }
     
     // Car rental context for the AI - this helps guide the model
     const SYSTEM_CONTEXT = `
@@ -53,9 +78,10 @@ document.addEventListener('DOMContentLoaded', function() {
         - Insurance options
     `;
     
-    // Initialize chat and fetch car data
+    // Initialize chat and fetch data
     initChat();
     fetchCarData();
+    loadTrainingData();
     initChatbotWidget();
     
     // Initialize the chatbot widget controls
@@ -208,13 +234,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function processMessage(userMessage) {
         try {
-            // Only show introduction for first message
-            if (!hasGreeted) {
-                addMessage("Hi there! I'm Ilyas, your CARSRENT assistant. How can I help you today?", 'bot');
-                hasGreeted = true;
+            // First check if this matches a question in our training data
+            const trainingMatch = findMatchingTrainingQuestion(userMessage);
+            if (trainingMatch) {
+                typingIndicator.classList.remove('active');
+                addMessage(trainingMatch, 'bot');
+                return;
             }
             
-            // First detect intent
+            // If no training match, detect intent
             const intent = detectIntent(userMessage);
             
             // Check if we need to handle the intent with specific API data
@@ -240,6 +268,45 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error("Error in processMessage:", error);
             handleAPIError(userMessage);
         }
+    }
+    
+    // Find a matching question in our training data
+    function findMatchingTrainingQuestion(userMessage) {
+        if (!trainingData || trainingData.length === 0) {
+            return null;
+        }
+        
+        const userMessageLower = userMessage.toLowerCase().trim();
+        
+        // First try exact matches
+        for (const item of trainingData) {
+            if (userMessageLower === item.question.toLowerCase().trim()) {
+                return item.answer;
+            }
+        }
+        
+        // Then try for close matches
+        for (const item of trainingData) {
+            const questionLower = item.question.toLowerCase().trim();
+            
+            // Check if the user message contains most of the question keywords
+            const questionWords = questionLower.split(/\s+/).filter(word => word.length > 3);
+            const userWords = userMessageLower.split(/\s+/);
+            
+            let matchCount = 0;
+            for (const qWord of questionWords) {
+                if (userWords.some(uWord => uWord.includes(qWord) || qWord.includes(uWord))) {
+                    matchCount++;
+                }
+            }
+            
+            // If more than 70% of words match, consider it a match
+            if (questionWords.length > 0 && matchCount / questionWords.length > 0.7) {
+                return item.answer;
+            }
+        }
+        
+        return null;
     }
 
     // Function to detect intent from user message

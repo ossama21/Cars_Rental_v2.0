@@ -1,7 +1,7 @@
 h1{
     font-family: 'montserrat';
     position: relative;
-    top:10rem;
+    /* top:10rem; */
     padding-top: 100px;
     margin-bottom: 40px;
     color: var(--text-color);

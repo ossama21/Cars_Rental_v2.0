@@ -1,5 +1,16 @@
 <?php
 session_start();
+
+// Language selection handling
+$availableLangs = ['en', 'fr', 'ar'];
+$lang_code = isset($_SESSION['lang']) && in_array($_SESSION['lang'], $availableLangs) ? $_SESSION['lang'] : 'en';
+
+// Set html direction for Arabic
+$dir = $lang_code === 'ar' ? 'rtl' : 'ltr';
+
+// Include the selected language file
+include_once "../languages/{$lang_code}.php";
+
 include '../data/connect.php';
 include '../data/auth.php';
 
@@ -798,9 +809,15 @@ if (!empty($status)) {
                                                 <div class="text-muted small">Brand: <?php echo htmlspecialchars($car['brand']); ?></div>
                                             </td>
                                             <td>
-                                                <div><i class="fas fa-calendar me-2 text-secondary"></i><?php echo htmlspecialchars($car['model']); ?></div>
-                                                <div><i class="fas fa-cog me-2 text-secondary"></i><?php echo htmlspecialchars($car['transmission']); ?></div>
-                                                <div><i class="fas fa-chair me-2 text-secondary"></i><?php echo htmlspecialchars($car['interior']); ?></div>
+                                                <div><i class="fas fa-calendar me-2 text-secondary"></i><?php echo $lang['model']; ?>: <?php echo htmlspecialchars($car['model']); ?></div>
+                                                <div><i class="fas fa-cog me-2 text-secondary"></i><?php echo $lang['transmission']; ?>: <?php echo $lang['transmission_' . strtolower(str_replace('Automatic', 'auto', $car['transmission']))]; ?></div>
+                                                <div><i class="fas fa-chair me-2 text-secondary"></i><?php echo $lang['interior']; ?>: <?php echo $lang['interior_' . strtolower($car['interior'])]; ?></div>
+                                                <?php if (!empty($car['fuel_type'])): ?>
+                                                <div><i class="fas fa-gas-pump me-2 text-secondary"></i><?php echo $lang['fuel_type']; ?>: <?php echo $lang['fuel_' . strtolower($car['fuel_type'])]; ?></div>
+                                                <?php endif; ?>
+                                                <?php if (!empty($car['seating_capacity'])): ?>
+                                                <div><i class="fas fa-users me-2 text-secondary"></i><?php echo $lang['seating_capacity']; ?>: <?php echo htmlspecialchars($car['seating_capacity']); ?></div>
+                                                <?php endif; ?>
                                             </td>
                                             <td>
                                                 <?php 

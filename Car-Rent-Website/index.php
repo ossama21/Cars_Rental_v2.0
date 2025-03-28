@@ -3,6 +3,16 @@ session_start();
 $firstName = isset($_SESSION['firstName']) ? $_SESSION['firstName'] : '';
 $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
 
+// Language selection handling
+$availableLangs = ['en', 'fr', 'ar'];
+$lang_code = isset($_SESSION['lang']) && in_array($_SESSION['lang'], $availableLangs) ? $_SESSION['lang'] : 'en';
+
+// Set html direction for Arabic
+$dir = $lang_code === 'ar' ? 'rtl' : 'ltr';
+
+// Include the selected language file
+include_once "languages/{$lang_code}.php";
+
 // Database connection
 $host="localhost";
 $user="root";
@@ -16,7 +26,7 @@ if ($conn->connect_error) {
 }
 ?>
 <!doctype html>
-<html lang="en">
+<html lang="<?php echo $lang_code; ?>" dir="<?php echo $dir; ?>">
   <head>
     <!-- Required meta tags -->
     <meta charset="UTF-8">
@@ -47,10 +57,12 @@ if ($conn->connect_error) {
     <link rel="stylesheet" href="./css/modern.css">
     <!-- Dark Mode CSS -->
     <link rel="stylesheet" href="./css/dark-mode.css">
+    <!-- Language selector CSS -->
+    <link rel="stylesheet" href="./css/language-selector.css">
     <!-- Mobile-specific CSS (loaded conditionally) -->
     <link rel="stylesheet" href="./css/mobile.css">
 
-    <title>CARrent</title>
+    <title><?php echo $lang['title']; ?></title>
     <style>
       #loading-overlay {
         position: fixed;
@@ -89,6 +101,17 @@ if ($conn->connect_error) {
       body.loading-active {
         overflow: hidden;
       }
+      
+      /* Flag Icons Styling */
+      .flag-icon {
+        margin-right: 5px;
+        font-size: 1em;
+      }
+      
+      html[dir="rtl"] .flag-icon {
+        margin-right: 0;
+        margin-left: 5px;
+      }
     </style>
   </head>
   <body class="loading-active">
@@ -110,18 +133,45 @@ if ($conn->connect_error) {
             <div class="nav-menu">
               <ul class="nav-list">
                 <li class="nav-item">
-                  <a href="index.php" class="nav-link active">Home</a>
+                  <a href="index.php" class="nav-link active"><?php echo $lang['home']; ?></a>
                 </li>
                 <li class="nav-item">
-                  <a href="about.php" class="nav-link">About</a>
+                  <a href="about.php" class="nav-link"><?php echo $lang['about']; ?></a>
                 </li>
                 <li class="nav-item">
-                  <a href="book.php" class="nav-link">Cars</a>
+                  <a href="book.php" class="nav-link"><?php echo $lang['cars']; ?></a>
                 </li>
                 <li class="nav-item">
-                  <a href="#contact" class="nav-link">Contact</a>
+                  <a href="#contact" class="nav-link"><?php echo $lang['contact']; ?></a>
                 </li>
               </ul>
+            </div>
+          </div>
+
+          <!-- Language Selector -->
+          <div class="language-selector">
+            <div class="current-lang">
+              <span>
+                <?php if($lang_code == 'en'): ?>
+                  <i class="flag-icon fas fa-flag flag-icon-uk"></i> EN
+                <?php elseif($lang_code == 'fr'): ?>
+                  <i class="flag-icon fas fa-flag flag-icon-france"></i> FR
+                <?php elseif($lang_code == 'ar'): ?>
+                  <i class="flag-icon fas fa-flag flag-icon-morocco"></i> AR
+                <?php endif; ?>
+              </span>
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="language-dropdown">
+              <a href="languages/change_language.php?lang=en" class="language-option">
+                <i class="flag-icon fas fa-flag flag-icon-uk"></i> English
+              </a>
+              <a href="languages/change_language.php?lang=fr" class="language-option">
+                <i class="flag-icon fas fa-flag flag-icon-france"></i> Français
+              </a>
+              <a href="languages/change_language.php?lang=ar" class="language-option">
+                <i class="flag-icon fas fa-flag flag-icon-morocco"></i> العربية
+              </a>
             </div>
           </div>
 
@@ -149,23 +199,23 @@ if ($conn->connect_error) {
                   <i class="fas fa-chevron-down"></i>
                 </button>
                 <div class="profile-menu">
-                  <a href="./data/homepage.php" class="profile-menu-item">
-                    <i class="fas fa-user"></i>My Account
+                  <a href="./data/my_account.php" class="profile-menu-item">
+                    <i class="fas fa-user"></i><?php echo $lang['my_account']; ?>
                   </a>
                   <?php if ($isAdmin): ?>
                   <a href="./admin/admin.php" class="profile-menu-item">
-                    <i class="fas fa-cog"></i>Admin Dashboard
+                    <i class="fas fa-cog"></i><?php echo $lang['admin_dashboard']; ?>
                   </a>
                   <?php endif; ?>
                   <a href="./data/logout.php" class="profile-menu-item">
-                    <i class="fas fa-sign-out-alt"></i>Logout
+                    <i class="fas fa-sign-out-alt"></i><?php echo $lang['logout']; ?>
                   </a>
                 </div>
               </div>
             <?php else: ?>
               <div class="auth-buttons">
-                <a href="data/index.php" class="nav-btn login-btn">Login</a>
-                <a href="data/index.php" class="nav-btn signup-btn">Sign Up</a>
+                <a href="data/authentication.php?action=login" class="nav-btn login-btn"><?php echo $lang['login']; ?></a>
+                <a href="data/authentication.php?action=register" class="nav-btn signup-btn"><?php echo $lang['signup']; ?></a>
               </div>
             <?php endif; ?>
           </div>
@@ -183,26 +233,69 @@ if ($conn->connect_error) {
     <div class="mobile-nav">
       <ul class="mobile-nav-list">
         <li class="mobile-nav-item">
-          <a href="index.php" class="mobile-nav-link active">Home</a>
+          <a href="index.php" class="mobile-nav-link active"><?php echo $lang['home']; ?></a>
         </li>
         <li class="mobile-nav-item">
-          <a href="about.php" class="mobile-nav-link">About</a>
+          <a href="about.php" class="mobile-nav-link"><?php echo $lang['about']; ?></a>
         </li>
         <li class="mobile-nav-item">
-          <a href="book.php" class="mobile-nav-link">Cars</a>
+          <a href="book.php" class="mobile-nav-link"><?php echo $lang['cars']; ?></a>
         </li>
         <li class="mobile-nav-item">
-          <a href="#contact" class="mobile-nav-link">Contact</a>
+          <a href="#contact" class="mobile-nav-link"><?php echo $lang['contact']; ?></a>
         </li>
       </ul>
       
-      <?php if (!isset($_SESSION['firstName'])): ?>
+      <?php if (isset($_SESSION['firstName'])): ?>
+      <!-- Mobile profile section (only when user is logged in) -->
+      <div class="mobile-profile">
+        <div class="mobile-profile-header">
+          <div class="mobile-profile-avatar">
+            <img src="./images/profile-pic.png" alt="Profile">
+          </div>
+          <div class="mobile-profile-info">
+            <span class="mobile-profile-name"><?= htmlspecialchars($_SESSION['firstName']); ?></span>
+            <?php if ($isAdmin): ?>
+            <span class="mobile-profile-role">Admin</span>
+            <?php endif; ?>
+          </div>
+        </div>
+        <div class="mobile-profile-menu">
+          <a href="./data/my_account.php" class="mobile-profile-menu-item">
+            <i class="fas fa-user"></i><?php echo $lang['my_account']; ?>
+          </a>
+          <?php if ($isAdmin): ?>
+          <a href="./admin/admin.php" class="mobile-profile-menu-item">
+            <i class="fas fa-cog"></i><?php echo $lang['admin_dashboard']; ?>
+          </a>
+          <?php endif; ?>
+          <a href="./data/logout.php" class="mobile-profile-menu-item">
+            <i class="fas fa-sign-out-alt"></i><?php echo $lang['logout']; ?>
+          </a>
+        </div>
+      </div>
+      <?php else: ?>
       <!-- Mobile auth buttons (only shown in mobile menu) -->
       <div class="mobile-auth">
-        <a href="data/index.php" class="nav-btn login-btn">Login</a>
-        <a href="data/index.php" class="nav-btn signup-btn">Sign Up</a>
+        <a href="data/authentication.php?action=login" class="nav-btn login-btn"><?php echo $lang['login']; ?></a>
+        <a href="data/authentication.php?action=register" class="nav-btn signup-btn"><?php echo $lang['signup']; ?></a>
       </div>
       <?php endif; ?>
+      
+      <!-- Mobile language selector -->
+      <div class="mobile-language-selector">
+        <div class="language-options">
+          <a href="languages/change_language.php?lang=en" class="language-option">
+            <i class="flag-icon fas fa-flag flag-icon-uk"></i> English
+          </a>
+          <a href="languages/change_language.php?lang=fr" class="language-option">
+            <i class="flag-icon fas fa-flag flag-icon-france"></i> Français
+          </a>
+          <a href="languages/change_language.php?lang=ar" class="language-option">
+            <i class="flag-icon fas fa-flag flag-icon-morocco"></i> العربية
+          </a>
+        </div>
+      </div>
     </div>
 
     <!-- Hero Section with Carousel -->
@@ -212,33 +305,33 @@ if ($conn->connect_error) {
           <div class="carousel-item active">
             <img src="./images/wallpaperslide1.jpg" class="d-block w-100" alt="Luxury Car">
             <div class="carousel-caption" data-aos="fade-up" data-aos-delay="200">
-              <h1>Premium Cars at Affordable Rates</h1>
-              <p>Experience the ultimate driving comfort with our fleet</p>
-              <a href="./book.php" class="btn btn-primary btn-lg">Book Now</a>
+              <h1><?php echo $lang['premium_cars']; ?></h1>
+              <p><?php echo $lang['experience_driving']; ?></p>
+              <a href="./book.php" class="btn btn-primary btn-lg"><?php echo $lang['book_now']; ?></a>
             </div>
           </div>
           <div class="carousel-item">
             <img src="./images/wallpaperslide2.jpg" class="d-block w-100" alt="SUV">
             <div class="carousel-caption" data-aos="fade-up" data-aos-delay="200">
-              <h1>Find Your Perfect Ride</h1>
-              <p>Wide selection of vehicles for any occasion</p>
-              <a href="./book.php" class="btn btn-primary btn-lg">Book Now</a>
+              <h1><?php echo $lang['find_perfect_ride']; ?></h1>
+              <p><?php echo $lang['wide_selection']; ?></p>
+              <a href="./book.php" class="btn btn-primary btn-lg"><?php echo $lang['book_now']; ?></a>
             </div>
           </div>
           <div class="carousel-item">
             <img src="./images/wallpaperslide3.jpg" class="d-block w-100" alt="Sports Car">
             <div class="carousel-caption" data-aos="fade-up" data-aos-delay="200">
-              <h1>Drive in Style</h1>
-              <p>Luxury and comfort at your fingertips</p>
-              <a href="./book.php" class="btn btn-primary btn-lg">Book Now</a>
+              <h1><?php echo $lang['drive_in_style']; ?></h1>
+              <p><?php echo $lang['luxury_comfort']; ?></p>
+              <a href="./book.php" class="btn btn-primary btn-lg"><?php echo $lang['book_now']; ?></a>
             </div>
           </div>
           <div class="carousel-item">
             <img src="./images/wallpaperslide4.jpg" class="d-block w-100" alt="Family Car">
             <div class="carousel-caption" data-aos="fade-up" data-aos-delay="200">
-              <h1>Hassle-Free Car Rental</h1>
-              <p>Quick booking, exceptional service</p>
-              <a href="./book.php" class="btn btn-primary btn-lg">Book Now</a>
+              <h1><?php echo $lang['hassle_free']; ?></h1>
+              <p><?php echo $lang['quick_booking']; ?></p>
+              <a href="./book.php" class="btn btn-primary btn-lg"><?php echo $lang['book_now']; ?></a>
             </div>
           </div>
         </div>
@@ -257,26 +350,26 @@ if ($conn->connect_error) {
     <section class="search-section">
       <div class="container">
         <div class="search-container" data-aos="fade-up">
-          <h3>Find Your Ideal Car</h3>
+          <h3><?php echo $lang['find_ideal_car']; ?></h3>
           <form class="search-form" action="book.php" method="GET">
             <div class="row g-3">
               <div class="col-md-3">
                 <select class="form-select" name="type" required>
-                  <option value="">Select Car Type</option>
-                  <option value="sedan">Sedan</option>
-                  <option value="suv">SUV</option>
-                  <option value="luxury">Luxury</option>
-                  <option value="sports">Sports</option>
+                  <option value=""><?php echo $lang['select_car_type']; ?></option>
+                  <option value="sedan"><?php echo $lang['sedan']; ?></option>
+                  <option value="suv"><?php echo $lang['suv']; ?></option>
+                  <option value="luxury"><?php echo $lang['luxury']; ?></option>
+                  <option value="sports"><?php echo $lang['sports']; ?></option>
                 </select>
               </div>
               <div class="col-md-3">
-                <input type="date" class="form-control" name="pickup_date" placeholder="Pick-up Date" required min="<?php echo date('Y-m-d'); ?>">
+                <input type="date" class="form-control" name="pickup_date" placeholder="<?php echo $lang['pickup_date']; ?>" required min="<?php echo date('Y-m-d'); ?>">
               </div>
               <div class="col-md-3">
-                <input type="date" class="form-control" name="return_date" placeholder="Return Date" required min="<?php echo date('Y-m-d'); ?>">
+                <input type="date" class="form-control" name="return_date" placeholder="<?php echo $lang['return_date']; ?>" required min="<?php echo date('Y-m-d'); ?>">
               </div>
               <div class="col-md-3">
-                <button type="submit" class="btn btn-primary w-100">Search Cars</button>
+                <button type="submit" class="btn btn-primary w-100"><?php echo $lang['search_cars']; ?></button>
               </div>
             </div>
           </form>
@@ -287,8 +380,8 @@ if ($conn->connect_error) {
     <!-- Featured Cars Section -->
     <section class="featured-cars">
       <div class="container">
-        <h2 class="section-title" data-aos="fade-up">Featured Vehicles</h2>
-        <p class="section-description" data-aos="fade-up">Discover our selection of premium vehicles available for rent</p>
+        <h2 class="section-title" data-aos="fade-up"><?php echo $lang['featured_vehicles']; ?></h2>
+        <p class="section-description" data-aos="fade-up"><?php echo $lang['discover_selection']; ?></p>
         
         <div class="swiper car-slider">
           <div class="swiper-wrapper">
@@ -303,7 +396,7 @@ if ($conn->connect_error) {
                     d.discount_type,
                     d.discount_value,
                     ci.image_path as primary_image,
-                    CONCAT('images/cars/index_cars/', c.id, '.jpg') as index_image
+                    CONCAT('../Car-Rent-Website/images/cars/index_cars', c.id, '.jpg') as index_image
                     FROM cars c 
                     LEFT JOIN car_discounts d ON c.id = d.car_id 
                         AND CURRENT_TIMESTAMP BETWEEN d.start_date AND d.end_date 
@@ -338,7 +431,7 @@ if ($conn->connect_error) {
                 <div class="car-image">
                   <img src="<?php echo htmlspecialchars($imagePath); ?>" alt="<?php echo htmlspecialchars($car['name']); ?>">
                   <?php if(isset($car['discount_value'])): ?>
-                    <div class="car-tag">Special Offer</div>
+                    <div class="car-tag"><?php echo $lang['special_offer']; ?></div>
                   <?php endif; ?>
                 </div>
                 <div class="car-info">
@@ -346,14 +439,14 @@ if ($conn->connect_error) {
                   <div class="car-specs">
                     <span><i class="fas fa-cog"></i> <?php echo htmlspecialchars($car['transmission']); ?></span>
                     <span><i class="fas fa-gas-pump"></i> <?php echo htmlspecialchars($car['fuel_type'] ?? 'Petrol'); ?></span>
-                    <span><i class="fas fa-user"></i> <?php echo htmlspecialchars($car['seating_capacity'] ?? '5'); ?> Seats</span>
+                    <span><i class="fas fa-user"></i> <?php echo htmlspecialchars($car['seating_capacity'] ?? '5'); ?> <?php echo $lang['seats']; ?></span>
                   </div>
                   <div class="car-price">
-                    <h4>$<?php echo number_format($price, 2); ?> <span>/ day</span></h4>
+                    <h4>$<?php echo number_format($price, 2); ?> <span><?php echo $lang['day']; ?></span></h4>
                     <?php if (isset($_SESSION['firstName'])): ?>
-                      <a href="checkout.php?car_id=<?php echo $car['id']; ?>" class="btn btn-sm btn-primary">Rent Now</a>
+                      <a href="checkout.php?car_id=<?php echo $car['id']; ?>" class="btn btn-sm btn-primary"><?php echo $lang['rent_now']; ?></a>
                     <?php else: ?>
-                      <a href="data/index.php" class="btn btn-sm btn-primary">Login to Rent</a>
+                      <a href="data/authentication.php?action=login" class="btn btn-sm btn-primary"><?php echo $lang['login_to_rent']; ?></a>
                     <?php endif; ?>
                   </div>
                 </div>
@@ -375,9 +468,9 @@ if ($conn->connect_error) {
     <section class="why-choose-us">
       <div class="container">
         <div class="section-header text-center" data-aos="fade-up">
-          <span class="section-subtitle">Our Advantages</span>
-          <h2 class="section-title">Why Choose <span class="highlight">CARSRENT</span></h2>
-          <p class="section-description">Experience the perfect blend of luxury, convenience, and reliability with our premium car rental services</p>
+          <span class="section-subtitle"><?php echo $lang['our_advantages']; ?></span>
+          <h2 class="section-title"><?php echo $lang['why_choose']; ?> <span class="highlight">CARSRENT</span></h2>
+          <p class="section-description"><?php echo $lang['experience_blend']; ?></p>
         </div>
 
         <div class="features">
@@ -389,12 +482,12 @@ if ($conn->connect_error) {
                 </div>
               </div>
               <div class="feature-content">
-                <h3 class="feature-title">Premium Fleet</h3>
-                <p class="feature-description">Choose from our extensive collection of well-maintained luxury and economy vehicles</p>
+                <h3 class="feature-title"><?php echo $lang['premium_fleet']; ?></h3>
+                <p class="feature-description"><?php echo $lang['premium_fleet_desc']; ?></p>
                 <ul class="feature-list">
-                  <li><i class="fas fa-check"></i> Latest Models</li>
-                  <li><i class="fas fa-check"></i> Regular Maintenance</li>
-                  <li><i class="fas fa-check"></i> Variety of Brands</li>
+                  <li><i class="fas fa-check"></i> <?php echo $lang['latest_models']; ?></li>
+                  <li><i class="fas fa-check"></i> <?php echo $lang['regular_maintenance']; ?></li>
+                  <li><i class="fas fa-check"></i> <?php echo $lang['variety_brands']; ?></li>
                 </ul>
               </div>
             </div>
@@ -408,12 +501,12 @@ if ($conn->connect_error) {
                 </div>
               </div>
               <div class="feature-content">
-                <h3 class="feature-title">Best Value</h3>
-                <p class="feature-description">Competitive pricing with no hidden charges and exclusive member benefits</p>
+                <h3 class="feature-title"><?php echo $lang['best_value']; ?></h3>
+                <p class="feature-description"><?php echo $lang['best_value_desc']; ?></p>
                 <ul class="feature-list">
-                  <li><i class="fas fa-check"></i> Transparent Pricing</li>
-                  <li><i class="fas fa-check"></i> Member Discounts</li>
-                  <li><i class="fas fa-check"></i> Flexible Plans</li>
+                  <li><i class="fas fa-check"></i> <?php echo $lang['transparent_pricing']; ?></li>
+                  <li><i class="fas fa-check"></i> <?php echo $lang['member_discounts']; ?></li>
+                  <li><i class="fas fa-check"></i> <?php echo $lang['flexible_plans']; ?></li>
                 </ul>
               </div>
             </div>
@@ -427,12 +520,12 @@ if ($conn->connect_error) {
                 </div>
               </div>
               <div class="feature-content">
-                <h3 class="feature-title">24/7 Support</h3>
-                <p class="feature-description">Round-the-clock customer service to assist you whenever you need help</p>
+                <h3 class="feature-title"><?php echo $lang['support_24_7']; ?></h3>
+                <p class="feature-description"><?php echo $lang['support_desc']; ?></p>
                 <ul class="feature-list">
-                  <li><i class="fas fa-check"></i> 24/7 Assistance</li>
-                  <li><i class="fas fa-check"></i> Roadside Support</li>
-                  <li><i class="fas fa-check"></i> Quick Response</li>
+                  <li><i class="fas fa-check"></i> <?php echo $lang['assistance_24_7']; ?></li>
+                  <li><i class="fas fa-check"></i> <?php echo $lang['roadside_support']; ?></li>
+                  <li><i class="fas fa-check"></i> <?php echo $lang['quick_response']; ?></li>
                 </ul>
               </div>
             </div>
@@ -446,12 +539,12 @@ if ($conn->connect_error) {
                 </div>
               </div>
               <div class="feature-content">
-                <h3 class="feature-title">Safety First</h3>
-                <p class="feature-description">Your safety is our priority with comprehensive insurance coverage</p>
+                <h3 class="feature-title"><?php echo $lang['safety_first']; ?></h3>
+                <p class="feature-description"><?php echo $lang['safety_desc']; ?></p>
                 <ul class="feature-list">
-                  <li><i class="fas fa-check"></i> Full Insurance</li>
-                  <li><i class="fas fa-check"></i> Sanitized Vehicles</li>
-                  <li><i class="fas fa-check"></i> Safety Protocols</li>
+                  <li><i class="fas fa-check"></i> <?php echo $lang['full_insurance']; ?></li>
+                  <li><i class="fas fa-check"></i> <?php echo $lang['sanitized_vehicles']; ?></li>
+                  <li><i class="fas fa-check"></i> <?php echo $lang['safety_protocols']; ?></li>
                 </ul>
               </div>
             </div>
@@ -465,12 +558,12 @@ if ($conn->connect_error) {
                 </div>
               </div>
               <div class="feature-content">
-                <h3 class="feature-title">Express Service</h3>
-                <p class="feature-description">Quick and efficient rental process with minimal waiting time</p>
+                <h3 class="feature-title"><?php echo $lang['express_service']; ?></h3>
+                <p class="feature-description"><?php echo $lang['express_desc']; ?></p>
                 <ul class="feature-list">
-                  <li><i class="fas fa-check"></i> Fast Booking</li>
-                  <li><i class="fas fa-check"></i> Express Pickup</li>
-                  <li><i class="fas fa-check"></i> Digital Contracts</li>
+                  <li><i class="fas fa-check"></i> <?php echo $lang['fast_booking']; ?></li>
+                  <li><i class="fas fa-check"></i> <?php echo $lang['express_pickup']; ?></li>
+                  <li><i class="fas fa-check"></i> <?php echo $lang['digital_contracts']; ?></li>
                 </ul>
               </div>
             </div>
@@ -484,12 +577,12 @@ if ($conn->connect_error) {
                 </div>
               </div>
               <div class="feature-content">
-                <h3 class="feature-title">Flexible Rentals</h3>
-                <p class="feature-description">Adaptable rental periods and options to suit your schedule</p>
+                <h3 class="feature-title"><?php echo $lang['flexible_rentals']; ?></h3>
+                <p class="feature-description"><?php echo $lang['flexible_desc']; ?></p>
                 <ul class="feature-list">
-                  <li><i class="fas fa-check"></i> Custom Duration</li>
-                  <li><i class="fas fa-check"></i> Free Cancellation</li>
-                  <li><i class="fas fa-check"></i> Easy Extension</li>
+                  <li><i class="fas fa-check"></i> <?php echo $lang['custom_duration']; ?></li>
+                  <li><i class="fas fa-check"></i> <?php echo $lang['free_cancellation']; ?></li>
+                  <li><i class="fas fa-check"></i> <?php echo $lang['easy_extension']; ?></li>
                 </ul>
               </div>
             </div>
@@ -504,9 +597,9 @@ if ($conn->connect_error) {
         <div class="row align-items-center">
           <div class="col-md-6 mb-4 mb-md-0">
             <div class="stats-content" data-aos="fade-right">
-              <span class="section-subtitle">Our Numbers</span>
-              <h2 class="section-title">Trusted by Thousands <br>of Happy Customers</h2>
-              <p class="section-description">We take pride in our growing community and the trust our customers place in us. Our numbers speak for themselves.</p>
+              <span class="section-subtitle"><?php echo $lang['our_numbers']; ?></span>
+              <h2 class="section-title"><?php echo $lang['trusted_by']; ?></h2>
+              <p class="section-description"><?php echo $lang['we_take_pride']; ?></p>
             </div>
           </div>
           <div class="col-md-6">
@@ -518,7 +611,7 @@ if ($conn->connect_error) {
                 </div>
                 <div class="stat-details">
                   <div class="stat-number" data-target="150">0</div>
-                  <div class="stat-label">Premium Vehicles</div>
+                  <div class="stat-label"><?php echo $lang['premium_vehicles']; ?></div>
                   <div class="stat-progress">
                     <div class="progress-bar"></div>
                   </div>
@@ -532,7 +625,7 @@ if ($conn->connect_error) {
                 </div>
                 <div class="stat-details">
                   <div class="stat-number" data-target="5000">0</div>
-                  <div class="stat-label">Happy Clients</div>
+                  <div class="stat-label"><?php echo $lang['happy_clients']; ?></div>
                   <div class="stat-progress">
                     <div class="progress-bar"></div>
                   </div>
@@ -546,7 +639,7 @@ if ($conn->connect_error) {
                 </div>
                 <div class="stat-details">
                   <div class="stat-number" data-target="25">0</div>
-                  <div class="stat-label">Locations</div>
+                  <div class="stat-label"><?php echo $lang['locations']; ?></div>
                   <div class="stat-progress">
                     <div class="progress-bar"></div>
                   </div>
@@ -560,7 +653,7 @@ if ($conn->connect_error) {
                 </div>
                 <div class="stat-details">
                   <div class="stat-number" data-target="99">0</div>
-                  <div class="stat-label">Satisfaction Rate</div>
+                  <div class="stat-label"><?php echo $lang['satisfaction_rate']; ?></div>
                   <div class="stat-progress">
                     <div class="progress-bar"></div>
                   </div>
@@ -575,8 +668,8 @@ if ($conn->connect_error) {
     <!-- Testimonials Section -->
     <section class="testimonials-section">
       <div class="container">
-        <h2 class="section-title" data-aos="fade-up">What Our Clients Are Saying</h2>
-        <p class="section-description" data-aos="fade-up">Hear directly from our valued clients about their experiences with us.</p>
+        <h2 class="section-title" data-aos="fade-up"><?php echo $lang['client_saying']; ?></h2>
+        <p class="section-description" data-aos="fade-up"><?php echo $lang['hear_directly']; ?></p>
         
         <div class="swiper testimonials-slider" data-aos="fade-up">
           <div class="swiper-wrapper">
@@ -590,14 +683,14 @@ if ($conn->connect_error) {
                     <i class="fas fa-star"></i>
                     <i class="fas fa-star"></i>
                   </div>
-                  <h3 class="testimonial-heading">Exceptional Service</h3>
-                  <p class="testimonial-text">Fast, reliable, and incredibly affordable. This was a top-notch experience from start to finish.</p>
+                  <h3 class="testimonial-heading"><?php echo $lang['exceptional_service']; ?></h3>
+                  <p class="testimonial-text"><?php echo $lang['testimonial1']; ?></p>
                 </div>
                 <div class="testimonial-avatar">
                   <img src="./images/person_1.jpg" alt="HICHAM" class="avatar"/>
                   <div class="avatar-info">
                     <p class="avatar-name">HICHAM</p>
-                    <p class="avatar-title">CEO, Company data</p>
+                    <p class="avatar-title"><?php echo $lang['ceo']; ?>, Company data</p>
                   </div>
                 </div>
               </div>
@@ -613,14 +706,14 @@ if ($conn->connect_error) {
                     <i class="fas fa-star"></i>
                     <i class="fas fa-star"></i>
                   </div>
-                  <h3 class="testimonial-heading">Highly Recommended</h3>
-                  <p class="testimonial-text">The team was both professional and welcoming. I wholeheartedly recommend their services to anyone in need.</p>
+                  <h3 class="testimonial-heading"><?php echo $lang['highly_recommended']; ?></h3>
+                  <p class="testimonial-text"><?php echo $lang['testimonial2']; ?></p>
                 </div>
                 <div class="testimonial-avatar">
                   <img src="./images/person_3.jpg" alt="KHALID" class="avatar"/>
                   <div class="avatar-info">
                     <p class="avatar-name">KHALID</p>
-                    <p class="avatar-title">Manager, Company streaming</p>
+                    <p class="avatar-title"><?php echo $lang['manager']; ?>, Company streaming</p>
                   </div>
                 </div>
               </div>
@@ -636,14 +729,14 @@ if ($conn->connect_error) {
                     <i class="fas fa-star"></i>
                     <i class="fas fa-star-half-alt"></i>
                   </div>
-                  <h3 class="testimonial-heading">A Reliable Choice</h3>
-                  <p class="testimonial-text">I appreciated the team's efficiency and their commitment to transparency throughout the rental process.</p>
+                  <h3 class="testimonial-heading"><?php echo $lang['reliable_choice']; ?></h3>
+                  <p class="testimonial-text"><?php echo $lang['testimonial3']; ?></p>
                 </div>
                 <div class="testimonial-avatar">
                   <img src="./images/person_4.jpg" alt="HAMZA" class="avatar"/>
                   <div class="avatar-info">
                     <p class="avatar-name">HAMZA</p>
-                    <p class="avatar-title">Supervisor, Hotel company</p>
+                    <p class="avatar-title"><?php echo $lang['supervisor']; ?>, Hotel company</p>
                   </div>
                 </div>
               </div>
@@ -661,26 +754,26 @@ if ($conn->connect_error) {
           <div class="row align-items-center">
             <div class="col-lg-7 mb-4 mb-lg-0">
               <div class="cta-content">
-                <span class="cta-subtitle">Start Your Journey</span>
-                <h2>Ready to Experience the <br><span class="highlight">Ultimate Drive?</span></h2>
-                <p>Join thousands of satisfied customers who trust us for their travel needs. Book your dream car today and enjoy the freedom of the open road.</p>
+                <span class="cta-subtitle"><?php echo $lang['start_journey']; ?></span>
+                <h2><?php echo $lang['ready_experience']; ?></h2>
+                <p><?php echo $lang['join_thousands']; ?></p>
                 <div class="cta-features">
                   <div class="cta-feature">
                     <i class="fas fa-check-circle"></i>
-                    <span>Instant Booking</span>
+                    <span><?php echo $lang['instant_booking']; ?></span>
                   </div>
                   <div class="cta-feature">
                     <i class="fas fa-check-circle"></i>
-                    <span>24/7 Support</span>
+                    <span><?php echo $lang['support_24_7']; ?></span>
                   </div>
                   <div class="cta-feature">
                     <i class="fas fa-check-circle"></i>
-                    <span>Free Cancellation</span>
+                    <span><?php echo $lang['free_cancellation']; ?></span>
                   </div>
                 </div>
                 <div class="cta-buttons">
-                  <a href="./book.php" class="btn btn-primary btn-lg">Book Now</a>
-                  <a href="about.php" class="btn btn-outline-light btn-lg">Learn More</a>
+                  <a href="./book.php" class="btn btn-primary btn-lg"><?php echo $lang['book_now']; ?></a>
+                  <a href="about.php" class="btn btn-outline-light btn-lg"><?php echo $lang['learn_more']; ?></a>
                 </div>
               </div>
             </div>
@@ -708,7 +801,7 @@ if ($conn->connect_error) {
               <a style="font-weight: 900;" href="#" class="footer-brand">
                 <span class="brand-highlight">CARS</span>RENT
               </a>
-              <p class="mt-3">Providing quality car rentals with exceptional service. Best cars at competitive prices.</p>
+              <p class="mt-3"><?php echo $lang['providing_quality']; ?></p>
               <div class="social-icons">
                 <a href="#"><i class="fab fa-facebook-f"></i></a>
                 <a href="#"><i class="fab fa-twitter"></i></a>
@@ -718,17 +811,17 @@ if ($conn->connect_error) {
             </div>
             
             <div class="col-lg-2 col-md-6 mb-4 mb-md-0">
-              <h5>Quick Links</h5>
+              <h5><?php echo $lang['quick_links']; ?></h5>
               <ul class="footer-links">
-                <li><a href="index.php">Home</a></li>
-                <li><a href="./book.php">Book Now</a></li>
-                <li><a href="about.php">About Us</a></li>
-                <li><a href="#contact">Contact Us</a></li>
+                <li><a href="index.php"><?php echo $lang['home']; ?></a></li>
+                <li><a href="./book.php"><?php echo $lang['book_now']; ?></a></li>
+                <li><a href="about.php"><?php echo $lang['about']; ?></a></li>
+                <li><a href="#contact"><?php echo $lang['contact']; ?></a></li>
               </ul>
             </div>
             
             <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
-              <h5>Contact Info</h5>
+              <h5><?php echo $lang['contact_info']; ?></h5>
               <ul class="contact-info">
                 <li><i class="fas fa-map-marker-alt"></i> 99 Ahadaf Street, Meknes, Morocco</li>
                 <li><i class="fas fa-phone"></i> +212 630352250</li>
@@ -737,7 +830,7 @@ if ($conn->connect_error) {
             </div>
             
             <div class="col-lg-3 col-md-6">
-              <h5>TEAM</h5>
+              <h5><?php echo $lang['team']; ?></h5>
               <div class="team-info">
                 <a href="https://github.com/ossama21/Cars_Rental_WebSite-Project" class="github-link">
                   <i class="fab fa-github"></i> Cars_Rental_WebSite-Project
@@ -752,10 +845,10 @@ if ($conn->connect_error) {
         <div class="container">
           <div class="row align-items-center">
             <div class="col-md-6">
-              <p class="mb-0">&copy;2024 <span>CARS</span>RENT - All Rights Reserved.</p>
+              <p class="mb-0">&copy;2024 <span>CARS</span>RENT - <?php echo $lang['all_rights_reserved']; ?></p>
             </div>
             <div class="col-md-6 text-md-end">
-              <p class="mb-0">Made by: HATTAN OUSSAMA</p>
+              <p class="mb-0"><?php echo $lang['made_by']; ?></p>
             </div>
           </div>
         </div>
@@ -789,6 +882,27 @@ if ($conn->connect_error) {
     <!-- Dark Mode JS -->
     <script src="js/theme.js"></script>
     <script>
+      // Language Selector
+      document.addEventListener('DOMContentLoaded', function() {
+        const languageSelector = document.querySelector('.language-selector');
+        const currentLang = document.querySelector('.current-lang');
+        
+        if (languageSelector && currentLang) {
+          currentLang.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            languageSelector.classList.toggle('active');
+          });
+          
+          // Close dropdown when clicking outside
+          document.addEventListener('click', function(e) {
+            if (!languageSelector.contains(e.target)) {
+              languageSelector.classList.remove('active');
+            }
+          });
+        }
+      });
+      
       window.addEventListener('load', function() {
         const loadingOverlay = document.getElementById('loading-overlay');
         const body = document.body;

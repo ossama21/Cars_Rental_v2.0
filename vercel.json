@@ -2,7 +2,7 @@
   "routes": [
     {
       "src": "/",
-      "dest": "/Car-Rent-Website/"
+      "dest": "/Car-Rent_v2.0/"
     },
     {
       "src": "/Car-Rent-Website/index.php",

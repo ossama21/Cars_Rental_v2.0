@@ -287,6 +287,127 @@
     position: relative;
     margin-left: 20px;
   }
+
+  /* Mobile Profile Section Styles */
+  .mobile-profile {
+    background-color: var(--background-color);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin: 1.5rem 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .mobile-profile-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .mobile-profile-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid var(--primary-color);
+    margin-right: 1rem;
+    flex-shrink: 0;
+  }
+
+  .mobile-profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .mobile-profile-info {
+    flex: 1;
+  }
+
+  .mobile-profile-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 0.25rem;
+    display: block;
+  }
+
+  .mobile-profile-role {
+    display: inline-block;
+    font-size: 0.8rem;
+    font-weight: 500;
+    background-color: rgba(246, 173, 85, 0.2);
+    color: var(--secondary-color);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+  }
+
+  .mobile-profile-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .mobile-profile-menu-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--text-color);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    background-color: var(--surface-color);
+  }
+
+  .mobile-profile-menu-item i {
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    margin-right: 1rem;
+    font-size: 0.9rem;
+  }
+
+  .mobile-profile-menu-item:hover {
+    background-color: var(--primary-light);
+    transform: translateY(-2px);
+  }
+
+  /* Ensure mobile nav takes full height on small screens */
+  .mobile-nav {
+    max-height: 100vh;
+    overflow-y: auto;
+    padding-bottom: 2rem;
+  }
+
+  /* Dark mode adjustments */
+  html[data-theme="dark"] .mobile-profile {
+    background-color: var(--card-bg);
+  }
+
+  html[data-theme="dark"] .mobile-profile-menu-item {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+
+  html[data-theme="dark"] .mobile-profile-menu-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  /* RTL Support for Mobile Profile */
+  html[dir="rtl"] .mobile-profile-avatar {
+    margin-right: 0;
+    margin-left: 1rem;
+  }
+
+  html[dir="rtl"] .mobile-profile-menu-item i {
+    margin-right: 0;
+    margin-left: 1rem;
+  }
 }
 
 /* Extra Small Devices (phones, 575.98px and down) */

@@ -2,6 +2,34 @@
 session_start();
 $firstName = isset($_SESSION['firstName']) ? $_SESSION['firstName'] : '';
 $isAdmin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
+
+// Language selection handling
+$availableLangs = ['en', 'fr', 'ar'];
+$lang_code = isset($_SESSION['lang']) && in_array($_SESSION['lang'], $availableLangs) ? $_SESSION['lang'] : 'en';
+
+// Set html direction for Arabic
+$dir = $lang_code === 'ar' ? 'rtl' : 'ltr';
+
+// Include the selected language file
+include_once "languages/{$lang_code}.php";
+
+// Currency conversion rates
+$currency_symbols = [
+    'en' => '$',
+    'fr' => '€',
+    'ar' => 'MAD'
+];
+
+$currency_rates = [
+    'en' => 1,       // USD (base currency)
+    'fr' => 0.9,     // EUR (1 USD = 0.9 EUR)
+    'ar' => 10       // MAD (1 USD = 10 MAD)
+];
+
+// Get currency symbol and rate for the current language
+$currency_symbol = $currency_symbols[$lang_code];
+$currency_rate = $currency_rates[$lang_code];
+
 $host="localhost";
 $user="root";
 $pass="";
@@ -103,9 +131,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<?php echo $lang_code; ?>" dir="<?php echo $dir; ?>">
 <head>
-    <title>Available Cars - CARSRENT</title>
+    <title><?php echo $lang['premium_cars']; ?> - CARSRENT</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="icon" type="image/png" href="./images/image.png">
@@ -116,6 +144,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="./css/book.css">
     <link rel="stylesheet" href="./css/modern.css">
     <link rel="stylesheet" href="./css/dark-mode.css">
+    <!-- Language selector CSS -->
+    <link rel="stylesheet" href="./css/language-selector.css">
     <!-- Mobile-specific CSS -->
     <link rel="stylesheet" href="./css/mobile.css">
     
@@ -134,7 +164,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         /* Add transparent navbar initial state */
         .navbar {
-            background: #5d5f5d !important;
+            background: #1e293b !important;
             padding: 1rem 2rem;
             position: fixed;
             width: 100%;
@@ -179,6 +209,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .main-content {
+            position: relative;
             padding-top: 70px;
             min-height: calc(100vh - 80px);
             background: linear-gradient(135deg, var(--background-light) 0%, #ffffff 100%);
@@ -187,15 +218,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .title-wrapper {
             text-align: center;
             padding: 0 0 20px;
-        }
-
-        .main-title {
-            font-size: 32px;
-            font-weight: bold;
-            color: #3498db;
-            margin: 0;
-            text-transform: uppercase;
-            letter-spacing: 1px;
         }
 
         .filters-section {
@@ -558,17 +580,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         .subtitle {
             font-size: 1.1rem;
-            font-weight: 500;
             color: var(--secondary-color);
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 4px;
+            margin-bottom: 5px;
+            padding-bottom: 5px;
         }
 
-        .title-separator {
-            width: 80px;
-            height: 3px;
-            background: var(--secondary-color);
-            margin: 1.5rem auto;
+        .main-title {
+            font-size: 3rem; /* Reduce the size */
+            font-weight: 700;
+            margin: 10px 0; /* Adjust spacing */
+            padding: 0 10px;
+            line-height: 1.2; /* Improve readability */
+            text-align: center; /* Center the text */
+            /* change the position of title text */
+            position: relative;
+            z-index: 1;
+            display: inline-block;
+            padding-bottom: 10px;
+            
+            /* Background gradient (if needed) */
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
         }
 
         .search-tag {
@@ -710,7 +758,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             left: 0;
             right: 0;
             height: 2px;
-            background: var(--secondary-color);
+            background: var (--secondary-color);
             transform: scaleX(0);
             transition: transform 0.3s ease;
         }
@@ -755,7 +803,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             width: 80px;
             height: 3px;
             background: linear-gradient(90deg, #3498db 0%, #2c3e50 100%);
-            margin: 10px auto 15px; /* Reduced margins */
+            margin: 5px auto 25px;
             border-radius: 2px;
         }
 
@@ -895,504 +943,77 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         .page-header {
             text-align: center;
-            margin: 20px 0 45px;
-            padding: 15px 0;
-        }
-
-        .page-header h1 {
-            font-size: 38px;
-            font-weight: 700;
-            color: #2c3e50;
-            margin: 0 0 8px;
-        }
-
-        .page-header p {
-            font-size: 17px;
-            color: #7f8c8d;
-            margin: 0;
-        }
-        /* Modern Card Design Styles - March 2025 Update */
-        :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #3498db;
-            --accent-color: #e74c3c;
-            --background-light: #f8f9fa;
-            --text-dark: #2c3e50;
-            --text-light: #95a5a6;
-            --shadow-color: rgba(0,0,0,0.1);
-            --card-radius: 20px;
-            --transition-speed: 0.3s;
-        }
-
-        #car-listings {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
-            padding: 1rem 0;
-        }
-
-        .car-card {
-            background: white;
-            border-radius: var(--card-radius);
-            overflow: hidden;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
-            transition: all var(--transition-speed);
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            border: none;
-            transform: translateY(0);
-        }
-
-        .car-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.18);
-        }
-
-        .car-image {
-            height: 180px;
-            position: relative;
-            overflow: hidden;
-            border-radius: var(--card-radius) var(--card-radius) 0 0;
-        }
-
-        .car-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.8s ease;
-        }
-
-        .car-card:hover .car-image img {
-            transform: scale(1.05);
-        }
-
-        /* Gradient overlay on image */
-        .car-image::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 40%;
-            background: linear-gradient(0deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
-            z-index: 1;
-        }
-
-        .car-brand {
-            position: absolute;
-            bottom: 15px;
-            left: 15px;
-            color: white;
-            font-size: 0.85rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            z-index: 2;
-            background: rgba(52, 152, 219, 0.8);
-            padding: 5px 15px;
+            margin: 40px 0 60px;
+            padding: 60px 40px;
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.05) 0%, rgba(44, 62, 80, 0.05) 100%);
             border-radius: 30px;
-        }
-
-        .car-status {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            padding: 8px 16px;
-            border-radius: 30px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            z-index: 2;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .car-status.available {
-            background: linear-gradient(135deg, #2ecc71, #27ae60);
-            color: white;
-        }
-
-        .car-status.rented {
-            background: linear-gradient(135deg, #e74c3c, #c0392b);
-            color: white;
-            animation: pulse 2s infinite;
-        }
-
-        .car-details {
-            padding: 1.2rem;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            background: white;
-            position: relative;
-        }
-
-        .car-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin-bottom: 0.8rem;
-            position: relative;
-            padding-bottom: 0.6rem;
-            line-height: 1.3;
-        }
-
-        .car-title::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 50px;
-            height: 3px;
-            background: var(--secondary-color);
-            border-radius: 3px;
-        }
-
-        .car-description {
-            font-size: 0.85rem;
-            color: var(--text-light);
-            margin-bottom: 1rem;
-            line-height: 1.4;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .car-info {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 0.8rem;
-            margin-bottom: 1rem;
-            background: #f8f9fa;
-            padding: 0.8rem;
-            border-radius: 10px;
-        }
-
-        .info-item {
-            display: flex;
-            align-items: center;
-            color: var(--text-dark);
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-
-        .info-item i {
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 8px;
-            background: var(--secondary-color);
-            color: white;
-            border-radius: 50%;
-            font-size: 0.75rem;
-        }
-
-        .car-price {
-            padding: 0.8rem;
-            border-radius: 10px;
-            margin: 0.5rem 0 0.8rem;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: rgba(52, 152, 219, 0.08);
-            flex-wrap: wrap;
-            border-left: 3px solid var(--secondary-color);
-        }
-
-        .price-content {
-            flex: 1;
-            min-width: 0;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .discounted-price {
-            color: #e74c3c;
-            font-size: 1.2rem;
-            font-weight: 800;
-            line-height: 1;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            margin-bottom: 3px;
-        }
-
-        .discounted-price small {
-            font-size: 0.9rem;
-            opacity: 0.7;
-            font-weight: 600;
-        }
-
-        .discount-badge {
-            background: linear-gradient(135deg, #e74c3c, #c0392b);
-            color: white;
-            padding: 3px 8px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            border-radius: 30px;
-            white-space: nowrap;
-            box-shadow: 0 2px 5px rgba(231, 76, 60, 0.3);
-            animation: pulse 2s infinite;
-        }
-
-        .original-price {
-            font-size: 0.7rem;
-            color: #95a5a6;
-            text-decoration: line-through;
-            line-height: 1;
-            margin-top: 2px;
-        }
-
-        .regular-price {
-            font-size: 1.2rem;
-            font-weight: 800;
-            color: #2c3e50;
-            display: flex;
-            align-items: baseline;
-            gap: 4px;
-        }
-
-        .discount-countdown {
-            margin-top: 8px;
-            font-size: 0.85rem;
-            background: rgba(44, 62, 80, 0.08);
-            padding: 6px 10px;
-            border-radius: 20px;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .discount-countdown.urgent .countdown-text {
-            color: #e74c3c;
-            font-weight: bold;
-        }
-
-        .discount-countdown i {
-            color: #e67e22;
-        }
-
-        .book-now-btn {
-            width: 100%;
-            padding: 0.8rem;
-            text-align: center;
-            background: linear-gradient(135deg, #3498db, #2980b9);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 0.9rem;
-            letter-spacing: 0.5px;
-            transition: all 0.4s ease;
-            text-decoration: none;
-            display: inline-block;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
         }
 
-        .book-now-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
+        .container {
+            max-width: 1400px;
             width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: all 0.4s ease;
-        }
-
-        .book-now-btn:hover {
-            background: linear-gradient(135deg, #2980b9, #2c3e50);
-            transform: translateY(-3px);
-            text-decoration: none;
-            color: white;
-            box-shadow: 0 7px 20px rgba(52, 152, 219, 0.5);
-        }
-
-        .book-now-btn:hover::before {
-            left: 100%;
-        }
-
-        /* Preorder section styling */
-        .preorder-section {
-            background: linear-gradient(135deg, rgba(52, 152, 219, 0.1), rgba(41, 128, 185, 0.15));
-            padding: 1.2rem;
-            border-radius: 15px;
-            margin: 0.5rem 0 1.2rem;
-            border: 1px dashed rgba(52, 152, 219, 0.3);
-            text-align: center;
-        }
-
-        .next-available {
-            color: #2980b9;
-            font-weight: 600;
-            margin-bottom: 0.8rem;
-            font-size: 0.95rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-
-        .next-available i {
-            color: #3498db;
-        }
-
-        .preorder-btn {
-            background: linear-gradient(135deg, #3498db, #2980b9);
-            color: white;
-            border: none;
-            padding: 0.8rem 1.5rem;
-            border-radius: 12px;
-            font-weight: 600;
-            display: inline-block;
-            text-align: center;
-            width: 100%;
-            transition: all 0.4s ease;
-            text-decoration: none;
-            margin-bottom: 0.7rem;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
-        }
-
-        .preorder-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: all 0.4s ease;
-        }
-
-        .preorder-btn:hover {
-            background: linear-gradient(135deg, #2980b9, #2c3e50);
-            transform: translateY(-3px);
-            text-decoration: none;
-            color: white;
-            box-shadow: 0 7px 20px rgba(52, 152, 219, 0.4);
-        }
-
-        .preorder-btn:hover::before {
-            left: 100%;
-        }
-
-        .preorder-fee {
-            display: block;
-            color: #e67e22;
-            font-size: 0.85rem;
-            font-weight: 500;
-            margin-top: 0.5rem;
-        }
-
-        .availability-badge {
-            text-align: center;
-            padding: 0.7rem;
-            margin: 0.8rem 0;
-            border-radius: 10px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .availability-badge.unavailable {
-            background: rgba(231, 76, 60, 0.1);
-            color: #e74c3c;
-        }
-
-        .availability-badge i {
-            font-size: 1.1rem;
-        }
-
-        /* Shine effect for buttons */
-        @keyframes shine {
-            0% { background-position: -100% 0; }
-            100% { background-position: 200% 0; }
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        /* No cars found styling */
-        .no-cars-found {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 4rem 2rem;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-
-        .no-cars-found i {
-            font-size: 4rem;
-            color: #95a5a6;
-            margin-bottom: 1.5rem;
-        }
-
-        .no-cars-found h3 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #2c3e50;
-            margin-bottom: 1rem;
-        }
-
-        .no-cars-found p {
-            font-size: 1.1rem;
-            color: #7f8c8d;
-            max-width: 500px;
             margin: 0 auto;
+            padding: 0 15px;
         }
 
-        /* Responsive styles */
-        @media (max-width: 991.98px) {
-            #car-listings {
-                grid-template-columns: repeat(2, 1fr);
-            }
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
         }
 
-        @media (max-width: 767.98px) {
-            #car-listings {
-                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-                gap: 2rem;
-            }
-            
-            .car-title {
-                font-size: 1.3rem;
-            }
-            
-            .car-details {
-                padding: 1.5rem;
-            }
-            
-            .car-info {
-                gap: 1rem;
-            }
+        .title-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 0;
         }
 
-        @media (max-width: 575.98px) {
-            #car-listings {
-                grid-template-columns: 1fr;
-            }
-            
-            .car-image {
-                height: 200px;
-            }
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--secondary-color);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin: 0;
+            padding: 0;
+            font-weight: 500;
+            display: block;
+        }
+
+        .main-title {
+            font-size: clamp(2.rem, 5vw, 4.5rem);
+            font-weight: 800;
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin: 15px 0;
+            line-height: 1.2;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .title-separator {
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--secondary-color), transparent);
+            margin: 5px 0 20px;
+            display: block;
+        }
+
+        .header-description {
+            font-size: 1.2rem;
+            color: #7f8c8d;
+            max-width: 800px;
+            margin: 0;
+            text-align: center;
+            line-height: 1.6;
         }
     </style>
 </head>
@@ -1409,16 +1030,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="nav-menu">
               <ul class="nav-list">
                 <li class="nav-item">
-                  <a href="index.php" class="nav-link">Home</a>
+                  <a href="index.php" class="nav-link"><?php echo $lang['home']; ?></a>
                 </li>
                 <li class="nav-item">
-                  <a href="about.php" class="nav-link">About</a>
+                  <a href="about.php" class="nav-link"><?php echo $lang['about']; ?></a>
                 </li>
                 <li class="nav-item">
-                  <a href="book.php" class="nav-link active">Cars</a>
+                  <a href="book.php" class="nav-link active"><?php echo $lang['cars']; ?></a>
                 </li>
                 <li class="nav-item">
-                  <a href="#contact" class="nav-link">Contact</a>
+                  <a href="#contact" class="nav-link"><?php echo $lang['contact']; ?></a>
                 </li>
               </ul>
             </div>
@@ -1426,6 +1047,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
           <!-- Authentication buttons/profile dropdown -->
           <div class="nav-buttons desktop-auth">
+            <!-- Language Selector -->
+            <div class="language-selector">
+              <div class="current-lang">
+                <span>
+                  <?php if($lang_code == 'en'): ?>
+                    <i class="flag-icon fas fa-flag flag-icon-uk"></i> EN
+                  <?php elseif($lang_code == 'fr'): ?>
+                    <i class="flag-icon fas fa-flag flag-icon-france"></i> FR
+                  <?php elseif($lang_code == 'ar'): ?>
+                    <i class="flag-icon fas fa-flag flag-icon-morocco"></i> AR
+                  <?php endif; ?>
+                </span>
+                <i class="fas fa-chevron-down"></i>
+              </div>
+              <div class="language-dropdown">
+                <a href="data/change-language.php?lang=en&redirect=<?php echo urlencode($_SERVER['PHP_SELF'] . ($_SERVER['QUERY_STRING'] ? '?' . $_SERVER['QUERY_STRING'] : '')); ?>" class="language-option">
+                  <i class="flag-icon fas fa-flag flag-icon-uk"></i> English
+                </a>
+                <a href="data/change-language.php?lang=fr&redirect=<?php echo urlencode($_SERVER['PHP_SELF'] . ($_SERVER['QUERY_STRING'] ? '?' . $_SERVER['QUERY_STRING'] : '')); ?>" class="language-option">
+                  <i class="flag-icon fas fa-flag flag-icon-france"></i> Français
+                </a>
+                <a href="data/change-language.php?lang=ar&redirect=<?php echo urlencode($_SERVER['PHP_SELF'] . ($_SERVER['QUERY_STRING'] ? '?' . $_SERVER['QUERY_STRING'] : '')); ?>" class="language-option">
+                  <i class="flag-icon fas fa-flag flag-icon-morocco"></i> العربية
+                </a>
+              </div>
+            </div>
+
             <!-- Dark Mode Toggle -->
             <div class="theme-switch-wrapper">
               <span class="theme-switch-label"><i class="fas fa-sun"></i></span>
@@ -1464,8 +1112,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php else: ?>
               <!-- The only instance of login/signup buttons -->
               <div class="auth-buttons">
-                <a href="data/index.php" class="nav-btn login-btn">Login</a>
-                <a href="data/index.php" class="nav-btn signup-btn">Sign Up</a>
+                <a href="data/authentication.php?action=login" class="nav-btn login-btn"><?php echo $lang['login']; ?></a>
+                <a href="data/authentication.php?action=register" class="nav-btn signup-btn"><?php echo $lang['signup']; ?></a>
               </div>
             <?php endif; ?>
           </div>
@@ -1481,50 +1129,112 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <!-- Mobile Nav Menu -->
     <div class="mobile-nav">
+      <div style="background-color: #e74c3c; color: white; text-align: center; padding: 10px; margin-bottom: 15px; border-radius: 6px;">
+        <strong>UPDATED MOBILE MENU</strong>
+      </div>
       <ul class="mobile-nav-list">
         <li class="mobile-nav-item">
-          <a href="index.php" class="mobile-nav-link">Home</a>
+          <a href="index.php" class="mobile-nav-link"><?php echo $lang['home']; ?></a>
         </li>
         <li class="mobile-nav-item">
-          <a href="about.php" class="mobile-nav-link">About</a>
+          <a href="about.php" class="mobile-nav-link"><?php echo $lang['about']; ?></a>
         </li>
         <li class="mobile-nav-item">
-          <a href="book.php" class="mobile-nav-link active">Cars</a>
+          <a href="book.php" class="mobile-nav-link active"><?php echo $lang['cars']; ?></a>
         </li>
         <li class="mobile-nav-item">
-          <a href="#contact" class="mobile-nav-link">Contact</a>
+          <a href="#contact" class="mobile-nav-link"><?php echo $lang['contact']; ?></a>
         </li>
       </ul>
       
-      <?php if (!isset($_SESSION['firstName'])): ?>
+      <?php if (isset($_SESSION['firstName'])): ?>
+      <!-- Mobile profile section (only when user is logged in) -->
+      <div class="mobile-profile">
+        <div class="mobile-profile-header">
+          <div class="mobile-profile-avatar">
+            <img src="./images/profile-pic.png" alt="Profile">
+          </div>
+          <div class="mobile-profile-info">
+            <span class="mobile-profile-name"><?= htmlspecialchars($_SESSION['firstName']); ?></span>
+            <?php if ($isAdmin): ?>
+            <span class="mobile-profile-role">Admin</span>
+            <?php endif; ?>
+          </div>
+        </div>
+        <div class="mobile-profile-menu">
+          <a href="./data/my_account.php" class="mobile-profile-menu-item">
+            <i class="fas fa-user"></i><?php echo $lang['my_account']; ?>
+          </a>
+          <?php if ($isAdmin): ?>
+          <a href="./admin/admin.php" class="mobile-profile-menu-item">
+            <i class="fas fa-cog"></i><?php echo $lang['admin_dashboard']; ?>
+          </a>
+          <?php endif; ?>
+          <a href="./data/logout.php" class="mobile-profile-menu-item">
+            <i class="fas fa-sign-out-alt"></i><?php echo $lang['logout']; ?>
+          </a>
+        </div>
+      </div>
+      <?php else: ?>
       <!-- Mobile auth buttons (only shown in mobile menu) -->
       <div class="mobile-auth">
-        <a href="data/index.php" class="nav-btn login-btn">Login</a>
-        <a href="data/index.php" class="nav-btn signup-btn">Sign Up</a>
+        <a href="data/authentication.php?action=login" class="nav-btn login-btn"><?php echo $lang['login']; ?></a>
+        <a href="data/authentication.php?action=register" class="nav-btn signup-btn"><?php echo $lang['signup']; ?></a>
       </div>
       <?php endif; ?>
+      
+      <!-- Mobile language selector -->
+      <div class="mobile-language-selector">
+        <div class="language-options">
+          <a href="data/change-language.php?lang=en&redirect=<?php echo urlencode($_SERVER['PHP_SELF'] . ($_SERVER['QUERY_STRING'] ? '?' . $_SERVER['QUERY_STRING'] : '')); ?>" class="language-option">
+            <i class="flag-icon fas fa-flag flag-icon-uk"></i> English
+          </a>
+          <a href="data/change-language.php?lang=fr&redirect=<?php echo urlencode($_SERVER['PHP_SELF'] . ($_SERVER['QUERY_STRING'] ? '?' . $_SERVER['QUERY_STRING'] : '')); ?>" class="language-option">
+            <i class="flag-icon fas fa-flag flag-icon-france"></i> Français
+          </a>
+          <a href="data/change-language.php?lang=ar&redirect=<?php echo urlencode($_SERVER['PHP_SELF'] . ($_SERVER['QUERY_STRING'] ? '?' . $_SERVER['QUERY_STRING'] : '')); ?>" class="language-option">
+            <i class="flag-icon fas fa-flag flag-icon-morocco"></i> العربية
+          </a>
+        </div>
+      </div>
     </div>
 
     <!-- Main Content -->
     <div class="main-content">
-        <div class="container">
-            <div class="page-header">
-                <h1>Available Cars</h1>
-                <p>Choose from our selection of premium vehicles</p>
+        <div class="container-fluid px-0">
+            <div class="container">
+                <div class="page-header">
+                    <div class="header-wrapper">
+                        <div class="header-content">
+                            <div class="title-group">
+                                <span class="subtitle"><?php echo $lang['welcome_to_our']; ?></span>
+                                <h1 class="main-title"><?php echo $lang['premium_car_collection']; ?></h1>
+                                <div class="title-separator"></div>
+                            </div>
+                            <p class="header-description"><?php echo $lang['discover_our_fleet']; ?></p>
+                            <div class="header-badges">
+                                <span class="badge"><i class="fas fa-star"></i> <?php echo $lang['premium_selection']; ?></span>
+                                <span class="badge"><i class="fas fa-shield-alt"></i> <?php echo $lang['quality_assured']; ?></span>
+                                <span class="badge"><i class="fas fa-clock"></i> <?php echo $lang['support']; ?></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-
+        </div>
+        <div class="container">
             <!-- Filters Section -->
             <div class="filters-section">
                 <div class="row g-3">
                     <div class="col-md-4">
                         <div class="search-box">
                             <i class="fas fa-search"></i>
-                            <input type="text" id="searchInput" class="form-control" placeholder="Search by name, brand or model...">
+                            <input type="text" id="searchInput" class="form-control" placeholder="<?php echo $lang['search_placeholder'] ?? 'Search by name, brand or model...'; ?>">
                         </div>
                     </div>
                     <div class="col-md-4">
                         <select class="form-control" id="brandFilter">
-                            <option value="">All Brands</option>
+                            <option value=""><?php echo $lang['all_brands'] ?? 'All Brands'; ?></option>
                             <?php foreach($brands as $brand): ?>
                                 <option value="<?php echo htmlspecialchars($brand); ?>"><?php echo htmlspecialchars($brand); ?></option>
                             <?php endforeach; ?>
@@ -1532,9 +1242,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                     <div class="col-md-4">
                         <select class="form-control" id="sortBy">
-                            <option value="name">Sort by Name</option>
-                            <option value="price-low">Price: Low to High</option>
-                            <option value="price-high">Price: High to Low</option>
+                            <option value="name"><?php echo $lang['sort_by_name'] ?? 'Sort by Name'; ?></option>
+                            <option value="price-low"><?php echo $lang['price_low_to_high'] ?? 'Price: Low to High'; ?></option>
+                            <option value="price-high"><?php echo $lang['price_high_to_low'] ?? 'Price: High to Low'; ?></option>
                         </select>
                     </div>
                 </div>
@@ -1545,8 +1255,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php if (empty($cars)): ?>
                 <div class="no-cars-found">
                     <i class="fas fa-car-slash"></i>
-                    <h3>No Cars Available</h3>
-                    <p>Sorry, there are no cars matching your criteria at the moment.</p>
+                    <h3><?php echo $lang['no_cars_available']; ?></h3>
+                    <p><?php echo $lang['no_cars_message']; ?></p>
                 </div>
                 <?php else: ?>
                 <?php foreach ($cars as $car): ?>
@@ -1561,7 +1271,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <?php endif; ?>
                         <?php if ($car['active_rentals'] >= $car['quantity']): ?>
                             <div class="car-status rented">
-                                <i class="fas fa-clock"></i> Rented
+                                <i class="fas fa-clock"></i> <?php echo $lang['rented']; ?>
                             </div>
                             <?php 
                             // Get the earliest available date for this car
@@ -1574,16 +1284,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $nextAvailableDate->modify('+1 day'); // Available from next day
                             ?>
                             <div class="preorder-section">
-                                <p class="next-available">Next available from: <?php echo $nextAvailableDate->format('M d, Y'); ?></p>
+                                <p class="next-available"><?php echo $lang['next_available_from']; ?>: <?php echo $nextAvailableDate->format('M d, Y'); ?></p>
                                 <a href="checkout.php?car_id=<?php echo $car['id']; ?>&preorder=1&available_from=<?php echo $nextAvailableDate->format('Y-m-d'); ?>" 
                                    class="preorder-btn">
-                                    <i class="fas fa-clock"></i> Preorder
+                                    <i class="fas fa-clock"></i> <?php echo $lang['preorder']; ?>
                                 </a>
-                                <small class="preorder-fee">*Preorder fee: $15</small>
+                                <small class="preorder-fee"><?php echo $lang['preorder_fee']; ?></small>
                             </div>
                         <?php else: ?>
                             <div class="car-status available">
-                                <i class="fas fa-check"></i> Available
+                                <i class="fas fa-check"></i> <?php echo $lang['available']; ?>
                             </div>
                         <?php endif; ?>
                     </div>
@@ -1599,34 +1309,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="car-info">
                             <div class="info-item">
                                 <i class="fas fa-calendar-alt"></i>
-                                <?php echo htmlspecialchars($car['model']); ?>
+                                <span><?php echo $lang['model']; ?>: <?php echo htmlspecialchars($car['model']); ?></span>
                             </div>
                             <div class="info-item">
                                 <i class="fas fa-cog"></i>
-                                <?php echo htmlspecialchars($car['transmission']); ?>
+                                <span><?php echo $lang['transmission']; ?>: <?php echo $lang['transmission_' . strtolower(str_replace('Automatic', 'auto', $car['transmission']))]; ?></span>
                             </div>
                             <div class="info-item">
                                 <i class="fas fa-chair"></i>
-                                <?php echo htmlspecialchars($car['interior']); ?>
+                                <span><?php echo $lang['interior']; ?>: <?php echo $lang['interior_' . strtolower($car['interior'])]; ?></span>
                             </div>
+                            <?php if (!empty($car['fuel_type'])): ?>
                             <div class="info-item">
                                 <i class="fas fa-gas-pump"></i>
-                                Petrol
+                                <span><?php echo $lang['fuel_type']; ?>: <?php echo $lang['fuel_' . strtolower($car['fuel_type'])]; ?></span>
                             </div>
+                            <?php endif; ?>
+                            <?php if (!empty($car['seating_capacity'])): ?>
+                            <div class="info-item">
+                                <i class="fas fa-users"></i>
+                                <span><?php echo $lang['seating_capacity']; ?>: <?php echo htmlspecialchars($car['seating_capacity']); ?></span>
+                            </div>
+                            <?php endif; ?>
+                            <?php if (!empty($car['engine_type'])): ?>
+                            <div class="info-item">
+                                <i class="fas fa-cogs"></i>
+                                <span><?php echo $lang['engine_type']; ?>: <?php echo htmlspecialchars($car['engine_type']); ?></span>
+                            </div>
+                            <?php endif; ?>
                         </div>
                         <div class="car-price">
                             <?php if (isset($car['discount_display'])): ?>
-                                <div class="price-content" data-original-price="<?php echo number_format($car['price'], 2); ?>">
+                                <div class="price-content" data-original-price="<?php echo number_format($car['price'] * $currency_rate, 2); ?>">
                                     <div class="discounted-price">
-                                        $<?php echo number_format($car['discounted_price'], 2); ?>
+                                        <?php echo $currency_symbol . number_format($car['discounted_price'] * $currency_rate, 2); ?>
                                         <small>/day</small>
                                         <span class="discount-badge"><?php echo str_replace(' OFF', '', $car['discount_display']); ?></span>
                                     </div>
-                                    <div class="original-price">was $<?php echo number_format($car['price'], 2); ?></div>
+                                    <div class="original-price">was <?php echo $currency_symbol . number_format($car['price'] * $currency_rate, 2); ?></div>
                                     <?php if (isset($car['discount_end'])): ?>
                                     <div class="discount-countdown" data-end="<?php echo $car['discount_end']; ?>">
                                         <small class="text-muted">
-                                            <i class="fas fa-clock"></i> Offer ends in: <span class="countdown-text">Loading...</span>
+                                            <i class="fas fa-clock"></i> <?php echo $lang['offer_ends_in']; ?>: <span class="countdown-text">Loading...</span>
                                         </small>
                                     </div>
                                     <?php endif; ?>
@@ -1634,16 +1358,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <?php else: ?>
                                 <div class="price-content">
                                     <div class="regular-price">
-                                        $<?php echo number_format($car['price'], 2); ?><small>/day</small>
+                                        <?php echo $currency_symbol . number_format($car['price'] * $currency_rate, 2); ?><small>/day</small>
                                     </div>
                                 </div>
                             <?php endif; ?>
                         </div>
                         <?php if (!$car['active_rentals'] >= $car['quantity']): ?>
                             <?php if (isset($_SESSION['firstName'])): ?>
-                                <a href="checkout.php?car_id=<?php echo $car['id']; ?><?php echo isset($car['discounted_price']) ? '&price=' . $car['discounted_price'] : ''; ?>" class="book-now-btn">Book Now</a>
+                                <a href="checkout.php?car_id=<?php echo $car['id']; ?><?php echo isset($car['discounted_price']) ? '&price=' . ($car['discounted_price'] * $currency_rate) : ''; ?>" class="book-now-btn"><?php echo $lang['book_now']; ?></a>
                             <?php else: ?>
-                                <a href="data/index.php" class="book-now-btn">Login to Book</a>
+                                <a href="data/authentication.php?action=login" class="book-now-btn"><?php echo $lang['login_to_book']; ?></a>
                             <?php endif; ?>
                         <?php else: ?>
                             <?php 
@@ -1657,15 +1381,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $nextAvailableDate->modify('+1 day'); // Available from next day
                             ?>
                             <div class="preorder-section">
-                                <p class="next-available">Next available from: <?php echo $nextAvailableDate->format('M d, Y'); ?></p>
+                                <p class="next-available"><?php echo $lang['next_available_from']; ?>: <?php echo $nextAvailableDate->format('M d, Y'); ?></p>
                                 <a href="checkout.php?car_id=<?php echo $car['id']; ?>&preorder=1&available_from=<?php echo $nextAvailableDate->format('Y-m-d'); ?>" 
                                    class="preorder-btn">
-                                    <i class="fas fa-clock"></i> Preorder
+                                    <i class="fas fa-clock"></i> <?php echo $lang['preorder']; ?>
                                 </a>
-                                <small class="preorder-fee">*Preorder fee: $15</small>
+                                <small class="preorder-fee"><?php echo $lang['preorder_fee']; ?></small>
                             </div>
                             <div class="availability-badge unavailable">
-                                <i class="fas fa-times-circle"></i> Currently Unavailable
+                                <i class="fas fa-times-circle"></i> <?php echo $lang['currently_unavailable']; ?>
                             </div>
                         <?php endif; ?>
                     </div>
@@ -1685,7 +1409,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               <a style="font-weight: 900;" href="#" class="footer-brand">
                 <span class="brand-highlight">CARS</span>RENT
               </a>
-              <p class="mt-3">Providing quality car rentals with exceptional service. Best cars at competitive prices.</p>
+              <p class="mt-3"><?php echo $lang['footer_description']; ?></p>
               <div class="social-icons">
                 <a href="#"><i class="fab fa-facebook-f"></i></a>
                 <a href="#"><i class="fab fa-twitter"></i></a>
@@ -1695,27 +1419,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             
             <div class="col-lg-2 col-md-6 mb-4 mb-md-0">
-              <h5>Quick Links</h5>
+              <h5><?php echo $lang['quick_links']; ?></h5>
               <ul class="footer-links">
-                <li><a href="index.php">Home</a></li>
-                <li><a href="./book.php">Book Now</a></li>
-                <li><a href="about.php">About Us</a></li>
-                <li><a href="#contact">Contact Us</a></li>
+                <li><a href="index.php"><?php echo $lang['home']; ?></a></li>
+                <li><a href="./book.php"><?php echo $lang['book_now']; ?></a></li>
+                <li><a href="about.php"><?php echo $lang['about_us']; ?></a></li>
+                <li><a href="#contact"><?php echo $lang['contact_us']; ?></a></li>
               </ul>
             </div>
             
             <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
-              <h5>Contact Info</h5>
+              <h5><?php echo $lang['contact_info']; ?></h5>
               <ul class="contact-info">
-                <li><i class="fas fa-map-marker-alt"></i> Morocco CasaBlanca, City</li>
-                <li><i class="fas fa-phone"></i> +212 630352250</li>
-                <li><i class="fas fa-envelope"></i> ossamahattan@gmail.com</li>
+                <li><i class="fas fa-map-marker-alt"></i> <?php echo $lang['address']; ?></li>
+                <li><i class="fas fa-phone"></i> <?php echo $lang['phone']; ?></li>
+                <li><i class="fas fa-envelope"></i> <?php echo $lang['email']; ?></li>
               </ul>
             </ul>
             </div>
             
             <div class="col-lg-3 col-md-6">
-              <h5>TEAM</h5>
+              <h5><?php echo $lang['team']; ?></h5>
               <div class="team-info">
                 <a href="https://github.com/ossama21/Cars_Rental_WebSite-Project" class="github-link">
                   <i class="fab fa-github"></i> Cars_Rental_WebSite-Project
@@ -1730,10 +1454,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="container">
           <div class="row align-items-center">
             <div class="col-md-6">
-              <p class="mb-0">&copy;<span id="currentYear"></span> <span>CARS</span>RENT - All Rights Reserved.</p>
+              <p class="mb-0">&copy;<span id="currentYear"></span> <span>CARS</span>RENT - <?php echo $lang['all_rights_reserved']; ?></p>
             </div>
             <div class="col-md-6 text-md-end">
-              <p class="mb-0">Made by: HATTAN OUSSAMA</p>
+              <p class="mb-0"><?php echo $lang['made_by']; ?>: HATTAN OUSSAMA</p>
             </div>
           </div>
         </div>
@@ -1798,6 +1522,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 profileMenu.classList.toggle('active');
               });
               
+
               // Close dropdown when clicking outside
               document.addEventListener('click', function(e) {
                 if (!profileToggle.contains(e.target) && !profileMenu.contains(e.target)) {
@@ -1808,13 +1533,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             // Mobile menu toggle
             const menuToggle = document.querySelector('.menu-toggle');
-            const navMenu = document.querySelector('.nav-menu');
+            const mobileNav = document.querySelector('.mobile-nav');
+            const body = document.body;
             
-            if (menuToggle) {
-              menuToggle.addEventListener('click', function() {
+            if (menuToggle && mobileNav) {
+              menuToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
                 menuToggle.classList.toggle('active');
-                navMenu.classList.toggle('active');
-                document.body.classList.toggle('menu-open');
+                mobileNav.classList.toggle('active');
+                body.classList.toggle('menu-open');
+              });
+              
+              // Close menu when clicking outside
+              document.addEventListener('click', function(e) {
+                if (!menuToggle.contains(e.target) && !mobileNav.contains(e.target)) {
+                  menuToggle.classList.remove('active');
+                  mobileNav.classList.remove('active');
+                  body.classList.remove('menu-open');
+                }
               });
             }
 
@@ -1955,6 +1691,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Update countdown every minute
             updateCountdown();
             setInterval(updateCountdown, 60000);
+
+            // Language selector dropdown functionality
+            const languageSelector = document.querySelector('.language-selector');
+            const currentLang = document.querySelector('.current-lang');
+            
+            if (currentLang) {
+                currentLang.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    languageSelector.classList.toggle('active');
+                });
+                
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!languageSelector.contains(e.target)) {
+                        languageSelector.classList.remove('active');
+                    }
+                });
+            }
+            
+            // ...existing code...
         });
     </script>
 </body>

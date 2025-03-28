@@ -272,7 +272,7 @@ display: none;
     margin-bottom: 2rem;
     border-radius: var(--border-radius);
     overflow: hidden;
-    background: white;
+    /* background: white; */
 }
 
 .main-image-container {
@@ -295,7 +295,7 @@ display: none;
     grid-template-columns: repeat(4, 1fr);
     gap: 8px;
     padding: 12px;
-    background: rgba(240, 245, 250, 0.5);
+    /* background: rgba(240, 245, 250, 0.5); */
 }
 
 .thumbnail-item {

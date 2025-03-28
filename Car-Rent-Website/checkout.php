@@ -1,9 +1,36 @@
 <?php
 session_start();
 if (!isset($_SESSION['firstName'])) {
-    header('Location: data/index.php');
+    header('Location: data/authentication.php?action=login');
     exit;
 }
+
+// Language selection handling
+$availableLangs = ['en', 'fr', 'ar'];
+$lang_code = isset($_SESSION['lang']) && in_array($_SESSION['lang'], $availableLangs) ? $_SESSION['lang'] : 'en';
+
+// Set html direction for Arabic
+$dir = $lang_code === 'ar' ? 'rtl' : 'ltr';
+
+// Include the selected language file
+include_once "languages/{$lang_code}.php";
+
+// Currency conversion rates
+$currency_symbols = [
+    'en' => '$',
+    'fr' => '€',
+    'ar' => 'MAD'
+];
+
+$currency_rates = [
+    'en' => 1,       // USD (base currency)
+    'fr' => 0.9,     // EUR (1 USD = 0.9 EUR)
+    'ar' => 10       // MAD (1 USD = 10 MAD)
+];
+
+// Get currency symbol and rate for the current language
+$currency_symbol = $currency_symbols[$lang_code];
+$currency_rate = $currency_rates[$lang_code];
 
 $host = "localhost";
 $user = "root";
@@ -345,11 +372,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $conn->commit();
             
             if ($isAjax) {
-                echo json_encode(['success' => true, 'message' => 'Booking successful', 'redirect' => 'confirmation.php']);
+                echo json_encode(['success' => true, 'message' => 'Booking successful', 'redirect' => 'confirmation2.php']);
                 exit;
             } else {
                 // For traditional form submission, redirect to confirmation page
-                header("Location: confirmation.php");
+                header("Location: confirmation2.php");
                 exit;
             }
             
@@ -395,7 +422,7 @@ if (isset($_SESSION['id'])) {
 $conn->close();
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="<?php echo $dir; ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -406,6 +433,8 @@ $conn->close();
     <link rel="icon" type="image/png" href="./images/image.png">
     <link rel="stylesheet" href="./css/modern.css">
     <link rel="stylesheet" href="./css/checkout.css">
+    <link rel="stylesheet" href="./css/language-selector.css">
+    <link rel="stylesheet" href="./css/dark-mode.css">
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -578,9 +607,9 @@ $conn->close();
             display: grid;
             grid-template-columns: 1.5fr 1fr;
             gap: 2.5rem;
-            max-width: 1300px;
+            /* max-width: 1300px; */
             margin: 6rem auto 2rem; /* Increased top margin to account for navbar */
-            padding: 0 2rem; /* Increased horizontal padding */
+            /* padding: 0 2rem; */
             width: 100%; /* Ensure full width */
         }
 
@@ -1438,20 +1467,57 @@ $conn->close();
                     <div class="nav-menu">
                         <ul class="nav-list">
                             <li class="nav-item">
-                                <a href="index.php" class="nav-link">Home</a>
+                                <a href="index.php" class="nav-link"><?php echo $lang['home']; ?></a>
                             </li>
                             <li class="nav-item">
-                                <a href="about.php" class="nav-link">About</a>
+                                <a href="about.php" class="nav-link"><?php echo $lang['about']; ?></a>
                             </li>
                             <li class="nav-item">
-                                <a href="book.php" class="nav-link">Cars</a>
+                                <a href="book.php" class="nav-link"><?php echo $lang['cars']; ?></a>
                             </li>
                             <li class="nav-item">
-                                <a href="#contact" class="nav-link">Contact</a>
+                                <a href="#contact" class="nav-link"><?php echo $lang['contact']; ?></a>
                             </li>
                         </ul>
                     </div>
                 </div>
+            <!-- Language Selector -->
+            <div class="language-selector">
+              <div class="current-lang">
+                <span>
+                  <?php if($lang_code == 'en'): ?>
+                    <i class="flag-icon fas fa-flag flag-icon-uk"></i> EN
+                  <?php elseif($lang_code == 'fr'): ?>
+                    <i class="flag-icon fas fa-flag flag-icon-france"></i> FR
+                  <?php elseif($lang_code == 'ar'): ?>
+                    <i class="flag-icon fas fa-flag flag-icon-morocco"></i> AR
+                  <?php endif; ?>
+                </span>
+                <i class="fas fa-chevron-down"></i>
+              </div>
+              <div class="language-dropdown">
+                <a href="data/change-language.php?lang=en&redirect=<?php echo urlencode($_SERVER['PHP_SELF']); ?>" class="language-option">
+                    <i class="flag-icon fas fa-flag flag-icon-uk"></i> English
+                </a>
+                <a href="data/change-language.php?lang=fr&redirect=<?php echo urlencode($_SERVER['PHP_SELF']); ?>" class="language-option">
+                    <i class="flag-icon fas fa-flag flag-icon-france"></i> Français
+                </a>
+                <a href="data/change-language.php?lang=ar&redirect=<?php echo urlencode($_SERVER['PHP_SELF']); ?>" class="language-option">
+                    <i class="flag-icon fas fa-flag flag-icon-morocco"></i> العربية
+                </a>
+              </div>
+            </div>
+
+            <!-- Dark Mode Toggle -->
+            <div class="theme-switch-wrapper">
+                <label class="theme-switch" for="theme-toggle">
+                    <input type="checkbox" id="theme-toggle">
+                    <span class="slider round">
+                        <i class="fas fa-sun"></i>
+                        <!-- <i class="fas fa-moon"></i> -->
+                    </span>
+                </label>
+            </div>
 
                 <div class="nav-buttons">
                     <?php if (isset($_SESSION['firstName'])): ?>
@@ -1478,8 +1544,10 @@ $conn->close();
                             </div>
                         </div>
                     <?php else: ?>
-                        <a href="data/index.php" class="nav-btn login-btn">Login</a>
-                        <a href="data/index.php" class="nav-btn signup-btn">Sign Up</a>
+                        <div class="auth-buttons">
+                            <a href="data/authentication.php?action=login" class="nav-btn login-btn">Login</a>
+                            <a href="data/authentication.php?action=register" class="nav-btn signup-btn">Sign Up</a>
+                        </div>
                     <?php endif; ?>
                 </div>
 
@@ -1502,8 +1570,8 @@ $conn->close();
         <div class="checkout-grid">
             <!-- Main Checkout Form -->
             <div class="checkout-section">
-                <h1>Complete Your Booking</h1>
-                <p>Please review and confirm your rental details</p>
+                <h1><?php echo $lang['complete_booking'] ?? 'Complete Your Booking'; ?></h1>
+                <p><?php echo $lang['review_booking'] ?? 'Please review and confirm your rental details'; ?></p>
 
                 <form id="bookingForm" method="POST" action="checkout.php">
                     <input type="hidden" name="car_id" id="car_id" value="<?php echo $car ? $car['id'] : ''; ?>">
@@ -1516,24 +1584,24 @@ $conn->close();
                     <div class="progress-step">
                         <div class="step-number active" data-step="1">1</div>
                         <div class="step-content">
-                            <h2>Personal Information</h2>
+                            <h2><?php echo $lang['personal_info'] ?? 'Personal Information'; ?></h2>
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label for="firstName">First Name</label>
+                                    <label for="firstName"><?php echo $lang['first_name'] ?? 'First Name'; ?></label>
                                     <input type="text" id="firstName" name="firstName" class="form-control" value="<?php echo htmlspecialchars($userData['firstName']); ?>" required>
                                 </div>
                                 <div class="form-group">
-                                    <label for="lastName">Last Name</label>
+                                    <label for="lastName"><?php echo $lang['last_name'] ?? 'Last Name'; ?></label>
                                     <input type="text" id="lastName" name="lastName" class="form-control" value="<?php echo htmlspecialchars($userData['lastName']); ?>" required>
                                 </div>
                             </div>
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label for="email">Email Address</label>
+                                    <label for="email"><?php echo $lang['email'] ?? 'Email Address'; ?></label>
                                     <input type="email" id="email" name="email" class="form-control" value="<?php echo htmlspecialchars($userData['email']); ?>" required>
                                 </div>
                                 <div class="form-group">
-                                    <label for="phone">Phone Number</label>
+                                    <label for="phone"><?php echo $lang['phone'] ?? 'Phone Number'; ?></label>
                                     <input type="tel" id="phone" name="phone" class="form-control" value="<?php echo htmlspecialchars($userData['phone']); ?>" required>
                                 </div>
                             </div>
@@ -1544,14 +1612,14 @@ $conn->close();
                     <div class="progress-step">
                         <div class="step-number" data-step="2">2</div>
                         <div class="step-content">
-                            <h2>Rental Period</h2>
+                            <h2><?php echo $lang['rental_period'] ?? 'Rental Period'; ?></h2>
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label for="startDate">Pick-up Date & Time</label>
+                                    <label for="startDate"><?php echo $lang['pickup_date'] ?? 'Pick-up Date & Time'; ?></label>
                                     <input type="datetime-local" id="startDate" name="startDate" class="form-control" required>
                                 </div>
                                 <div class="form-group">
-                                    <label for="endDate">Return Date & Time</label>
+                                    <label for="endDate"><?php echo $lang['return_date'] ?? 'Return Date & Time'; ?></label>
                                     <input type="datetime-local" id="endDate" name="endDate" class="form-control" required>
                                 </div>
                             </div>
@@ -1566,8 +1634,8 @@ $conn->close();
                     <div class="progress-step">
                         <div class="step-number" data-step="3">3</div>
                         <div class="step-content">
-                            <h2>Payment Method</h2>
-                            <p>Choose your preferred payment method</p>
+                            <h2><?php echo $lang['payment_method'] ?? 'Payment Method'; ?></h2>
+                            <p><?php echo $lang['choose_payment'] ?? 'Choose your preferred payment method'; ?></p>
 
                             <input type="hidden" id="selected-payment-method" name="payment_method">
                             <input type="hidden" id="payment-data" name="payment_data" value="{}">
@@ -1591,57 +1659,57 @@ $conn->close();
                             <div id="payment-forms">
                                 <!-- Credit Card Form -->
                                 <div id="credit-card-form" class="payment-form">
-                                    <div class="form-row">
-                                        <div class="form-group">
-                                            <label for="card-number">Card Number</label>
-                                            <input type="text" id="card-number" class="form-control" placeholder="1234 5678 9012 3456" required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="card-name">Cardholder Name</label>
-                                            <input type="text" id="card-name" class="form-control" required>
-                                        </div>
-                                    </div>
-                                    <div class="form-row">
-                                        <div class="form-group">
-                                            <label for="card-expiry">Expiry Date</label>
-                                            <input type="month" id="card-expiry" class="form-control" required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="card-cvv">CVV</label>
-                                            <input type="text" id="card-cvv" class="form-control" placeholder="123" maxlength="3" required>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- PayPal Form -->
-                                <div id="paypal-form" class="payment-form">
-                                    <div class="alert alert-info">
-                                        <i class="fas fa-info-circle"></i>
-                                        You will be redirected to PayPal to complete your payment securely.
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="card-number">Card Number</label>
+                                        <input type="text" id="card-number" name="card_number" class="form-control" placeholder="1234 5678 9012 3456" data-required>
                                     </div>
                                     <div class="form-group">
-                                        <label for="paypal-email">PayPal Email</label>
-                                        <input type="email" id="paypal-email" class="form-control" placeholder="your@email.com" required>
+                                        <label for="card-name">Cardholder Name</label>
+                                        <input type="text" id="card-name" name="card_name" class="form-control" data-required>
                                     </div>
                                 </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="card-expiry">Expiry Date</label>
+                                        <input type="month" id="card-expiry" name="card_expiry" class="form-control" data-required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="card-cvv">CVV</label>
+                                        <input type="text" id="card-cvv" name="card_cvv" class="form-control" placeholder="123" maxlength="3" data-required>
+                                    </div>
+                                </div>
+                            </div>
 
-                                <!-- Bank Transfer Form -->
-                                <div id="bank-form" class="payment-form">
-                                    <div class="alert alert-info">
-                                        <i class="fas fa-info-circle"></i>
-                                        Please provide your bank account details for direct transfer.
+                            <!-- PayPal Form -->
+                            <div id="paypal-form" class="payment-form">
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle"></i>
+                                    You will be redirected to PayPal to complete your payment securely.
+                                </div>
+                                <div class="form-group">
+                                    <label for="paypal-email">PayPal Email</label>
+                                    <input type="email" id="paypal-email" name="paypal_email" class="form-control" placeholder="your@email.com" data-required>
+                                </div>
+                            </div>
+
+                            <!-- Bank Transfer Form -->
+                            <div id="bank-form" class="payment-form">
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle"></i>
+                                    Please provide your bank account details for direct transfer.
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="bank-account">Account Number</label>
+                                        <input type="text" id="bank-account" name="bank_account" class="form-control" placeholder="Account Number" data-required>
                                     </div>
-                                    <div class="form-row">
-                                        <div class="form-group">
-                                            <label for="bank-account">Account Number</label>
-                                            <input type="text" id="bank-account" class="form-control" placeholder="Account Number" required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="bank-routing">Routing Number</label>
-                                            <input type="text" id="bank-routing" class="form-control" placeholder="Routing Number" required>
-                                        </div>
+                                    <div class="form-group">
+                                        <label for="bank-routing">Routing Number</label>
+                                        <input type="text" id="bank-routing" name="bank_routing" class="form-control" placeholder="Routing Number" data-required>
                                     </div>
                                 </div>
+                            </div>
                             </div>
 
                             <div class="secure-badge">
@@ -1683,62 +1751,50 @@ $conn->close();
                     <div class="car-price-tag">
                         <?php if (isset($car['discount_type'])): ?>
                             <div class="price-with-discount">
-                                <span class="discounted-price">$<?php echo number_format($car['discounted_price'], 2); ?></span>
+                                <span class="discounted-price"><?php echo $currency_symbol . number_format($car['discounted_price'] * $currency_rate, 2); ?></span>
                                 <div class="original-price">
-                                    <span class="text-muted"><s>$<?php echo number_format($car['price'], 2); ?></s></span>
+                                    <span class="text-muted"><s><?php echo $currency_symbol . number_format($car['price'] * $currency_rate, 2); ?></s></span>
                                     <span class="discount-badge" 
                                           data-type="<?php echo htmlspecialchars($car['discount_type']); ?>"
                                           data-value="<?php echo htmlspecialchars($car['discount_value']); ?>">
                                         <?php echo $car['discount_type'] === 'percentage' ? 
                                             number_format($car['discount_value'], 0) . '% OFF' : 
-                                            '$' . number_format($car['discount_value'], 2) . ' OFF'; ?>
+                                            $currency_symbol . number_format($car['discount_value'] * $currency_rate, 2) . ' OFF'; ?>
                                     </span>
                                 </div>
                             </div>
                         <?php else: ?>
-                            <span id="car-price">$<?php echo $car ? number_format($car['price'], 2) : '0.00'; ?></span> per day
+                            <span id="car-price"><?php echo $currency_symbol . ($car ? number_format($car['price'] * $currency_rate, 2) : '0.00'); ?></span> per day
                         <?php endif; ?>
                     </div>
                     
                     <div class="car-specs">
                         <div class="spec-item">
                             <i class="fas fa-car"></i>
-                            <span><strong>Brand:</strong> <span id="car-brand"><?php echo $car ? htmlspecialchars($car['brand']) : 'Brand'; ?></span></span>
+                            <span><strong><?php echo $lang['brand']; ?>:</strong> <span id="car-brand"><?php echo $car ? htmlspecialchars($car['brand']) : 'Brand'; ?></span></span>
                         </div>
                         <div class="spec-item">
                             <i class="fas fa-cog"></i>
-                            <span><strong>Transmission:</strong> <span id="car-transmission"><?php echo $car ? htmlspecialchars($car['transmission']) : 'Transmission'; ?></span></span>
+                            <span><strong><?php echo $lang['transmission']; ?>:</strong> <span id="car-transmission"><?php echo $car ? $lang['transmission_' . strtolower(str_replace('Automatic', 'auto', $car['transmission']))] : 'Transmission'; ?></span></span>
                         </div>
                         <div class="spec-item">
                             <i class="fas fa-calendar"></i>
-                            <span><strong>Model Year:</strong> <span id="car-model"><?php echo $car ? htmlspecialchars($car['model']) : 'Model'; ?></span></span>
+                            <span><strong><?php echo $lang['model']; ?>:</strong> <span id="car-model"><?php echo $car ? htmlspecialchars($car['model']) : 'Model'; ?></span></span>
                         </div>
                         <div class="spec-item">
                             <i class="fas fa-chair"></i>
-                            <span><strong>Interior:</strong> <span id="car-interior"><?php echo $car ? htmlspecialchars($car['interior']) : 'Interior'; ?></span></span>
+                            <span><strong><?php echo $lang['interior']; ?>:</strong> <span id="car-interior"><?php echo $car ? $lang['interior_' . strtolower($car['interior'])] : 'Interior'; ?></span></span>
                         </div>
                         <?php if (!empty($car['fuel_type'])): ?>
                         <div class="spec-item">
                             <i class="fas fa-gas-pump"></i>
-                            <span><strong>Fuel Type:</strong> <span id="car-fuel"><?php echo htmlspecialchars($car['fuel_type']); ?></span></span>
-                        </div>
-                        <?php endif; ?>
-                        <?php if (!empty($car['engine_type'])): ?>
-                        <div class="spec-item">
-                            <i class="fas fa-tachometer-alt"></i>
-                            <span><strong>Engine:</strong> <span id="car-engine"><?php echo htmlspecialchars($car['engine_type']); ?></span></span>
+                            <span><strong><?php echo $lang['fuel_type']; ?>:</strong> <span><?php echo $lang['fuel_' . strtolower($car['fuel_type'])]; ?></span></span>
                         </div>
                         <?php endif; ?>
                         <?php if (!empty($car['seating_capacity'])): ?>
                         <div class="spec-item">
                             <i class="fas fa-users"></i>
-                            <span><strong>Seats:</strong> <span id="car-seats"><?php echo htmlspecialchars($car['seating_capacity']); ?></span></span>
-                        </div>
-                        <?php endif; ?>
-                        <?php if (!empty($car['color'])): ?>
-                        <div class="spec-item">
-                            <i class="fas fa-palette"></i>
-                            <span><strong>Color:</strong> <span id="car-color"><?php echo htmlspecialchars($car['color']); ?></span></span>
+                            <span><strong><?php echo $lang['seating_capacity']; ?>:</strong> <span><?php echo htmlspecialchars($car['seating_capacity']); ?></span></span>
                         </div>
                         <?php endif; ?>
                     </div>
@@ -1768,7 +1824,7 @@ $conn->close();
                                 endif;
                             endforeach; 
                             ?>
-                        </div>
+                        <div class="features-list">
                     </div>
                     <?php endif; ?>
                 </div>
@@ -1785,7 +1841,7 @@ $conn->close();
                 <div class="rental-summary">
                     <div class="summary-row">
                         <span>Daily Rate</span>
-                        <span id="car-price">$<?php echo $car ? number_format($car['price'], 2) : '0.00'; ?></span>
+                        <span id="car-price"><?php echo $currency_symbol . ($car ? number_format($car['price'] * $currency_rate, 2) : '0.00'); ?></span>
                     </div>
                     <?php if (isset($car['discount_type'])): ?>
                     <div class="summary-row discount-row">
@@ -1831,29 +1887,29 @@ $conn->close();
 
                     <div class="summary-row">
                         <span>Insurance Fee</span>
-                        <span>$25.00</span>
+                        <span><?php echo $currency_symbol . '25.00'; ?></span>
                     </div>
 
                     <?php if ($is_preorder): ?>
                     <div class="summary-row preorder-fee">
                         <span>Pre-order Fee</span>
-                        <span>$15.00</span>
+                        <span><?php echo $currency_symbol . '15.00'; ?></span>
                     </div>
                     <?php endif; ?>
 
                     <div class="summary-row">
                         <span>Original Price</span>
-                        <span id="original-price">$0.00</span>
+                        <span id="original-price"><?php echo $currency_symbol . '0.00'; ?></span>
                     </div>
 
                     <div class="summary-row total-savings">
                         <span>Total Savings</span>
-                        <span id="total-savings">-$0.00</span>
+                        <span id="total-savings">-<?php echo $currency_symbol . '0.00'; ?></span>
                     </div>
 
                     <div class="summary-row total-row">
                         <span>Total Amount</span>
-                        <span id="total-price">$0.00</span>
+                        <span id="total-price"><?php echo $currency_symbol . '0.00'; ?></span>
                     </div>
                 </div>
 
@@ -1878,41 +1934,32 @@ $conn->close();
             // Add active class to selected method
             document.querySelector(`.payment-method[data-method="${method}"]`).classList.add('active');
             
-            // Hide all payment forms
+            // Hide all payment forms and disable required fields
             document.querySelectorAll('.payment-form').forEach(function(form) {
                 form.style.display = 'none';
+                // Remove required attribute from all fields in this form
+                form.querySelectorAll('[data-required]').forEach(input => {
+                    input.removeAttribute('required');
+                });
             });
             
-            // Show the selected form
-            document.getElementById(`${method}-form`).style.display = 'block';
+            // Show the selected form and enable its required fields
+            const selectedForm = document.getElementById(`${method}-form`);
+            selectedForm.style.display = 'block';
+            // Add required attribute to fields in the selected form
+            selectedForm.querySelectorAll('[data-required]').forEach(input => {
+                input.setAttribute('required', 'required');
+            });
             
             // Update hidden input
             document.getElementById('selected-payment-method').value = method;
         }
         
-        // Image Gallery Functionality
+        // Call selectPaymentMethod with default payment method (if needed)
         document.addEventListener('DOMContentLoaded', function() {
-            // Image gallery thumbnail switching
-            const thumbnails = document.querySelectorAll('.thumbnail-item');
-            const mainImage = document.getElementById('main-car-image');
-            
-            thumbnails.forEach(function(thumbnail) {
-                thumbnail.addEventListener('click', function() {
-                    // Remove active class from all thumbnails
-                    thumbnails.forEach(t => t.classList.remove('active'));
-                    
-                    // Add active class to clicked thumbnail
-                    this.classList.add('active');
-                    
-                    // Update main image source with smooth transition
-                    mainImage.style.opacity = '0';
-                    setTimeout(() => {
-                        const imagePath = this.getAttribute('data-image');
-                        mainImage.src = imagePath;
-                        mainImage.style.opacity = '1';
-                    }, 200);
-                });
-            });
+            // Set credit-card as default payment method
+            selectPaymentMethod('credit-card');
+            // ...rest of your DOMContentLoaded code...
         });
     </script>
     <script src="./js/checkout.js"></script>
@@ -1960,6 +2007,25 @@ $conn->close();
                 });
             }
 
+            // Language selector dropdown functionality
+            const languageSelector = document.querySelector('.language-selector');
+            const currentLang = document.querySelector('.current-lang');
+            
+            if (currentLang) {
+                currentLang.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    languageSelector.classList.toggle('active');
+                });
+                
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!languageSelector.contains(e.target)) {
+                        languageSelector.classList.remove('active');
+                    }
+                });
+            }
+
             // Update payment data before form submission
             document.getElementById('bookingForm').addEventListener('submit', function() {
                 const method = document.getElementById('selected-payment-method').value;
@@ -1992,77 +2058,72 @@ $conn->close();
 
             // Function to calculate and update price
             function updatePriceCalculation() {
-                const startDate = document.getElementById('startDate').value;
-                const endDate = document.getElementById('endDate').value;
-                const carPrice = <?php echo $car ? $car['price'] : '0'; ?>;
-                const discountType = <?php echo isset($car['discount_type']) ? "'" . $car['discount_type'] . "'" : 'null'; ?>;
-                const discountValue = <?php echo isset($car['discount_value']) ? $car['discount_value'] : 0; ?>;
+                const startDate = new Date(document.getElementById('startDate').value);
+                const endDate = new Date(document.getElementById('endDate').value);
                 
-                if (startDate && endDate) {
-                    const start = new Date(startDate);
-                    const end = new Date(endDate);
-                    const duration = Math.max(1, Math.ceil((end - start) / (1000 * 60 * 60 * 24)));
+                if (startDate && endDate && !isNaN(startDate.getTime()) && !isNaN(endDate.getTime())) {
+                    // Calculate duration in days (always round up to next day)
+                    const duration = Math.max(1, Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)));
+                    
+                    // Update duration display
+                    document.getElementById('rental-duration').textContent = `${duration} day${duration > 1 ? 's' : ''}`;
+                    
+                    const carPrice = <?php echo $car ? $car['price'] : '0'; ?>;
+                    const discountedPrice = <?php echo isset($car['discounted_price']) ? $car['discounted_price'] : 'carPrice'; ?>;
                     const insuranceFee = 25;
                     const preorderFee = <?php echo $is_preorder ? '15' : '0'; ?>;
                     
-                    // Calculate daily discount first
-                    let dailyDiscountAmount = 0;
-                    if (discountType) {
-                        if (discountType === 'percentage') {
-                            dailyDiscountAmount = carPrice * (discountValue / 100);
-                        } else if (discountType === 'fixed') {
-                            dailyDiscountAmount = discountValue;
-                        }
-                    }
-                    
-                    // Calculate totals
+                    // Calculate base amounts
                     const originalTotal = duration * carPrice;
-                    const totalDiscount = dailyDiscountAmount * duration;
-                    const discountedTotal = originalTotal - totalDiscount;
-                    const totalPrice = discountedTotal + insuranceFee + preorderFee;
+                    const discountedTotal = duration * discountedPrice;
+                    let totalPrice = discountedTotal + insuranceFee + preorderFee;
                     
-                    // Update display
-                    document.getElementById('rental-duration').textContent = `${duration} days`;
-                    
-                    // Update discount display if applicable
-                    if (discountType && document.getElementById('discount-amount')) {
-                        document.getElementById('discount-amount').textContent = 
-                            `-$${dailyDiscountAmount.toFixed(2)}/day `;
+                    // Apply any coupon discount
+                    if (couponType === 'percentage') {
+                        const couponAmount = totalPrice * (couponValue / 100);
+                        totalPrice -= couponAmount;
+                        document.getElementById('coupon-discount').textContent = `-<?php echo $currency_symbol; ?>${couponAmount.toFixed(2)}`;
+                        document.getElementById('coupon-row').style.display = 'flex';
+                    } else if (couponType === 'fixed') {
+                        totalPrice -= couponValue;
+                        document.getElementById('coupon-discount').textContent = `-<?php echo $currency_symbol; ?>${couponValue.toFixed(2)}`;
+                        document.getElementById('coupon-row').style.display = 'flex';
                     }
                     
-                    // Update original price and total savings
-                    if (document.getElementById('original-price')) {
-                        document.getElementById('original-price').textContent = `$${originalTotal.toFixed(2)}`;
+                    // Update all price displays
+                    document.getElementById('original-price').textContent = `<?php echo $currency_symbol; ?>${originalTotal.toFixed(2)}`;
+                    document.getElementById('total-price').textContent = `<?php echo $currency_symbol; ?>${totalPrice.toFixed(2)}`;
+                    
+                    // Calculate and display total savings
+                    const totalSavings = originalTotal + insuranceFee + preorderFee - totalPrice;
+                    if (totalSavings > 0) {
+                        document.getElementById('total-savings').textContent = `-<?php echo $currency_symbol; ?>${totalSavings.toFixed(2)}`;
                     }
                     
-                    if (document.getElementById('total-savings')) {
-                        document.getElementById('total-savings').textContent = `-$${totalDiscount.toFixed(2)}`;
+                    // Show car discount if applicable
+                    if (carPrice !== discountedPrice && document.getElementById('discount-amount')) {
+                        const dailyDiscount = carPrice - discountedPrice;
+                        document.getElementById('discount-amount').textContent = `-<?php echo $currency_symbol; ?>${dailyDiscount.toFixed(2)}/day`;
                     }
-                    
-                    document.getElementById('total-price').textContent = `$${totalPrice.toFixed(2)}`;
                 }
             }
 
-            // Add event listeners to date inputs for live updates
-            document.getElementById('startDate').addEventListener('change', updatePriceCalculation);
-            document.getElementById('endDate').addEventListener('change', updatePriceCalculation);
-            
-            // Set minimum date for startDate to today
-            const today = new Date();
-            today.setHours(today.getHours() + 2); // Minimum 2 hours from now
-            const todayStr = today.toISOString().slice(0, 16);
-            document.getElementById('startDate').setAttribute('min', todayStr);
-
-            // Update endDate minimum when startDate changes
+            // Add event listeners for date changes
             document.getElementById('startDate').addEventListener('change', function() {
                 const startDate = new Date(this.value);
-                startDate.setDate(startDate.getDate() + 1); // Minimum 1 day rental
+                startDate.setDate(startDate.getDate() + 1); // Ensure minimum 1 day rental
                 const minEndDate = startDate.toISOString().slice(0, 16);
-                document.getElementById('endDate').setAttribute('min', minEndDate);
+                document.getElementById('endDate').min = minEndDate;
+                if (document.getElementById('endDate').value) {
+                    const endDate = new Date(document.getElementById('endDate').value);
+                    if (endDate <= startDate) {
+                        document.getElementById('endDate').value = minEndDate;
+                    }
+                }
+                updatePriceCalculation();
             });
-
-            // Initial call to update price if dates are pre-filled
-            updatePriceCalculation();
+            
+            document.getElementById('endDate').addEventListener('change', updatePriceCalculation);
         });
 
         // Global variables for price calculations
@@ -2091,7 +2152,7 @@ $conn->close();
             
             let total = durationDays * discountedPrice + insuranceFee + preorderFee;
             
-            // Apply coupon discount
+            // Apply coupon discount if exists
             if (couponType === 'percentage') {
                 let couponAmount = total * (couponValue / 100);
                 total -= couponAmount;
@@ -2101,19 +2162,21 @@ $conn->close();
                 couponDiscount = couponValue;
             }
             
-            // Update UI
+            // Update displays
             document.getElementById('original-price').textContent = formatCurrency(baseTotal + insuranceFee + preorderFee);
             document.getElementById('total-price').textContent = formatCurrency(total);
             
-            // Calculate and display total savings
-            const totalSavings = (baseTotal + insuranceFee + preorderFee) - total;
-            document.getElementById('total-savings').textContent = '-' + formatCurrency(totalSavings);
+            // Calculate and show total savings
+            const totalSavings = originalTotal + insuranceFee + preorderFee - total;
+            document.getElementById('total-savings').textContent = 
+                `-<?php echo $currency_symbol; ?>${Math.max(0, totalSavings).toFixed(2)}`;
             
-            // Show coupon discount in summary if applicable
+            // Update coupon discount display if applicable
             const couponRow = document.getElementById('coupon-row');
             if (couponDiscount > 0) {
                 couponRow.style.display = 'flex';
-                document.getElementById('coupon-discount').textContent = '-' + formatCurrency(couponDiscount);
+                document.getElementById('coupon-discount').textContent = 
+                    `-<?php echo $currency_symbol; ?>${couponDiscount.toFixed(2)}`;
             } else {
                 couponRow.style.display = 'none';
             }
@@ -2225,7 +2288,7 @@ $conn->close();
                 padding: 0.75rem 1rem;
                 margin: 0;
                 border: none;
-                border-radius: 0.75rem;
+                border-radius: var(--border-radius);
             }
 
             .alert-success {
@@ -2243,6 +2306,33 @@ $conn->close();
             }
         `;
         document.head.appendChild(style);
+    </script>
+    <script>
+        // Dark mode functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeToggle = document.getElementById('theme-toggle');
+            const body = document.documentElement;
+
+            // Check for saved theme preference, otherwise use system preference
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            // Set initial theme
+            if (savedTheme) {
+                body.setAttribute('data-theme', savedTheme);
+                themeToggle.checked = savedTheme === 'dark';
+            } else if (prefersDark) {
+                body.setAttribute('data-theme', 'dark');
+                themeToggle.checked = true;
+            }
+
+            // Handle theme toggle
+            themeToggle.addEventListener('change', function() {
+                const theme = this.checked ? 'dark' : 'light';
+                body.setAttribute('data-theme', theme);
+                localStorage.setItem('theme', theme);
+            });
+        });
     </script>
 </body>
 </html>

@@ -3,23 +3,27 @@
 
 /* General Styles */
 :root {
-  --primary-color: #3182ce;
-  --primary-dark: #2c5282;
-  --primary-light: #63b3ed;
-  --secondary-color: #f6ad55;
-  --text-color: #2d3748;
-  --text-light: #718096;
-  --light-bg: #f7fafc;
+  --primary-color: #2563eb;      /* Rich blue */
+  --primary-dark: #1e40af;       /* Darker blue */
+  --primary-light: #60a5fa;      /* Light blue */
+  --secondary-color: #f97316;    /* Vibrant orange */
+  --secondary-light: #fb923c;    /* Light orange */
+  --text-color: #1e293b;         /* Dark slate */
+  --text-light: #64748b;         /* Slate gray */
+  --light-bg: #f8fafc;          /* Very light blue-gray */
   --white: #ffffff;
   --transition: all 0.3s ease;
   --box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
-  --gray-100: #f7fafc;
-  --gray-200: #edf2f7;
-  --gray-300: #e2e8f0;
-  --gray-400: #cbd5e0;
-  --gray-500: #a0aec0;
-  --error-color: #e53e3e;
-  --success-color: #48bb78;
+  --gray-50: #f8fafc;
+  --gray-100: #f1f5f9;
+  --gray-200: #e2e8f0;
+  --gray-300: #cbd5e1;
+  --gray-400: #94a3b8;
+  --gray-500: #64748b;
+  --error-color: #ef4444;        /* Red */
+  --success-color: #22c55e;      /* Green */
+  --warning-color: #f59e0b;      /* Amber */
+  --info-color: #0ea5e9;         /* Sky blue */
 }
 
 body {
@@ -27,7 +31,7 @@ body {
     color: var(--text-color);
     position: relative;
     overflow-y: auto !important;
-    background: transparent !important;
+    background: #161d29 !important;
 }
 
 body.loading-active {
@@ -89,7 +93,7 @@ h1, h2, h3, h4, h5, h6 {
   top: 0;
   z-index: 1030;
   transition: all 0.4s ease;
-  background: transparent;
+  background: #1e293b; /* Dark slate background */
 }
 
 .navbar-container {
@@ -137,7 +141,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .navbar.scrolled {
-  background: var(--white);
+  background: #1c2c43;
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
   padding: 0.8rem 2rem;
 }
@@ -243,8 +247,8 @@ h1, h2, h3, h4, h5, h6 {
 
 .login-btn {
   background: transparent;
-  color: var(--white);
-  border: 1px solid var(--white);
+  color: var(--text-color);
+  border: 1px solid var(--secondary-light);
 }
 
 .navbar.scrolled .login-btn {
@@ -659,7 +663,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .car-image img {
   width: 100%;
-  height: 100%;
+  height: 120%;
   object-fit: contain;
   transition: all 0.5s ease;
   /* padding: 0.2rem; */
@@ -1497,7 +1501,7 @@ footer h5::after {
 }
 
 .contact-info i {
-  margin-right: 1rem;
+  /* margin-right: 1rem; */
   color: var(--secondary-color);
   font-size: 1.2rem;
   background: rgba(255, 255, 255, 0.05);
@@ -1674,7 +1678,7 @@ footer h5::after {
   align-items: center;
   background: none;
   border: none;
-  color: var(--white);
+  color: #000000;
   cursor: pointer;
   padding: 0.5rem;
   border-radius: 50px;
@@ -2764,4 +2768,20 @@ footer h5::after {
   .desktop-auth {
     display: none;
   }
+}
+
+.accordion-collapse {
+    transition: all 0.3s ease;
+}
+
+.accordion-button {
+    transition: all 0.3s ease;
+}
+
+.accordion-button:not(.collapsed)::after {
+    transform: rotate(-180deg);
+}
+
+.accordion-button::after {
+    transition: transform 0.3s ease;
 }

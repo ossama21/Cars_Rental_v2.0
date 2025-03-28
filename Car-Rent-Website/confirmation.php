@@ -7,7 +7,7 @@ $db = "car_rent";
 
 // Redirect if not logged in
 if (!isset($_SESSION['firstName'])) {
-    header("Location: data/index.php");
+    header("Location: data/authentication.php?action=login");
     exit();
 }
 
@@ -553,8 +553,8 @@ if (isset($_SESSION['booking'])) {
                             </div>
                         </div>
                     <?php else: ?>
-                        <a href="data/index.php" class="nav-btn login-btn">Login</a>
-                        <a href="data/index.php" class="nav-btn signup-btn">Sign Up</a>
+                        <a href="data/authentication.php?action=login" class="nav-btn login-btn">Login</a>
+                        <a href="data/authentication.php?action=register" class="nav-btn signup-btn">Sign Up</a>
                     <?php endif; ?>
                 </div>
 

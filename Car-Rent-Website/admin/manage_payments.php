@@ -416,12 +416,12 @@ $paymentsResult = $conn->query($sqlPayments);
             </div>
             
             <nav class="admin-sidebar-menu">
-                <div class="sidebar-menu-item">
+                <!-- <div class="sidebar-menu-item">
                     <a href="../index.php" class="sidebar-menu-link">
                         <i class="fas fa-home"></i>
                         <span>Back to Home</span>
                     </a>
-                </div>
+                </div> -->
 
                 <div class="sidebar-menu-item">
                     <a href="admin.php" class="sidebar-menu-link">

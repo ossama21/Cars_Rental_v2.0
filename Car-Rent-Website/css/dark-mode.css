@@ -1,42 +1,42 @@
 /* Dark Mode CSS */
 :root {
   /* Light theme variables (default) */
-  --primary-color: #3182ce;
-  --text-color: #333;
+  --primary-color: #2563eb;
+  --text-color: #1e293b;
   --bg-color: #ffffff;
-  --secondary-bg: #f0f0f0;
+  --secondary-bg: #f1f5f9;
   --card-bg: #ffffff;
   --border-color: rgba(0, 0, 0, 0.125);
   --nav-bg: #ffffff;
-  --nav-text: #333;
-  --footer-bg: #3182ce;
+  --nav-text: #1e293b;
+  --footer-bg: #2563eb;
   --footer-text: #fff;
   --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  --highlight-color: #f30c0c;
-  --feature-bg: #f9f9f9;
+  --highlight-color: #f97316;
+  --feature-bg: #f8fafc;
   --testimonial-bg: #ffffff;
-  --input-bg: #f1f1f1;
-  --input-text: #333;
+  --input-bg: #f1f5f9;
+  --input-text: #1e293b;
 }
 
 /* Dark theme variables */
 [data-theme="dark"] {
-  --primary-color: #4299e1;
-  --text-color: #e0e0e0;
-  --bg-color: #121212;
-  --secondary-bg: #121212;
-  --card-bg: #1e1e1e;
-  --border-color: rgba(255, 255, 255, 0.125);
-  --nav-bg: #121212;
-  --nav-text: #e0e0e0;
-  --footer-bg: #121212;
-  --footer-text: #e0e0e0;
-  --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-  --highlight-color: #ff5252;
-  --feature-bg: #1e1e1e;
-  --testimonial-bg: #1e1e1e;
-  --input-bg: #1e1e1e;
-  --input-text: #e0e0e0;
+  --primary-color: #60a5fa;          /* Lighter blue for dark mode */
+  --text-color: #f1f5f9;            /* Very light gray for text */
+  --bg-color: #0f172a;              /* Dark blue-gray background */
+  --secondary-bg: #1e293b;          /* Lighter blue-gray for sections */
+  --card-bg: #1e293b;               /* Same as secondary for cards */
+  --border-color: rgba(255, 255, 255, 0.15);
+  --nav-bg: rgba(15, 23, 42, 0.9);  /* Transparent dark blue-gray */
+  --nav-text: #f1f5f9;
+  --footer-bg: #0f172a;
+  --footer-text: #f1f5f9;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --highlight-color: #fb923c;        /* Lighter orange for dark mode */
+  --feature-bg: #1e293b;
+  --testimonial-bg: #1e293b;
+  --input-bg: #334155;              /* Darker blue-gray for inputs */
+  --input-text: #f1f5f9;
 }
 
 /* Apply theme colors to elements */
@@ -48,7 +48,7 @@ body {
 
 /* Override any transparent backgrounds */
 html[data-theme="dark"] body {
-  background-color: var(--bg-color) !important;
+  background-color: #1e293b !important;
 }
 
 html[data-theme="dark"] section {
@@ -64,7 +64,7 @@ html[data-theme="dark"] section {
 .navbar .nav-link,
 .navbar-brand,
 .menu-toggle span {
-  color: var(--nav-text) !important;
+  color: #878e95 !important;
   transition: color 0.3s ease;
 }
 
@@ -139,6 +139,7 @@ input, select, textarea {
   background-color: #ccc;
   transition: .4s;
   border-radius: 24px;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
 }
 
 .slider:before {
@@ -151,14 +152,16 @@ input, select, textarea {
   background-color: white;
   transition: .4s;
   border-radius: 50%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 input:checked + .slider {
   background-color: var(--primary-color);
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
 }
 
 input:focus + .slider {
-  box-shadow: 0 0 1px var(--primary-color);
+  box-shadow: 0 0 1px var(--primary-color), inset 0 0 5px rgba(0, 0, 0, 0.2);
 }
 
 input:checked + .slider:before {
@@ -274,7 +277,7 @@ input:checked + .slider .moon-icon {
 
 [data-theme="dark"] .member-info {
   background-color: var(--card-bg);
-  color: var(--text-color);
+  color: var (--text-color);
 }
 
 [data-theme="dark"] .member-info h4,
@@ -414,9 +417,297 @@ input:checked + .slider .moon-icon {
   filter: invert(0.9) hue-rotate(180deg);
 }
 
-/* Dark mode styles for the book.php page */
+/* Checkout page dark mode styles */
+[data-theme="dark"] .checkout-section {
+  background-color: var(--card-bg);
+  color: #8ec6ff;
+  border-color: var(--border-color);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .checkout-grid {
+  background-color: #1e293b;
+}
+
+[data-theme="dark"] .order-summary {
+  background-color: var(--card-bg);
+  color: var(--text-color);
+}
+
+[data-theme="dark"] .step-content h2,
+[data-theme="dark"] .order-summary h2,
+[data-theme="dark"] .order-summary h3 {
+  color: #a0c5e9;
+}
+
+[data-theme="dark"] .step-number {
+  background-color: var(--secondary-bg);
+  color: #9ecfff;
+}
+
+[data-theme="dark"] .progress-step:not(:last-child)::after {
+  background: var(--border-color);
+}
+
+[data-theme="dark"] .rental-summary {
+  background-color: var(--secondary-bg);
+}
+
+[data-theme="dark"] .feature-item,
+[data-theme="dark"] .summary-row {
+  color: #dbedff;
+}
+
+[data-theme="dark"] .payment-method {
+  background-color: var(--card-bg);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .payment-method span {
+  color: #9ecfff;
+}
+
+[data-theme="dark"] .payment-form {
+  background-color: var(--secondary-bg);
+}
+
+[data-theme="dark"] .secure-badge {
+  background: rgba(46, 204, 113, 0.1);
+}
+
+[data-theme="dark"] .car-specs .spec-item strong,
+[data-theme="dark"] .car-specs .spec-item span {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .feature-badge {
+  background-color: var(--secondary-bg);
+  color: #9ecfff;
+}
+
+[data-theme="dark"] .coupon-section {
+  background-color: var(--secondary-bg);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .coupon-section label {
+  color: #add6ff;
+}
+
+/* Additional checkout page dark mode fixes */
+[data-theme="dark"] .car-details-expanded h3,
+[data-theme="dark"] .car-details-expanded h4 {
+  color: #9ecfff;
+}
+
+[data-theme="dark"] .car-gallery .thumbnail-item {
+  border-color: var(--border-color);
+  background-color: var(--secondary-bg);
+}
+
+[data-theme="dark"] .car-gallery .thumbnail-item.active {
+  border-color: var(--primary-color);
+}
+
+[data-theme="dark"] .alert-info {
+  background-color: rgba(52, 152, 219, 0.1);
+  color: #a0cfff;
+  border-color: rgba(52, 152, 219, 0.2);
+}
+
+[data-theme="dark"] .btn-outline-secondary {
+  border-color: var(--text-color);
+  color: var(--text-color);
+}
+
+[data-theme="dark"] .btn-outline-secondary:hover {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+[data-theme="dark"] .total-row {
+  border-top-color: var(--border-color);
+  color: #9dc0e3;
+}
+
+[data-theme="dark"] .car-features h4 {
+  color: #86b4e1;
+}
+
+[data-theme="dark"] .form-control {
+  background-color: var(--input-bg) !important;
+  border-color: var(--border-color) !important;
+}
+
+/* Fix specific checkout page elements */
+[data-theme="dark"] .main-image-container {
+  background-color: var(--secondary-bg);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .spec-item {
+  color: var(--text-color);
+}
+
+[data-theme="dark"] .spec-item i {
+  color: #4b6783;
+}
+
+[data-theme="dark"] .discount-badge {
+  background-color: #e74c3c;
+}
+
+[data-theme="dark"] .alert-warning {
+  background-color: rgba(241, 196, 15, 0.1);
+  color: var(--text-color);
+  border-color: rgba(241, 196, 15, 0.2);
+}
+
+[data-theme="dark"] .thumbnail-item {
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .thumbnail-item.active {
+  border-color: var(--primary-color);
+}
+
+[data-theme="dark"] .profile-menu {
+  background-color: var(--card-bg);
+  box-shadow: var(--shadow);
+}
+
+[data-theme="dark"] .profile-menu-item {
+  color: var(--text-color);
+}
+
+[data-theme="dark"] .profile-menu-item:hover {
+  background-color: var(--secondary-bg);
+  color: var(--primary-color);
+}
+
+[data-theme="dark"] select.form-control option {
+  background-color: var(--card-bg);
+  color: var(--text-color);
+}
+
+/* Language selector enhancements */
+[data-theme="dark"] .language-selector .current-lang {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
+  font-weight: 500;
+}
+
+[data-theme="dark"] .language-selector .current-lang:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+[data-theme="dark"] .language-dropdown {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .language-option {
+  color: #e9f3fd;
+}
+
+[data-theme="dark"] .language-option:hover {
+  background-color: var(--secondary-bg);
+  color: var(--primary-color);
+}
+
+/* Enhanced visibility for language selector in general */
+.language-selector .current-lang {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.language-selector .current-lang span {
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.language-selector .current-lang i.fa-chevron-down {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 10px;
+}
+
+.language-selector.active .current-lang {
+  border-color: var(--primary-color);
+}
+
+.language-option {
+  border-left: 3px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.language-option:hover {
+  border-left-color: var(--primary-color);
+  padding-left: 17px;
+}
+
+.language-selector .flag-icon {
+  font-size: 16px;
+}
+
+/* Apply theme colors to book page elements */
 [data-theme="dark"] .main-content {
-  background: linear-gradient(135deg, var(--bg-color) 0%, var(--secondary-bg) 100%);
+  background: var(--bg-color);
+}
+
+[data-theme="dark"] .car-card {
+  background: var(--card-bg);
+  box-shadow: var(--shadow);
+}
+
+[data-theme="dark"] .car-details {
+  background: var(--card-bg);
+}
+
+[data-theme="dark"] .car-title {
+  color: var(--text-color);
+}
+
+[data-theme="dark"] .car-description {
+  color: var(--text-light);
+}
+
+[data-theme="dark"] .info-item {
+  color: var(--text-color);
+}
+
+[data-theme="dark"] .car-info {
+  background: var(--secondary-bg);
+}
+
+[data-theme="dark"] .car-price {
+  background: rgba(52, 152, 219, 0);
+}
+
+[data-theme="dark"] .filters-section {
+  background: var(--card-bg);
+}
+
+[data-theme="dark"] .form-control {
+  background-color: var(--input-bg);
+  color: var(--input-text);
+  border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .form-control:focus {
+  background-color: var(--input-bg);
+  color: var(--input-text);
+}
+
+[data-theme="dark"] .form-control option {
+  background-color: var(--input-bg);
+  color: var(--input-text);
 }
 
 [data-theme="dark"] .page-header h1 {
@@ -427,57 +718,13 @@ input:checked + .slider .moon-icon {
   color: var(--text-light);
 }
 
-[data-theme="dark"] .filters-section {
-  background-color: var(--card-bg);
-  box-shadow: var(--shadow);
+[data-theme="dark"] .preorder-section {
+  background: rgba(52, 152, 219, 0.15);
+  border-color: rgba(52, 152, 219, 0.3);
 }
 
-[data-theme="dark"] .search-box i {
-  color: var(--text-light);
-}
-
-[data-theme="dark"] #car-listings .car-card {
-  background-color: var(--card-bg);
-  box-shadow: var(--shadow);
-}
-
-[data-theme="dark"] .car-card {
-  background-color: var(--card-bg) !important;
-}
-
-[data-theme="dark"] .car-details {
-  background-color: var(--card-bg) !important;
-  color: var(--text-color);
-}
-
-[data-theme="dark"] .car-image-placeholder {
-  background-color: var(--secondary-bg);
-  color: var(--text-color);
-}
-
-[data-theme="dark"] .car-title {
-  color: var(--text-color);
-}
-
-[data-theme="dark"] .car-title::after {
-  background: var(--primary-color);
-}
-
-[data-theme="dark"] .car-description {
-  color: var(--text-light);
-}
-
-[data-theme="dark"] .car-info {
-  background-color: var(--secondary-bg) !important;
-}
-
-[data-theme="dark"] .info-item {
-  color: var(--text-color);
-}
-
-[data-theme="dark"] .car-price {
-  background-color: rgba(52, 152, 219, 0.05) !important;
-  border-left: 3px solid var(--primary-color);
+[data-theme="dark"] .next-available {
+  color: #60A5FA;
 }
 
 [data-theme="dark"] .regular-price {
@@ -488,96 +735,35 @@ input:checked + .slider .moon-icon {
   color: var(--text-light);
 }
 
-[data-theme="dark"] .discount-countdown {
-  background: rgba(44, 62, 80, 0.15);
-  color: var(--text-color);
-}
-
-[data-theme="dark"] .book-now-btn {
-  background: linear-gradient(135deg, var(--primary-color), #2980b9);
-  box-shadow: 0 4px 10px rgba(52, 152, 219, 0.2);
-}
-
-[data-theme="dark"] .book-now-btn:hover {
-  background: linear-gradient(135deg, #2980b9, var(--primary-color));
-  box-shadow: 0 7px 20px rgba(52, 152, 219, 0.3);
-}
-
-[data-theme="dark"] .preorder-section {
-  background: linear-gradient(135deg, rgba(52, 152, 219, 0.05), rgba(41, 128, 185, 0.1));
-  border: 1px dashed rgba(52, 152, 219, 0.2);
-}
-
-[data-theme="dark"] .next-available {
-  color: var(--primary-color);
-}
-
-[data-theme="dark"] .preorder-btn {
-  background: linear-gradient(135deg, var(--primary-color), #2980b9);
-  box-shadow: 0 5px 15px rgba(52, 152, 219, 0.2);
-}
-
-[data-theme="dark"] .preorder-btn:hover {
-  background: linear-gradient(135deg, #2980b9, var(--primary-color));
-  box-shadow: 0 7px 20px rgba(52, 152, 219, 0.3);
-}
-
-[data-theme="dark"] .no-cars-found {
-  background-color: var(--card-bg);
-  box-shadow: var(--shadow);
-}
-
-[data-theme="dark"] .no-cars-found i {
+[data-theme="dark"] .search-box i {
   color: var(--text-light);
 }
 
-[data-theme="dark"] .no-cars-found h3 {
-  color: var(--text-color);
+/* FAQ Section Dark Mode */
+[data-theme="dark"] .faq-section {
+    background-color: var(--dark-bg);
 }
 
-[data-theme="dark"] .no-cars-found p {
-  color: var(--text-light);
+[data-theme="dark"] .accordion-item {
+    background-color: var(--dark-card-bg);
+    border-color: var(--dark-border);
 }
 
-/* Dark mode for discount popover */
-[data-theme="dark"] .discount-popover {
-  background-color: var(--card-bg);
-  border: 1px solid var(--border-color);
-  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.3);
-  color: var(--text-color);
+[data-theme="dark"] .accordion-button {
+    background-color: var(--dark-card-bg);
+    color: #ffffff59;
 }
 
-[data-theme="dark"] .discount-popover::before {
-  border-color: transparent transparent var(--card-bg) transparent;
+[data-theme="dark"] .accordion-button:not(.collapsed) {
+    color: #0070f9;
+    background-color: rgba(49, 130, 206, 0.1);
 }
 
-[data-theme="dark"] .discount-popover h5 {
-  color: var(--text-color);
+[data-theme="dark"] .accordion-button::after {
+    filter: brightness(2);
 }
 
-[data-theme="dark"] .discount-popover p {
-  color: var(--text-color);
-}
-
-[data-theme="dark"] .discount-popover .text-success {
-  color: #2ecc71 !important;
-}
-
-[data-theme="dark"] .discount-popover .text-muted {
-  color: var(--text-light) !important;
-}
-
-/* Fix for map section */
-[data-theme="dark"] .map-section iframe {
-  filter: invert(0.9) hue-rotate(180deg);
-}
-
-[data-theme="dark"] .form-control {
-  background-color: var(--input-bg) !important;
-  border-color: var(--border-color) !important;
-}
-
-[data-theme="dark"] select.form-control option {
-  background-color: var(--card-bg);
-  color: var(--text-color);
+[data-theme="dark"] .accordion-body {
+    color: #ffffff;
+    background-color: var(--dark-card-bg);
 }

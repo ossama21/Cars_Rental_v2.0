@@ -1,152 +1,108 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 include 'connect.php';
 
 $error = '';
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = mysqli_real_escape_string($conn, $_POST['email']);
+    $email = trim($_POST['email']);
     $password = $_POST['password'];
-    
+
     $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
     
-    if ($result->num_rows == 1) {
-        $row = $result->fetch_assoc();
-        if (md5($password) === $row['password']) {  // Using md5 since that's what's in the database
-            $_SESSION['id'] = $row['id'];
-            $_SESSION['firstName'] = $row['firstName'];
-            $_SESSION['lastName'] = $row['lastName'];
-            $_SESSION['email'] = $row['email'];
-            $_SESSION['role'] = $row['role'];
+    if ($user = $result->fetch_assoc()) {
+        if (password_verify($password, $user['password'])) {
+            $_SESSION['id'] = $user['id'];
+            $_SESSION['firstName'] = $user['firstName'];
+            $_SESSION['lastName'] = $user['lastName'];
+            $_SESSION['email'] = $user['email'];
+            $_SESSION['age'] = $user['age'];
+            $_SESSION['phone'] = $user['phone'];
+            $_SESSION['address'] = $user['address'];
+            $_SESSION['role'] = $user['role'];
             
-            // Redirect all users to index page first, admin can navigate to admin panel from there
-            header("Location: ../index.php");
+            if ($user['role'] === 'admin') {
+                header('Location: ../admin/admin.php');
+            } else {
+                header('Location: ../index.php');
+            }
             exit();
-        } else {
-            $error = "Invalid email or password";
         }
-    } else {
-        $error = "Invalid email or password";
     }
+    $error = "Invalid email or password";
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - CARSrent</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-    <!-- Custom CSS -->
-    <style>
-        body {
-            background: #f8f9fa;
-            font-family: 'Poppins', sans-serif;
-        }
-        .login-container {
-            max-width: 400px;
-            margin: 100px auto;
-            padding: 30px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-        }
-        .login-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .brand-name {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #3182ce;
-        }
-        .form-control {
-            border-radius: 50px;
-            padding: 12px 20px;
-            margin-bottom: 20px;
-        }
-        .btn-login {
-            border-radius: 50px;
-            padding: 12px;
-            background: #3182ce;
-            border: none;
-            font-weight: 600;
-            width: 100%;
-        }
-        .btn-login:hover {
-            background: #2c5282;
-        }
-        .error-message {
-            color: #dc3545;
-            text-align: center;
-            margin-bottom: 20px;
-            padding: 10px;
-            background-color: rgba(220, 53, 69, 0.1);
-            border-radius: 5px;
-        }
-        .signup-link {
-            text-align: center;
-            margin-top: 20px;
-        }
-        .signup-link a {
-            color: #3182ce;
-            text-decoration: none;
-            font-weight: 600;
-        }
-        .signup-link a:hover {
-            text-decoration: underline;
-        }
-        .back-to-home {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            color: #3182ce;
-            text-decoration: none;
-            font-weight: 600;
-        }
-    </style>
+    <link rel="icon" type="image/png" href="../images/image.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <a href="../index.php" class="back-to-home">
-        <i class="fas fa-arrow-left"></i> Back to Home
-    </a>
-    
-    <div class="container">
-        <div class="login-container">
-            <div class="login-header">
-                <div class="brand-name">CARSRENT</div>
-                <p>Welcome back! Please login to your account.</p>
+    <div class="login-container">
+        <?php if ($error): ?>
+            <div class="error-message"><?php echo $error; ?></div>
+        <?php endif; ?>
+        
+        <div class="back-home">
+            <a href="../index.php"><i class="fas fa-arrow-left"></i> Back to Home</a>
+        </div>
+
+        <div class="form-container">
+            <!-- Left side - Car image and welcome content -->
+            <div class="form-image">
+                <img src="../images/img1.png" alt="Car Rental">
+                <div class="overlay-text">
+                    <h2>Welcome Back to <span>CARSrent</span></h2>
+                    <p>Sign in to continue your premium car rental experience.</p>
+                </div>
             </div>
             
-            <?php if($error): ?>
-                <div class="error-message">
-                    <?php echo $error; ?>
-                </div>
-            <?php endif; ?>
-            
-            <form method="POST" action="">
-                <div class="mb-3">
-                    <input type="email" class="form-control" name="email" placeholder="Email" required>
-                </div>
-                <div class="mb-3">
-                    <input type="password" class="form-control" name="password" placeholder="Password" required>
-                </div>
-                <button type="submit" class="btn btn-primary btn-login">Login</button>
-            </form>
-            
-            <div class="signup-link">
-                Don't have an account? <a href="index.php">Sign Up</a>
+            <!-- Right side - Login form -->
+            <div class="form-content">
+                <h2>Sign In</h2>
+                <p class="form-subtitle">Welcome back! Please sign in to your account</p>
+                
+                <form method="post" action="" id="login-form">
+                    <div class="input-group">
+                        <div class="input-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <input type="email" name="email" placeholder="Email" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <div class="input-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <input type="password" name="password" placeholder="Password" required>
+                    </div>
+                    
+                    <div class="form-options">
+                        <label class="remember-me">
+                            <input type="checkbox" name="remember">
+                            <span>Remember me</span>
+                        </label>
+                        <a href="#" class="forgot-password">Forgot Password?</a>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">Sign In</button>
+
+                    <div class="alternate-action">
+                        Don't have an account? <a href="register.php">Sign Up</a>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

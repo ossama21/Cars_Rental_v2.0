@@ -1,4 +1,5 @@
 <?php
+ob_start(); // Start output buffering
 session_start();
 require('../fpdf.php');
 
@@ -179,14 +180,14 @@ $pdf->SetFont('Arial', '', 10);
 
 // Daily rate
 $pdf->Cell(120, 8, 'Daily Rate:', 1);
-$pdf->Cell(70, 8, '$' . number_format($price, 2), 1, 1, 'R');
+$pdf->Cell(70, 8, '$' . number_format($car['price'], 2), 1, 1, 'R');
 
 // Rental duration
 $pdf->Cell(120, 8, 'Rental Duration:', 1);
 $pdf->Cell(70, 8, $duration . ' days', 1, 1, 'R');
 
 // Base amount
-$baseAmount = $duration * $price;
+$baseAmount = $duration * $car['price'];
 $pdf->Cell(120, 8, 'Base Amount:', 1);
 $pdf->Cell(70, 8, '$' . number_format($baseAmount, 2), 1, 1, 'R');
 
@@ -253,7 +254,8 @@ $pdf->Ln(10);
 $pdf->SetFont('Arial', '', 8);
 $pdf->Cell(190, 5, 'Invoice generated on: ' . date('Y-m-d H:i:s'), 0, 1, 'R');
 
-// Output PDF
+// Clean any output and generate PDF
+ob_end_clean(); // Clean output buffer before generating PDF
 $pdf->Output('CARSRENT_Invoice_' . $bookingId . '.pdf', 'I');
 
 // Close database connection

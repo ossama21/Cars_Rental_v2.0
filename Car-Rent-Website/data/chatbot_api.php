@@ -33,6 +33,9 @@ switch ($action) {
         ];
         echo json_encode(searchCars($params));
         break;
+    case 'get_training_data':
+        echo json_encode(getTrainingData());
+        break;
     default:
         echo json_encode(['status' => 'error', 'message' => 'Invalid action']);
 }
@@ -233,6 +236,19 @@ function getCarAvailability($carId, $startDate, $endDate) {
         }
     } catch (PDOException $e) {
         return ["status" => "error", "message" => "Database error: " . $e->getMessage()];
+    }
+}
+
+// Function to get chatbot training data
+function getTrainingData() {
+    // Include the training data file
+    require_once 'chatbot_training_data.php';
+    
+    // Check if the data was loaded successfully
+    if (isset($chatbot_training_data) && is_array($chatbot_training_data)) {
+        return ["status" => "success", "data" => $chatbot_training_data];
+    } else {
+        return ["status" => "error", "message" => "Could not load training data"];
     }
 }
 ?>

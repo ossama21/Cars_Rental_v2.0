@@ -467,7 +467,7 @@ $totalActiveUsers = $conn->query($sqlActiveUsers)->fetch_assoc()['total'];
                                 <ul class="dropdown-menu" aria-labelledby="exportDropdown">
                                     <li><a class="dropdown-item" href="#"><i class="fas fa-file-csv me-2"></i>CSV</a></li>
                                     <li><a class="dropdown-item" href="#"><i class="fas fa-file-excel me-2"></i>Excel</a></li>
-                                    <li><a class="dropdown-item" href="#"><i class="fas fa-file-pdf me-2"></i>PDF</a></li>
+                                    <li><a class="dropdown-item" href="export_cars.php?format=pdf"><i class="fas fa-file-pdf me-2"></i>PDF</a></li>
                                 </ul>
                             </div>
                             
