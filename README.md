@@ -1,6 +1,6 @@
 # CARS RENT - Car Rental Website
 
-![CARS RENT Logo](Car-Rent-Website/images/imag1.png)
+![CARS RENT Logo](Car-Rent-Website/images/image.png)
 
 ## 📝 Overview
 
