@@ -1,5 +1,7 @@
 # CARS RENT - Car Rental Website
 
+[![Video Walkthrough](https://img.shields.io/badge/Watch-Video%20Walkthrough-red?style=for-the-badge&logo=youtube)](https://youtube.com/15478)
+
 ![CARS RENT Logo](Car-Rent-Website/images/image.png)
 
 ## 📝 Overview
@@ -134,7 +136,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 - **Developer**: Ossama Hattan
 - **Email**: ossamahattan@gmail.com
-- **GitHub**: [ossama21](https://github.com/ossama21)
+- **Facebook**: [Ossama Ossama](https://www.facebook.com/ossama.colombo/)
 
 ## 📸 Screenshots
 
