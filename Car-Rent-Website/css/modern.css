@@ -31,7 +31,7 @@ body {
     color: var(--text-color);
     position: relative;
     overflow-y: auto !important;
-    background: #161d29 !important;
+    background: var(--admin-gray-light) !important;
 }
 
 body.loading-active {

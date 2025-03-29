@@ -1,63 +1,146 @@
-## Cars Rental Website Project
+# CARS RENT - Car Rental Website
 
-This project is a web application for a car rental company. It allows users to browse and rent cars online. The project is protected by the MIT License. 
+![CARS RENT Logo](Car-Rent-Website/images/image.png)
 
-### Features
+## 📝 Overview
 
-- User registration and login
-- Car catalog with detailed information 
-- Car search and filtering options
-- Booking and reservation system
-- Payment integration 
-- User profile management 
+CARS RENT is a modern, feature-rich car rental web application that provides users with a seamless experience to browse, book, and rent vehicles. The platform offers an intuitive interface with multilingual support, dark mode, responsive design, and a secure payment system.
 
-### Technologies Used
+## ✨ Features
 
-- HTML5 
-- CSS3 
-- JavaScript 
-- React.js
-- Node.js
-- Express.js 
+- **User Authentication & Management**
+  - Account creation and management
+  - Profile customization
+  - Booking history and receipts
 
+- **Advanced Car Browsing**
+  - Detailed car specifications
+  - High-quality image galleries
+  - Filtering by type, price, and availability
+  - Advanced search functionality
 
-### Installation
+- **Booking System**
+  - Real-time availability checking
+  - Date range selection
+  - Pricing calculation with discounts
+  - Coupon code support
 
-1. Clone the repository:
+- **Enhanced User Experience**
+  - Multi-language support (English, French, Arabic)
+  - Dark/Light theme toggle
+  - Responsive design for all devices
+  - Interactive chatbot assistance
 
-    ```bash
-    git clone https://github.com/your-username/Cars_Rental_WebSite-Project.git
-    ```
+- **Admin Dashboard**
+  - Car fleet management
+  - User management
+  - Booking oversight
+  - Discount and coupon management
+  - Sales reporting and analytics
 
-2. Install the dependencies:
+- **Secure Payment Processing**
+  - Multiple payment method support
+  - Secure transaction handling
+  - Invoice generation
 
-    ```bash
-    cd Cars_Rental_WebSite-Project 
-    npm install
-    ```
+## 🛠️ Technologies Used
 
-3. Set up the environment variables:
+- **Frontend**
+  - HTML5, CSS3, JavaScript
+  - Bootstrap 5
+  - FontAwesome
+  - Swiper.js
+  - AOS Animation Library
 
-    - Create a `.env` file in the root directory 
-    - Add the following variables:
+- **Backend**
+  - PHP
+  - MySQL Database
+  - FPDF (for PDF generation)
 
-      ```plaintext
-      PORT=3000
-      MONGODB_URI=your-mongodb-connection-string
-      ```
+- **Additional Tools**
+  - SASS/SCSS for styling
+  - AJAX for asynchronous requests
 
-4. Start the development server:
+## 📋 Requirements
 
-    ```bash
-    npm start
-    ```
+- PHP 7.4 or higher
+- MySQL 5.7 or higher
+- Web server (Apache recommended)
+- XAMPP, WAMP, MAMP, or similar local development environment
 
-### License
+## 🚀 Installation
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more information.
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/ossama21/Cars_Rental_WebSite-Project.git
+   ```
 
-### Contact
+2. **Set up your local environment**
+   - Install XAMPP, WAMP, or similar environment
+   - Start Apache and MySQL services
 
-For any inquiries or support, please contact us at [email protected]
+3. **Configure the database**
+   - Create a database named `car_rent`
+   - Import the SQL files from `Car-Rent-Website/admin/car_rent.sql`
+   - Run additional SQL scripts in the `database` directory if needed
 
-### Copyright (c) 2024.
+4. **Configure the application**
+   - Update database connection settings in `Car-Rent-Website/data/connect.php`
+   - Ensure file permissions are set correctly
+
+5. **Access the application**
+   - Navigate to `http://localhost/Cars_Rental_V2.0/Car-Rent-Website/`
+   - Admin access: Use the admin credentials to log in to the admin dashboard
+
+## 📂 Project Structure
+
+- **Car-Rent-Website/**: Main application directory
+  - **admin/**: Admin dashboard and management tools
+  - **css/**: Stylesheets for the application
+  - **data/**: Data handling scripts and APIs
+  - **images/**: Image assets for cars and UI
+  - **includes/**: Reusable PHP components
+  - **js/**: JavaScript files for client-side functionality
+  - **languages/**: Language files for multilingual support
+  - **loading/**: Loading animations and screens
+
+- **database/**: Database scripts and initialization
+- **font/**: Font files for PDF generation
+- **assets/**: Additional assets for the project
+
+## 🌐 Browser Support
+
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)
+- Opera (latest)
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📜 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 📞 Contact
+
+- **Developer**: Ossama Hattan
+- **Email**: ossamahattan@gmail.com
+- **GitHub**: [ossama21](https://github.com/ossama21)
+
+## 📸 Screenshots
+
+![Homepage](Car-Rent-Website/images/12.png)
+<!-- Add more screenshots as needed -->
+
+---
+
+© 2024 CARS RENT. All rights reserved.
