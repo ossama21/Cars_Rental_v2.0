@@ -824,7 +824,40 @@ if (isset($_SESSION['booking'])) {
                     </div>
 
                     <div class="car-summary">
-                        <img src="<?php echo htmlspecialchars($booking['car']['image']); ?>" alt="<?php echo htmlspecialchars($booking['car']['name']); ?>" class="car-image">
+                        <?php 
+                        // Try multiple approaches to find a car image
+                        $imagePath = './images/car-placeholder.png'; // Default fallback
+                        
+                        // First check primary_image from car_images table if available
+                        if (!empty($booking['car']['primary_image'])) {
+                            if (file_exists($booking['car']['primary_image'])) {
+                                $imagePath = $booking['car']['primary_image'];
+                            } else if (file_exists('./' . $booking['car']['primary_image'])) {
+                                $imagePath = './' . $booking['car']['primary_image'];
+                            }
+                        }
+                        
+                        // If primary image not found, try the legacy image
+                        if ($imagePath == './images/car-placeholder.png' && !empty($booking['car']['image'])) {
+                            if (file_exists($booking['car']['image'])) {
+                                $imagePath = $booking['car']['image'];
+                            } else if (file_exists('./' . $booking['car']['image'])) {
+                                $imagePath = './' . $booking['car']['image'];
+                            }
+                        }
+                        
+                        // Try looking directly in the car_id folder
+                        if ($imagePath == './images/car-placeholder.png' && !empty($booking['car']['id'])) {
+                            $carFolder = './images/cars/' . $booking['car']['id'] . '/';
+                            if (is_dir($carFolder)) {
+                                $files = glob($carFolder . '*.{jpg,jpeg,png}', GLOB_BRACE);
+                                if (!empty($files)) {
+                                    $imagePath = $files[0];
+                                }
+                            }
+                        }
+                        ?>
+                        <img src="<?php echo htmlspecialchars($imagePath); ?>" alt="<?php echo htmlspecialchars($booking['car']['name']); ?>" class="car-image">
                         <div class="car-details">
                             <h4><?php echo htmlspecialchars($booking['car']['name']); ?></h4>
                             <p><?php echo htmlspecialchars($booking['car']['brand']); ?> - <?php echo htmlspecialchars($booking['car']['model']); ?></p>
