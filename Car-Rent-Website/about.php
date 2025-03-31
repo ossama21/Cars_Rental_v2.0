@@ -157,7 +157,7 @@ include_once "languages/{$lang_code}.php";
                   <i class="fas fa-chevron-down"></i>
                 </button>
                 <div class="profile-menu">
-                  <a href="data/homepage.php" class="profile-menu-item">
+                  <a href="data/my_account.php" class="profile-menu-item">
                     <i class="fas fa-user"></i> <?php echo $lang['my_account']; ?>
                   </a>
                   <?php if ($isAdmin): ?>
@@ -223,7 +223,7 @@ include_once "languages/{$lang_code}.php";
           </div>
         </div>
         <div class="mobile-profile-menu">
-          <a href="./data/homepage.php" class="mobile-profile-menu-item">
+          <a href="./data/my_account.php" class="mobile-profile-menu-item">
             <i class="fas fa-user"></i><?php echo $lang['my_account']; ?>
           </a>
           <?php if ($isAdmin): ?>

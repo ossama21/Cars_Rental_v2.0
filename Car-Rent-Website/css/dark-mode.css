@@ -622,7 +622,7 @@ input:checked + .slider .moon-icon {
 .language-selector .current-lang {
   padding: 8px 12px;
   border-radius: 8px;
-  border: 1px solid transparent;
+  border: 1px solid #0000;
   transition: all 0.3s ease;
 }
 

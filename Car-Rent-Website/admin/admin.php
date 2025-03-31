@@ -67,8 +67,10 @@ $priceColumn = ($columnsResult && $columnsResult->num_rows > 0) ? 'price_per_day
 $columnsResult = $conn->query("SHOW COLUMNS FROM cars LIKE 'added_date'");
 $dateColumn = ($columnsResult && $columnsResult->num_rows > 0) ? 'added_date' : 'CURRENT_TIMESTAMP as added_date';
 
-$sqlRecentCars = "SELECT id, name, image, $priceColumn as price_per_day, $dateColumn 
-                  FROM cars ORDER BY id DESC LIMIT 5";
+$sqlRecentCars = "SELECT c.id, c.name, c.image, ci.image_path as primary_image, $priceColumn as price_per_day, $dateColumn 
+                  FROM cars c 
+                  LEFT JOIN car_images ci ON c.id = ci.car_id AND ci.is_primary = 1
+                  ORDER BY id DESC LIMIT 5";
 $recentCars = $conn->query($sqlRecentCars);
 
 // Get monthly revenue for chart - Using services table
@@ -998,7 +1000,19 @@ if ($carCategories && $carCategories->num_rows > 0) {
                                 <?php while($car = $recentCars->fetch_assoc()): ?>
                                     <tr>
                                         <td>
-                                            <img src="<?php echo htmlspecialchars($car['image']); ?>" alt="<?php echo htmlspecialchars($car['name']); ?>" style="width: 50px; height: 40px; object-fit: contain;">
+                                            <?php if(!empty($car['primary_image']) && file_exists('../' . $car['primary_image'])): ?>
+                                                <img src="../<?php echo htmlspecialchars($car['primary_image']); ?>" 
+                                                     alt="<?php echo htmlspecialchars($car['name']); ?>" 
+                                                     style="width: 50px; height: 40px; object-fit: contain; background-color: #f8f9fa;">
+                                            <?php elseif(!empty($car['image']) && file_exists('../' . $car['image'])): ?>
+                                                <img src="../<?php echo htmlspecialchars($car['image']); ?>" 
+                                                     alt="<?php echo htmlspecialchars($car['name']); ?>" 
+                                                     style="width: 50px; height: 40px; object-fit: contain; background-color: #f8f9fa;">
+                                            <?php else: ?>
+                                                <div style="width: 50px; height: 40px; background-color: #e2e8f0; display: flex; align-items: center; justify-content: center; border-radius: 4px;">
+                                                    <i class="fas fa-car text-secondary"></i>
+                                                </div>
+                                            <?php endif; ?>
                                         </td>
                                         <td><?php echo htmlspecialchars($car['id']); ?></td>
                                         <td><?php echo htmlspecialchars($car['name']); ?></td>

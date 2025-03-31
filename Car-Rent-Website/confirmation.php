@@ -539,7 +539,7 @@ if (isset($_SESSION['booking'])) {
                                 <i class="fas fa-chevron-down"></i>
                             </button>
                             <div class="profile-menu">
-                                <a href="data/homepage.php" class="profile-menu-item">
+                                <a href="data/my_account.php" class="profile-menu-item">
                                     <i class="fas fa-user"></i> My Account
                                 </a>
                                 <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>

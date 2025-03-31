@@ -1530,7 +1530,7 @@ $conn->close();
                                 <i class="fas fa-chevron-down"></i>
                             </button>
                             <div class="profile-menu">
-                                <a href="data/homepage.php" class="profile-menu-item">
+                                <a href="data/my_account.php" class="profile-menu-item">
                                     <i class="fas fa-user"></i> My Account
                                 </a>
                                 <?php if ($isAdmin): ?>
@@ -1962,7 +1962,34 @@ $conn->close();
             // ...rest of your DOMContentLoaded code...
         });
     </script>
-    <script src="./js/checkout.js"></script>
+    <!-- Replaced missing checkout.js with inline script -->
+    <script>
+        // Image Gallery Functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get the main image and all thumbnails
+            const mainImage = document.getElementById('main-car-image');
+            const thumbnails = document.querySelectorAll('.thumbnail-item');
+            
+            // Add click event to each thumbnail
+            thumbnails.forEach(thumbnail => {
+                thumbnail.addEventListener('click', function() {
+                    // Get the image source from data attribute
+                    const imgSrc = this.getAttribute('data-image');
+                    
+                    // Update main image source
+                    if (mainImage && imgSrc) {
+                        mainImage.src = imgSrc;
+                        
+                        // Remove active class from all thumbnails
+                        thumbnails.forEach(t => t.classList.remove('active'));
+                        
+                        // Add active class to clicked thumbnail
+                        this.classList.add('active');
+                    }
+                });
+            });
+        });
+    </script>
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -2095,10 +2122,9 @@ $conn->close();
                     document.getElementById('total-price').textContent = `<?php echo $currency_symbol; ?>${totalPrice.toFixed(2)}`;
                     
                     // Calculate and display total savings
-                    const totalSavings = originalTotal + insuranceFee + preorderFee - totalPrice;
-                    if (totalSavings > 0) {
-                        document.getElementById('total-savings').textContent = `-<?php echo $currency_symbol; ?>${totalSavings.toFixed(2)}`;
-                    }
+                    const totalSavings = originalTotal - totalPrice;
+                    document.getElementById('total-savings').textContent = 
+                        `-${formatCurrency(Math.max(0, totalSavings)).replace(/[()]/g, '')}`;
                     
                     // Show car discount if applicable
                     if (carPrice !== discountedPrice && document.getElementById('discount-amount')) {
@@ -2151,6 +2177,7 @@ $conn->close();
             const preorderFee = <?php echo $is_preorder ? '15' : '0'; ?>;
             
             let total = durationDays * discountedPrice + insuranceFee + preorderFee;
+            const originalTotal = baseTotal + insuranceFee + preorderFee;
             
             // Apply coupon discount if exists
             if (couponType === 'percentage') {
@@ -2163,13 +2190,13 @@ $conn->close();
             }
             
             // Update displays
-            document.getElementById('original-price').textContent = formatCurrency(baseTotal + insuranceFee + preorderFee);
+            document.getElementById('original-price').textContent = formatCurrency(originalTotal);
             document.getElementById('total-price').textContent = formatCurrency(total);
             
             // Calculate and show total savings
-            const totalSavings = originalTotal + insuranceFee + preorderFee - total;
+            const totalSavings = originalTotal - total;
             document.getElementById('total-savings').textContent = 
-                `-<?php echo $currency_symbol; ?>${Math.max(0, totalSavings).toFixed(2)}`;
+                `-${formatCurrency(Math.max(0, totalSavings)).replace(/[()]/g, '')}`;
             
             // Update coupon discount display if applicable
             const couponRow = document.getElementById('coupon-row');

@@ -3,7 +3,7 @@ session_start();
 include("connect.php");
 
 if (!isset($_SESSION['id']) || !isset($_POST['method_id'])) {
-    header("Location: homepage.php");
+    header("Location: my_account.php");
     exit();
 }
 
@@ -16,5 +16,5 @@ $stmt->bind_param("ii", $methodId, $userId);
 $stmt->execute();
 
 // Redirect back to homepage
-header("Location: homepage.php");
+header("Location: my_account.php");
 exit();

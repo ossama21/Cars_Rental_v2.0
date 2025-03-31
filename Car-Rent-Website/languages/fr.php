@@ -39,13 +39,16 @@ $lang = [
     'search_cars' => 'Rechercher des Voitures',
     
     // Featured Cars Section
-    'featured_vehicles' => 'Véhicules en Vedette',
+    'featured_vehicles' => 'Véhicules Vedettes',
     'discover_selection' => 'Découvrez notre sélection de véhicules premium disponibles à la location',
     'special_offer' => 'Offre Spéciale',
+    'hot' => 'POPULAIRE',
+    'most_rented' => 'Le Plus Loué',
+    'new_arrival' => 'Nouvel Arrivage',
     'seats' => 'Places',
     'day' => '/ jour',
     'rent_now' => 'Louer Maintenant',
-    'login_to_rent' => 'Connectez-vous pour Louer',
+    'login_to_rent' => 'Connectez-vous pour louer',
     
     // Why Choose Us Section
     'our_advantages' => 'Nos Avantages',
@@ -283,5 +286,6 @@ $lang = [
     'car_rented' => 'Loué',
     'car_reserved' => 'Réservé',
     'price_per_day' => 'Prix par Jour',
+    'login_to_book' => 'Connectez-vous pour Réserver'
 ];
 ?>

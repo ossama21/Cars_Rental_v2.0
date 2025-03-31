@@ -42,6 +42,9 @@ $lang = [
     'featured_vehicles' => 'Featured Vehicles',
     'discover_selection' => 'Discover our selection of premium vehicles available for rent',
     'special_offer' => 'Special Offer',
+    'hot' => 'HOT',
+    'most_rented' => 'Most Rented',
+    'new_arrival' => 'New Arrival',
     'seats' => 'Seats',
     'day' => '/ day',
     'rent_now' => 'Rent Now',
@@ -283,5 +286,6 @@ $lang = [
     'car_rented' => 'Rented',
     'car_reserved' => 'Reserved',
     'price_per_day' => 'Price per Day',
+    'login_to_book' => 'Login to Book',
 ];
 ?>

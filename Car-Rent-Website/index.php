@@ -396,13 +396,14 @@ if ($conn->connect_error) {
                     d.discount_type,
                     d.discount_value,
                     ci.image_path as primary_image,
-                    CONCAT('../Car-Rent-Website/images/cars/index_cars', c.id, '.jpg') as index_image
+                    CONCAT('../Car-Rent-Website/images/cars/index_cars', c.id, '.jpg') as index_image,
+                    (SELECT COUNT(*) FROM bookings WHERE car_id = c.id) as rental_count
                     FROM cars c 
                     LEFT JOIN car_discounts d ON c.id = d.car_id 
                         AND CURRENT_TIMESTAMP BETWEEN d.start_date AND d.end_date 
                     LEFT JOIN car_images ci ON c.id = ci.car_id AND ci.is_primary = 1
                     ORDER BY RAND() 
-                    LIMIT 4";
+                    LIMIT 8";
             
             $result = $conn->query($sql);
             
@@ -425,13 +426,28 @@ if ($conn->connect_error) {
                         $imagePath = 'images/car-placeholder.png';
                     }
                     $price = isset($car['discounted_price']) ? $car['discounted_price'] : $car['price'];
+                    
+                    // Determine which tags to show based on car properties
+                    $isHot = (isset($car['is_featured']) && $car['is_featured'] == 1);
+                    $isMostRented = (isset($car['rental_count']) && $car['rental_count'] > 5);
+                    $isNewArrival = (isset($car['date_added']) && (time() - strtotime($car['date_added']) < 30 * 24 * 60 * 60));
+                    $hasDiscount = isset($car['discount_value']) && $car['discount_value'] > 0;
             ?>
             <div class="swiper-slide">
               <div class="car-card" data-aos="fade-up">
                 <div class="car-image">
                   <img src="<?php echo htmlspecialchars($imagePath); ?>" alt="<?php echo htmlspecialchars($car['name']); ?>">
-                  <?php if(isset($car['discount_value'])): ?>
-                    <div class="car-tag"><?php echo $lang['special_offer']; ?></div>
+                  
+                  <?php if($isHot): ?>
+                    <div class="car-tag hot"><?php echo $lang['hot']; ?></div>
+                  <?php elseif($hasDiscount): ?>
+                    <div class="car-tag special-offer"><?php echo $lang['special_offer']; ?></div>
+                  <?php endif; ?>
+                  
+                  <?php if($isMostRented): ?>
+                    <div class="car-tag most-rented secondary-tag"><?php echo $lang['most_rented']; ?></div>
+                  <?php elseif($isNewArrival): ?>
+                    <div class="car-tag new-arrival secondary-tag"><?php echo $lang['new_arrival']; ?></div>
                   <?php endif; ?>
                 </div>
                 <div class="car-info">

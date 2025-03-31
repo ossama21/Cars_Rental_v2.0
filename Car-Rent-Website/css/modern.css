@@ -24,6 +24,12 @@
   --success-color: #22c55e;      /* Green */
   --warning-color: #f59e0b;      /* Amber */
   --info-color: #0ea5e9;         /* Sky blue */
+  
+  /* New tag colors */
+  --hot-color: #ef4444;          /* Red */
+  --most-rented-color: #8b5cf6;  /* Purple */
+  --new-arrival-color: #10b981;  /* Emerald */
+  --special-offer-color: #f59e0b; /* Amber */
 }
 
 body {
@@ -65,8 +71,10 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn {
+  display: inline-block;
+  padding: .35em .65em;
   border-radius: 50px;
-  padding: 0.6rem 1.5rem;
+  /* padding: 0.6rem 1.5rem; */
   font-weight: 500;
   transition: var(--transition);
   text-transform: uppercase;
@@ -184,7 +192,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .nav-link {
-  color: #ffffff;
+  color: #cdc5c5;
   text-decoration: none;
   font-size: 0.95rem;
   font-weight: 500;
@@ -673,6 +681,7 @@ h1, h2, h3, h4, h5, h6 {
   transform: scale(1.08);
 }
 
+/* Car tag styles - enhanced with multiple tag options */
 .car-tag {
   position: absolute;
   top: 1rem;
@@ -685,6 +694,55 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 600;
   letter-spacing: 0.5px;
   box-shadow: 0 5px 15px rgba(246, 173, 85, 0.2);
+  z-index: 2;
+}
+
+/* New additional tag styles */
+.car-tag.hot {
+  background: var(--hot-color);
+  box-shadow: 0 5px 15px rgba(239, 68, 68, 0.2);
+  animation: pulse 1.5s infinite;
+}
+
+.car-tag.most-rented {
+  background: var(--most-rented-color);
+  box-shadow: 0 5px 15px rgba(139, 92, 246, 0.2);
+}
+
+.car-tag.new-arrival {
+  background: var(--new-arrival-color);
+  box-shadow: 0 5px 15px rgba(16, 185, 129, 0.2);
+}
+
+.car-tag.special-offer {
+  background: var(--special-offer-color);
+  box-shadow: 0 5px 15px rgba(245, 158, 11, 0.2);
+}
+
+/* Position second tag if needed */
+.car-tag.secondary-tag {
+  top: 1rem;
+  right: auto;
+  left: 1rem;
+}
+
+/* Optional: Position for a third tag if needed */
+.car-tag.tertiary-tag {
+  top: 4rem;
+  right: 1rem;
+}
+
+/* Animation for the HOT tag */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .car-info {
@@ -1678,7 +1736,7 @@ footer h5::after {
   align-items: center;
   background: none;
   border: none;
-  color: #000000;
+  color: #8b8a8a;
   cursor: pointer;
   padding: 0.5rem;
   border-radius: 50px;

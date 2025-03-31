@@ -39,9 +39,12 @@ $lang = [
     'search_cars' => 'بحث عن سيارات',
     
     // Featured Cars Section
-    'featured_vehicles' => 'السيارات المميزة',
-    'discover_selection' => 'اكتشف مجموعتنا من السيارات الفاخرة المتاحة للإيجار',
+    'featured_vehicles' => 'المركبات المميزة',
+    'discover_selection' => 'اكتشف مجموعتنا من المركبات المميزة المتوفرة للإيجار',
     'special_offer' => 'عرض خاص',
+    'hot' => 'رائج',
+    'most_rented' => 'الأكثر تأجيراً',
+    'new_arrival' => 'وصل حديثاً',
     'seats' => 'مقاعد',
     'day' => '/ يوم',
     'rent_now' => 'استأجر الآن',
@@ -283,5 +286,6 @@ $lang = [
     'car_rented' => 'مؤجرة',
     'car_reserved' => 'محجوزة',
     'price_per_day' => 'السعر لليوم',
+    'login_to_book' => 'تسجيل الدخول للحجز'
 ];
 ?>
