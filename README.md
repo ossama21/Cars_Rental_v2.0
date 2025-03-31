@@ -140,12 +140,12 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 📸 Screenshots
 
-![Homepage](C:\xampp\htdocs\Cars_Rental_V2.0\Car-Rent-Website\images\screenshots\Capture_d'écran2.png)
-![FEATURES](C:\xampp\htdocs\Cars_Rental_V2.0\Car-Rent-Website\images\screenshots\Capture_d'écran1.png)
-![Homepage](C:\xampp\htdocs\Cars_Rental_V2.0\Car-Rent-Website\images\screenshots\Capture_d'écran3.png)
-![Carspage](C:\xampp\htdocs\Cars_Rental_V2.0\Car-Rent-Website\images\screenshots\Capture_d'écran4.png)
-![Carspage](C:\xampp\htdocs\Cars_Rental_V2.0\Car-Rent-Website\images\screenshots\Capture_d'écran5.png)
-![Loginpage](C:\xampp\htdocs\Cars_Rental_V2.0\Car-Rent-Website\images\screenshots\Capture_d'écran6.png)
+![Homepage](Car-Rent-Website/images/screenshots/Capture_d'écran2.png)
+![FEATURES](Car-Rent-Website/images/screenshots/Capture_d'écran1.png)
+![Homepage](Car-Rent-Website/images/screenshots/Capture_d'écran3.png)
+![Carspage](Car-Rent-Website/images/screenshots/Capture_d'écran4.png)
+![Carspage](Car-Rent-Website/images/screenshots/Capture_d'écran5.png)
+![Loginpage](Car-Rent-Website/images/screenshots/Capture_d'écran6.png)
 <!-- Add more screenshots as needed -->
 
 ---
