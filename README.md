@@ -1,6 +1,6 @@
 # CARS RENT - Car Rental Website
 
-[![Video Walkthrough](https://img.shields.io/badge/Watch-Video%20Walkthrough-red?style=for-the-badge&logo=youtube)](https://youtube.com/1547https://youtu.be/wZDCF0FLP7U8)
+[![Video Walkthrough](https://img.shields.io/badge/Watch-Video%20Walkthrough-red?style=for-the-badge&logo=youtube)](https://youtu.be/wZDCF0FLP7U)
 
 ![CARS RENT Logo](Car-Rent-Website/images/Capture d'écran.png)
 
