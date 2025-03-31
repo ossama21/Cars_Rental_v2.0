@@ -150,4 +150,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-© 2024 CARS RENT. All rights reserved.
+© 2025 CARS RENT. All rights reserved.
