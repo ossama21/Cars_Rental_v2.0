@@ -211,7 +211,7 @@ input:checked + .slider .moon-icon {
 }
 
 [data-theme="dark"] .search-section {
-  background-color: var(--secondary-bg);
+  background-color: #1e293b00;
 }
 
 [data-theme="dark"] .why-choose-us {

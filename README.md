@@ -1,8 +1,8 @@
 # CARS RENT - Car Rental Website
 
-[![Video Walkthrough](https://img.shields.io/badge/Watch-Video%20Walkthrough-red?style=for-the-badge&logo=youtube)](https://youtube.com/15478)
+[![Video Walkthrough](https://img.shields.io/badge/Watch-Video%20Walkthrough-red?style=for-the-badge&logo=youtube)](https://youtube.com/1547https://youtu.be/wZDCF0FLP7U8)
 
-![CARS RENT Logo](Car-Rent-Website/images/image.png)
+![CARS RENT Logo](Car-Rent-Website/images/Capture d'écran.png)
 
 ## 📝 Overview
 
@@ -140,7 +140,12 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 📸 Screenshots
 
-![Homepage](Car-Rent-Website/images/12.png)
+![Homepage](C:\xampp\htdocs\Cars_Rental_V2.0\Car-Rent-Website\images\screenshots\Capture_d'écran2.png)
+![FEATURES](C:\xampp\htdocs\Cars_Rental_V2.0\Car-Rent-Website\images\screenshots\Capture_d'écran1.png)
+![Homepage](C:\xampp\htdocs\Cars_Rental_V2.0\Car-Rent-Website\images\screenshots\Capture_d'écran3.png)
+![Carspage](C:\xampp\htdocs\Cars_Rental_V2.0\Car-Rent-Website\images\screenshots\Capture_d'écran4.png)
+![Carspage](C:\xampp\htdocs\Cars_Rental_V2.0\Car-Rent-Website\images\screenshots\Capture_d'écran5.png)
+![Loginpage](C:\xampp\htdocs\Cars_Rental_V2.0\Car-Rent-Website\images\screenshots\Capture_d'écran6.png)
 <!-- Add more screenshots as needed -->
 
 ---
