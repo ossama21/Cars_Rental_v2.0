@@ -2,7 +2,7 @@
 
 [![Video Walkthrough](https://img.shields.io/badge/Watch-Video%20Walkthrough-red?style=for-the-badge&logo=youtube)](https://youtu.be/wZDCF0FLP7U)
 
-![CARS RENT Logo](Car-Rent-Website/images/Capture d'écran.png)
+![CARS RENT Logo](Car-Rent-Website/images/Capture%20d'écran.png)
 
 ## 📝 Overview
 
@@ -140,7 +140,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 📸 Screenshots
 
-![Homepage](Car-Rent-Website/images/screenshots/Capture_d'écran2.png)
+![Homepage](Car-Rent-Website/images/Capture%20d'écran.png)
+![Aboutpage](Car-Rent-Website/images/screenshots/Capture_d'écran2.png)
 ![FEATURES](Car-Rent-Website/images/screenshots/Capture_d'écran1.png)
 ![Homepage](Car-Rent-Website/images/screenshots/Capture_d'écran3.png)
 ![Carspage](Car-Rent-Website/images/screenshots/Capture_d'écran4.png)
