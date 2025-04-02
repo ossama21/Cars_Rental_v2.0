@@ -73,6 +73,7 @@ CARS RENT is a modern, feature-rich car rental web application that provides use
 ## 🚀 Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/ossama21/Cars_Rental_WebSite-Project.git
    ```
@@ -135,7 +136,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## 📞 Contact
 
 - **Developer**: Ossama Hattan
-- **Email**: ossamahattan@gmail.com
+- **Email**: <ossamahattan@gmail.com>
 - **Facebook**: [Ossama Ossama](https://www.facebook.com/ossama.colombo/)
 
 ## 📸 Screenshots
